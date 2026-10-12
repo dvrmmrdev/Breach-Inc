@@ -18,7 +18,7 @@ var START_NODE = "act0_start";
 
 var GAME_NODES = {
   act0_start: {
-    act: "Act 0: Prequel",
+    act: "Act 0: Things Are Looking Up",
     title: "Promotion & Inherited Architecture",
     text: [
       "You are promoted to the Global Cyber Senior Leadership Team at ACME Inc., a market-leading payments processor that handles card payments for banks and retailers across the country. Most of the people whose data you hold have never heard of you.",
@@ -46,7 +46,7 @@ var GAME_NODES = {
   },
 
   act0_breach: {
-    act: "Act 0: Prequel",
+    act: "Act 0: Things Are Looking Up",
     title: "The Briefing Room",
     // Straight after the high of the summit: the cut should jar.
     jolt: true,
@@ -79,7 +79,7 @@ var GAME_NODES = {
   },
 
   act1_cert_alert: {
-    act: "Act 1: The Advisory & Reconstruction",
+    act: "Act 1: Living in Silence",
     title: "Reconstructing the Window",
     text: [
       "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy merchant portal, leaving the attackers a foothold for over two months. The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
@@ -108,7 +108,7 @@ var GAME_NODES = {
   },
 
   act1_containment: {
-    act: "Act 1: The Advisory & Reconstruction",
+    act: "Act 1: Living in Silence",
     title: "Overnight Changes",
     text: "The containment plan lands on your desk. Thousands of network and service account passwords must be changed, the network reshaped, and upgraded security controls deployed, all without alerting staff outside the read-in group that anything is wrong.",
     choices: [
@@ -130,7 +130,7 @@ var GAME_NODES = {
   },
 
   act1_scope: {
-    act: "Act 1: The Advisory & Reconstruction",
+    act: "Act 1: Living in Silence",
     title: "How Many People?",
     text: function (flags) {
       return (
@@ -161,7 +161,7 @@ var GAME_NODES = {
   },
 
   act2_foothold: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     title: "Project Harbour & the Blind Build",
     text: "To build a response site where the public can check whether they're affected, and to bring in more than a thousand external contact centre agents, ACME Inc. sets up a separate unit, Project Harbour. To prevent leaks, its staff are told they are supporting an incident at an unnamed client, without knowing the victim is ACME Inc. itself. The secrecy creates tension, rumours spread, and the engineers have no clear trading restrictions.",
     choices: [
@@ -184,7 +184,7 @@ var GAME_NODES = {
   },
 
   act2_scale: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     title: "Built for Everyone",
     text: "On announcement day, every adult in the country may try to check whether they were affected. Harbour's engineers want to build on ACME Inc.'s own platform and domain. A vendor offers a hosted site on a separate, newly registered domain that could be live in days.",
     choices: [
@@ -207,7 +207,7 @@ var GAME_NODES = {
   },
 
   act2_callcentres: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     title: "A Thousand New Voices",
     text: function (flags) {
       return [
@@ -235,7 +235,7 @@ var GAME_NODES = {
   },
 
   act2_trading: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     title: "The Share Sale",
     text: function (flags) {
       return (
@@ -267,7 +267,7 @@ var GAME_NODES = {
   },
 
   act3_transparency: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     title: "Who Hears First?",
     text: "The announcement is days away. Your security team, and the wider company, still don't know. You must decide how much they are told, and when.",
     choices: [
@@ -290,7 +290,7 @@ var GAME_NODES = {
   },
 
   act3_announce: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     title: "The Morning After",
     text: [
       "Traffic to the response site dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
@@ -316,7 +316,7 @@ var GAME_NODES = {
   },
 
   act3_lookalike: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     title: "The Wrong Website",
     text: function (flags) {
       return (
@@ -345,7 +345,7 @@ var GAME_NODES = {
   },
 
   act3_storm: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     title: "The Storm",
     text: "If you needed evidence that the world was against you, you don't have to check social media any more: the weather forecast proves it. A major hurricane makes landfall near two of your new contact centres just as call volumes peak. Hundreds of agents go offline, and the wait to reach an agent stretches to hours.",
     choices: [
@@ -478,6 +478,7 @@ var LESSONS = [
   "Foundational controls (asset management, patching, logging and response) underpin everything.",
   "Practise for the worst-case scenario, however unlikely it feels.",
   "Set up a structure that lets people work on incident response without being distracted by leaders.",
+  "Discuss your \u2018read-in\u2019 approach with business leaders. Too small a group, and you risk burnout. Too large a group, and you risk information leaks and insider trading. Find a balance.",
   "Have a leader in charge of people's wellbeing, making sure shifts end and people recover.",
   "Have contracts and processes in place to bring in external help quickly if it's ever needed.",
   "Plan how you'll maintain your team's health, wellbeing and availability during an extended crisis.",

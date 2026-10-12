@@ -11,7 +11,7 @@
 
 var INTERLUDES = {
   i_inherit: {
-    act: "Act 0: Prequel",
+    act: "Act 0: Things Are Looking Up",
     time: "18:20",
     title: "The Team You Inherit",
     text: [
@@ -25,7 +25,7 @@ var INTERLUDES = {
   },
 
   i_summit: {
-    act: "Act 0: Prequel",
+    act: "Act 0: Things Are Looking Up",
     time: "21:40",
     title: "The Global Summit",
     text: [
@@ -41,7 +41,7 @@ var INTERLUDES = {
   // The turn from the happy era to the breach: the colours drain to red as
   // the CISO starts to speak.
   i_gesture: {
-    act: "Act 0: Prequel",
+    act: "Act 0: Things Are Looking Up",
     time: "22:05",
     title: "A Quick Word",
     turn: true,
@@ -57,7 +57,7 @@ var INTERLUDES = {
   },
 
   i_hotel: {
-    act: "Act 0: Prequel",
+    act: "Act 0: Things Are Looking Up",
     time: "23:48",
     title: "Room 1412",
     silence: "start",
@@ -78,7 +78,7 @@ var INTERLUDES = {
   },
 
   i_warroom: {
-    act: "Act 1: The Advisory & Reconstruction",
+    act: "Act 1: Living in Silence",
     time: "03:10",
     title: "The War Room",
     text: [
@@ -93,7 +93,7 @@ var INTERLUDES = {
   },
 
   i_family: {
-    act: "Act 1: The Advisory & Reconstruction",
+    act: "Act 1: Living in Silence",
     time: "19:30",
     title: "Video Call",
     text: [
@@ -112,7 +112,7 @@ var INTERLUDES = {
   },
 
   i_number: {
-    act: "Act 1: The Advisory & Reconstruction",
+    act: "Act 1: Living in Silence",
     time: "08:05",
     title: "Everyone on the Train",
     text: [
@@ -125,7 +125,7 @@ var INTERLUDES = {
   },
 
   i_coffee: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     time: "10:40",
     title: "By the Coffee Machine",
     text: function (flags) {
@@ -142,7 +142,7 @@ var INTERLUDES = {
   },
 
   i_3am: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     time: "03:12",
     title: "Three in the Morning",
     text: function (flags, stats) {
@@ -160,7 +160,7 @@ var INTERLUDES = {
   },
 
   i_countdown: {
-    act: "Act 2: The Compartmented Build",
+    act: "Act 2: Under Pressure",
     time: "21:15",
     title: "A Date in the Diary",
     text: function (flags) {
@@ -177,7 +177,7 @@ var INTERLUDES = {
   },
 
   i_morning: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     time: "15:52",
     title: "Eight Minutes",
     silence: "end",
@@ -202,7 +202,7 @@ var INTERLUDES = {
   },
 
   i_clients: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     time: "16:09",
     title: "On the Call",
     text: [
@@ -218,7 +218,7 @@ var INTERLUDES = {
   },
 
   i_aftershock: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     time: "22:30",
     title: "Is This You?",
     text: [
@@ -231,7 +231,7 @@ var INTERLUDES = {
   },
 
   i_exposed: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     time: "12:30",
     title: "Open Season",
     text: function (flags) {
@@ -254,7 +254,7 @@ var INTERLUDES = {
   },
 
   i_home: {
-    act: "Act 3: Announcement",
+    act: "Act 3: Going Public",
     time: "18:05",
     title: "Home",
     text: [
