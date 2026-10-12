@@ -269,12 +269,17 @@ var GAME_NODES = {
   act3_transparency: {
     act: "Act 3: Going Public",
     title: "Who Hears First?",
-    text: "The announcement is days away. Your security team, and the wider company, still don't know. You must decide how much they are told, and when.",
+    text: function (flags, stats, left) {
+      return (
+        (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
+        " Your security team, and the wider company, still don't know. You must decide how much they are told, and when."
+      );
+    },
     choices: [
       {
         text: "Brief all staff an hour before the press release, with FAQs and support lines ready.",
         nextNode: "i_morning",
-        days: 1,
+        days: 0,
         stats: { internalInfluence: -5, teamHealth: 10, playerHealth: -5 },
         set: "staff_briefed",
         outcome: "There's shock but no leak. Your team hear it from you, not the news.",
@@ -282,7 +287,7 @@ var GAME_NODES = {
       {
         text: "Staff learn with the public, to minimise the risk of a leak.",
         nextNode: "i_morning",
-        days: 1,
+        days: 0,
         stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
         outcome: "Your engineers find out from news alerts on their phones. Some of them never quite forgive it.",
       },

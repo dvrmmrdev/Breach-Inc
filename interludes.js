@@ -1,7 +1,7 @@
 // Interludes: the moments between decisions. Each one is a few paragraphs
 // and a single Continue button. `time` is shown as a clock beside the day
-// count. `text` is an array of paragraphs, or a function of (flags, stats)
-// returning one. `stats` (also optionally a function) and `days` are optional, and are applied when the
+// count. `text` is an array of paragraphs, or a function of (flags, stats,
+// days left before Legal's date) returning one. `stats` (also optionally a function) and `days` are optional, and are applied when the
 // player continues. `silence: "start"` / `"end"` marks the stretch when you
 // can't tell anyone what's happening. `deadlineCheck` is where Legal's date
 // arrives: any days over it are squeezed into nights, at a cost to health.
@@ -57,7 +57,7 @@ var INTERLUDES = {
   },
 
   i_hotel: {
-    act: "Act 0: Things Are Looking Up",
+    act: "Act 1: Living in Silence",
     time: "23:48",
     title: "Room 1412",
     silence: "start",
@@ -163,11 +163,13 @@ var INTERLUDES = {
     act: "Act 2: Under Pressure",
     time: "21:15",
     title: "A Date in the Diary",
-    text: function (flags) {
+    text: function (flags, stats, left) {
       return [
-        flags.date_forward
-          ? "Legal's date is closer than it was. After the share sale, they brought it forward three days: with a manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. In the shared calendar, it's an innocuous meeting title that nobody would look at twice."
-          : "Legal's date is close now. In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
+        (flags.date_forward
+          ? "Legal's date is closer than it was. After the share sale, they brought it forward three days: with a manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. "
+          : "") +
+          (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
+          " In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
         "The press release is on draft fourteen. The Q&A runs to forty pages. You rehearse answers to questions you hope nobody asks, and some that you know they will.",
         "Legal ask everyone in the read-in group not to change their social media profiles, not to update their CVs, and not to cancel anything conspicuous. Act normal.",
         "You haven't felt normal for weeks. You're starting to forget what it was like.",

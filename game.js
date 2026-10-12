@@ -44,8 +44,14 @@
   }
 
   function nodeText(node) {
-    var text = typeof node.text === "function" ? node.text(state.flags, state.stats) : node.text;
+    var text = typeof node.text === "function" ? node.text(state.flags, state.stats, daysLeft()) : node.text;
     return [].concat(text);
+  }
+
+  // Days until Legal's announcement date, or null outside the countdown.
+  function daysLeft() {
+    var d = state.deadline;
+    return d && !d.done ? d.day - state.days : null;
   }
 
   // Days spent unable to tell anyone, so far or in total.
@@ -71,25 +77,29 @@
     }
   }
 
-  // Legal's date arrives whether or not the work is done. Work that didn't
-  // fit was squeezed into nights; either way, the clock jumps to the date.
-  function arriveAtDeadline() {
+  // Legal's date doesn't move. Until the announcement, the clock can't pass
+  // the day before it: work that doesn't fit is squeezed into nights, at a
+  // cost, as soon as it happens. The announcement itself is on the date.
+  function holdToDeadline(announcing) {
     var deadline = state.deadline;
     if (!deadline || deadline.done) return;
-    var over = state.days - deadline.day;
-    state.flags.overrun = Math.max(0, over);
-    if (over > 0) {
-      var changes = [];
-      applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over }, changes);
-      state.log.push({
-        title: "Legal's deadline",
-        choice: "",
-        outcome: "The date didn't move. " + over + " days of work were squeezed into nights.",
-        effects: changes.join(" · "),
-      });
+    if (announcing) {
+      state.days = deadline.day;
+      deadline.done = true;
+      return;
     }
-    state.days = deadline.day;
-    deadline.done = true;
+    var over = state.days - (deadline.day - 1);
+    if (over <= 0) return;
+    state.flags.overrun = (state.flags.overrun || 0) + over;
+    var changes = [];
+    applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over }, changes);
+    state.log.push({
+      title: "Legal's deadline",
+      choice: "",
+      outcome: "The date doesn't move. " + dayCount(over) + " of work squeezed into nights.",
+      effects: changes.join(" · "),
+    });
+    state.days = deadline.day - 1;
   }
 
   // Applies a choice, or an interlude's Continue, then moves on.
@@ -111,7 +121,7 @@
       });
     }
     var next = step.nextNode || step.next;
-    if (GAME_NODES[next] && GAME_NODES[next].deadlineCheck) arriveAtDeadline();
+    holdToDeadline(!!(GAME_NODES[next] && GAME_NODES[next].deadlineCheck));
 
     for (var stat in EARLY_ENDINGS) {
       if (state.stats[stat] <= 0) { state.ended = { early: stat }; break; }
