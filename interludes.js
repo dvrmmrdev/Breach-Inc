@@ -276,6 +276,7 @@ var INTERLUDES = {
     act: "Act 4: Aftermath",
     time: "10:00",
     title: "Back to Normal?",
+    when: "Months later", // shown instead of the day count
     text: function (flags) {
       return [
         "Months later, the diary starts to look ordinary again. Today is your first routine risk meeting since the breach.",

@@ -223,7 +223,7 @@
   function renderInterlude(card) {
     var node = GAME_NODES[state.node];
     card.className = "card interlude" + (node.turn ? " turning" : "");
-    card.appendChild(el("div", "clock", "Day " + state.days + " · " + node.time));
+    card.appendChild(el("div", "clock", (node.when || "Day " + state.days) + " · " + node.time));
     card.appendChild(el("h1", null, node.title));
     var paragraphs = nodeText(node);
     renderParagraphs(card, node, "narrative reveal");
