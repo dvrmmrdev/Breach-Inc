@@ -1,17 +1,18 @@
 # Breach Inc.
 
-A text adventure for security leaders, inspired by a real large-scale data breach. You join ACME Inc.'s security leadership just before the breach is discovered and steer the response through four acts:
+A text adventure for security leaders, loosely inspired by real events which happened to the game's creator. You join the security leadership of ACME Inc., a payments processor, just before a major breach is discovered, and steer the response through five acts:
 
-- reconstructing the attack
-- a secret build of the consumer response
-- the announcement
-- the aftermath
+- Things Are Looking Up
+- Living in Silence
+- Under Pressure
+- Going Public
+- Aftermath
 
 Between the decisions, short interludes with a single **Continue** button show what it was like to live through it. They include hotel rooms, a war room with no windows, calls home where you can't say anything, and lying to your own team. A **Days in silence** counter runs from the night you're told until the announcement, and the edges of the screen close in as your health falls.
 
 The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 2 Team health and 2 Your health for each day over (`OVERRUN_COST` in `game.js`).
 
-Every decision takes days and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons from the real event.
+Every decision takes days and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons learned.
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
 
