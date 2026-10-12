@@ -20,7 +20,7 @@ var GAME_NODES = {
   act0_start: {
     act: "Act 0: Prequel",
     title: "Promotion & Inherited Architecture",
-    text: "You are promoted to the Global Cyber Senior Leadership Team at ACME Inc., a market-leading consumer data and analytics company. Behind the congratulatory emails lies an enterprise shaped by years of rapid acquisitions, legacy application stacks, and relentless pressure to ship revenue-generating products ahead of routine control maintenance. In your first week, you must set your technical priorities.",
+    text: "You are promoted to the Global Cyber Senior Leadership Team at ACME Inc., a market-leading payments processor that handles card payments for banks and retailers across the country. Most of the people whose data you hold have never heard of you. Behind the congratulatory emails lies an enterprise shaped by years of rapid acquisitions, legacy application stacks, and relentless pressure to ship revenue-generating products ahead of routine control maintenance. In your first week, you must set your technical priorities.",
     choices: [
       {
         text: "Prioritise asset discovery, CMDB reconciliation, and clearing ACME Inc.'s legacy patching debt.",
@@ -48,7 +48,7 @@ var GAME_NODES = {
     readIn: true,
     text: [
       "'There has been a breach. One of the largest in corporate history.'",
-      "Attackers have been inside ACME Inc.'s network for months, and the data they took covers a huge share of the country's adults. Your team's flights will leave as planned, and they're to be told nothing.",
+      "Attackers have been inside ACME Inc.'s network for months, and the card and transaction data they took covers a huge share of the country's adults. Your team's flights will leave as planned, and they're to be told nothing.",
       "The Legal representative slides a confidentiality agreement across the table.",
       "Then the CISO looks straight at you. 'Understand this. If you breach confidentiality on this incident, you'll be fired on the spot. And cyber is a small world. Leak this, and your career is over, here and everywhere else.'",
       "Twenty minutes ago, you thought you belonged here.",
@@ -76,7 +76,7 @@ var GAME_NODES = {
     act: "Act 1: The Advisory & Reconstruction",
     title: "Reconstructing the Window",
     text: [
-      "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy customer-facing portal, leaving the attackers a foothold for over two months. The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
+      "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy merchant portal, leaving the attackers a foothold for over two months. The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
       "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
     ],
     // Legal's announcement date, in days from now. Days spent before the
@@ -157,7 +157,7 @@ var GAME_NODES = {
   act2_foothold: {
     act: "Act 2: The Compartmented Build",
     title: "Project Harbour & the Blind Build",
-    text: "To build the consumer lookup portal and bring in more than a thousand external contact centre agents, ACME Inc. sets up a separate unit, Project Harbour. To prevent leaks, its staff are told they are supporting an incident at an unnamed client, without knowing the victim is ACME Inc. itself. The secrecy creates tension, rumours spread, and the engineers have no clear trading restrictions.",
+    text: "To build a response site where the public can check whether they're affected, and to bring in more than a thousand external contact centre agents, ACME Inc. sets up a separate unit, Project Harbour. To prevent leaks, its staff are told they are supporting an incident at an unnamed client, without knowing the victim is ACME Inc. itself. The secrecy creates tension, rumours spread, and the engineers have no clear trading restrictions.",
     choices: [
       {
         text: "Keep the cover story; compartmentation protects the announcement.",
@@ -287,7 +287,7 @@ var GAME_NODES = {
     act: "Act 3: Announcement",
     title: "The Morning After",
     text: [
-      "Traffic to the lookup portal dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
+      "Traffic to the response site dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
       "On LinkedIn, vendors who were flattering you for a meeting last week are now publicly shaming you and your team. What you thought of as a cyber community is in a feeding frenzy, and your team is the meat.",
       "Journalists start messaging you and your team through your personal social media accounts. Former colleagues begin sharing their own theories about what went wrong.",
     ],

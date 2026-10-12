@@ -205,7 +205,7 @@ var INTERLUDES = {
     time: "16:09",
     title: "On the Call",
     text: [
-      "Nine minutes after the release, you're pulled into a conference room. One of ACME Inc.'s largest domestic clients is on the line, and they want answers now.",
+      "Nine minutes after the release, you're pulled into a conference room. One of the country's biggest banks, an ACME Inc. client, is on the line, and they want answers now.",
       "The CISO should be on this call. But they locked their office door and shut the blinds before the announcement went out, and they haven't come out since. Maybe it's all been too much. Feeling the way you do right now, you'd understand.",
       "Downstairs, your team are taking in the news. You should be with them. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
       "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent answers on the fly, based on what you're pretty sure are known facts, and paste each one into a shared document while the next call connects.",
@@ -221,7 +221,7 @@ var INTERLUDES = {
     time: "22:30",
     title: "Is This You?",
     text: [
-      "You have 63 unread messages on your phone. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I freeze my credit?' 'How could you let this happen?'",
+      "You have 63 unread messages on your phone. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I cancel my cards?' 'How could you let this happen?'",
       "Your family are kind on the phone. You can hear how hurt they are that they found out at the same time as everyone else.",
       "You can talk about it now, but only in the approved words. Anything beyond the press release is still off limits: to friends, to neighbours, even to former colleagues who'd understand better than anyone.",
       "The silence has ended. Now the noise is everywhere.",
