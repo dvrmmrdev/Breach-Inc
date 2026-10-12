@@ -81,14 +81,23 @@ var INTERLUDES = {
     act: "Act 1: Living in Silence",
     time: "03:10",
     title: "The War Room",
-    text: [
-      "Project Lantern works from a conference room with no windows, known to everyone in it as the war room. A second badge reader went onto the door on the first day. Phones stay in a locker in the corridor.",
-      "Every evening, the whiteboards are photographed and then wiped. Every morning, the same diagrams are drawn again, a little bigger.",
-      "You see the same faces in the same clothes three days running. Shifts stretch past sixteen hours, and some people stop going home between them at all.",
-      "The room smells of stale pizza. On the first night, it was a treat. By the third day, nobody can face another slice, and the boxes keep arriving anyway.",
-      "Under the strip lights, everyone's skin turns the same pasty grey. Someone has taped a sheet of paper over the glass panel in the door.",
-      "You lose track of whether it's day or night. The query replays run on, line after line, each one a set of real people's records.",
-    ],
+    text: function (flags) {
+      return [
+        "Project Lantern works from a conference room with no windows, known to everyone in it as the war room. A second badge reader went onto the door on the first day. Phones stay in a locker in the corridor.",
+        "Every evening, the whiteboards are photographed and then wiped. Every morning, the same diagrams are drawn again, a little bigger.",
+        "You see the same faces in the same clothes three days running. Shifts stretch past sixteen hours, and some people stop going home between them at all.",
+        "The room smells of stale pizza. On the first night, it was a treat. By the third day, nobody can face another slice, and the boxes keep arriving anyway.",
+        "Under the strip lights, everyone's skin turns the same pasty grey. Someone has taped a sheet of paper over the glass panel in the door.",
+        "You lose track of whether it's day or night. The query replays run on, line after line, each one a set of real people's records.",
+      flags.patching_first
+        ? "One thing goes right. Your reconciled asset inventory means Lantern knows which systems exist, who owns them and where their logs live. It saves days of guesswork."
+        : "Nobody is sure which systems exist, who owns them or where their logs live. Every answer starts with a hunt.",
+      ];
+    },
+    // The foundations you laid in your first week pay off here.
+    stats: function (flags) {
+      return flags.patching_first ? { internalInfluence: 5, teamHealth: 10, playerHealth: 5 } : {};
+    },
     next: "act1_visitors",
   },
 
@@ -166,7 +175,7 @@ var INTERLUDES = {
     text: function (flags, stats, left) {
       return [
         (flags.date_forward
-          ? "Legal's date is closer than it was. After the share sale, they brought it forward three days: with a manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. "
+          ? "Legal's date is closer than it was. After the share sale, they brought it forward: with a manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. "
           : "") +
           (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
           " In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
@@ -224,7 +233,7 @@ var INTERLUDES = {
     title: "Is This You?",
     text: [
       "You have 63 unread messages on your phone. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I cancel my cards?' 'How could you let this happen?'",
-      "Your family are kind on the phone. You can hear how hurt they are that they found out at the same time as everyone else.",
+      "Your family are kind on the phone. You can hear how hurt they are that they found out from the news, like everyone else.",
       "You can talk about it now, but only in the approved words. Anything beyond the press release is still off limits: to friends, to neighbours, even to former colleagues who'd understand better than anyone.",
       "The silence has ended. Now the noise is everywhere.",
     ],
@@ -267,7 +276,7 @@ var INTERLUDES = {
       "Halfway through, you stop talking and cry on your partner's shoulder. They hold on, and don't ask you to finish.",
       "You sleep for eleven hours.",
     ],
-    stats: { playerHealth: 25 },
+    stats: { playerHealth: 20 },
     days: 2,
     next: "act4_fallout",
   },
@@ -295,12 +304,31 @@ var INTERLUDES = {
     act: "Act 4: Aftermath",
     time: "14:00",
     title: "Live Coverage",
-    text: [
-      "The hearing is on every screen in the office. Nobody pretends to be working.",
-      "The former CEO apologises again. A lawmaker reads out a list of failures, and you recognise work your team did, reduced to a single damning sentence.",
-      "Weeks of nights in the war room, the overnight cutovers and the forty-page Q&A get no mention at all. Nobody outside the read-in group will ever know what it took.",
-      "You switch off the screen, and somebody quietly switches it back on.",
-    ],
+    text: function (flags) {
+      return [
+        "The hearing is on every screen in the office. Nobody pretends to be working.",
+        "The former CEO apologises again. A lawmaker reads out a list of failures, and you recognise work your team did, reduced to a single damning sentence.",
+        flags.narrow_scope
+          ? "Then a new line: the secondary systems your team never examined have turned up more records. The number goes up again, live on air."
+          : null,
+        flags.revised_up && !flags.narrow_scope
+          ? "The lawmaker reads out the latest revision of the number, and asks why it keeps changing."
+          : null,
+        flags.date_forward
+          ? null
+          : "Then the share sale. Investigators want to know what senior staff knew, and when, and your name is on their list. You raised nothing at the time.",
+        "Weeks of nights in the war room, the password resets and the forty-page Q&A get no mention at all. Nobody outside the read-in group will ever know what it took.",
+        "You switch off the screen, and somebody quietly switches it back on.",
+      ].filter(Boolean);
+    },
+    // Choices that looked cheap at the time cost you here.
+    stats: function (flags) {
+      var influence = 0, you = 0;
+      if (flags.narrow_scope) { influence -= 5; you -= 5; }
+      if (flags.revised_up) influence -= 5;
+      if (!flags.date_forward) { influence -= 5; you -= 5; }
+      return { internalInfluence: influence, playerHealth: you };
+    },
     next: "act4_dutyofcare",
   },
 };

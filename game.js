@@ -105,11 +105,15 @@
   // Applies a choice, or an interlude's Continue, then moves on.
   function advance(step, logChoice) {
     var node = GAME_NODES[state.node];
+    var startDay = state.days;
     state.days += step.days || 0;
     var changes = [];
     applyStats(step.stats, changes);
     if (step.set) state.flags[step.set] = true;
-    if (step.deadlineShift && state.deadline) state.deadline.day += step.deadlineShift;
+    // Legal can bring the date forward, but never to before tomorrow.
+    if (step.deadlineShift && state.deadline) {
+      state.deadline.day = Math.max(startDay + 1, state.deadline.day + step.deadlineShift);
+    }
     // The silence ends once you've read the interlude that ends it.
     if (node.silence === "end" && state.silence && state.silence.to == null) state.silence.to = state.days;
     if (logChoice || changes.length) {

@@ -10,7 +10,7 @@ A text adventure for security leaders, loosely inspired by real events which hap
 
 Between the decisions, short interludes with a single **Continue** button show what it was like to live through it. They include hotel rooms, a war room with no windows, calls home where you can't say anything, and lying to your own team. A **Days in silence** counter runs from the night you're told until the announcement, and the edges of the screen close in as your health falls.
 
-The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 2 Team health and 2 Your health for each day over (`OVERRUN_COST` in `game.js`).
+The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it up to three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 2 Team health and 2 Your health for each day over (`OVERRUN_COST` in `game.js`).
 
 Every decision takes days and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons learned.
 
@@ -58,9 +58,11 @@ Choices show only how many days they take. The effect on people is revealed in t
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about a third of the time, usually from burnout;
-- reaches the best ending about 1 time in 8;
-- misses Legal's date about 45% of the time.
+- ends early about 15% of the time, usually from burnout;
+- reaches the best ending about 14% of the time;
+- most often ends with a Pyrrhic Victory (about 40%).
+
+No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, appointing a wellbeing lead, escalating the share sale, and funding recovery.
 
 Re-check after changing any stats.
 
