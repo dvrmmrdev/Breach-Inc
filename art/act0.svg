@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="The sun rising behind a corporate headquarters tower, one window lit, a lone figure's long shadow">
+<defs>
+<radialGradient id="fadeg" cx="0.5" cy="0.5" r="0.5"><stop offset="0.62" stop-color="#c9d1d9" stop-opacity="1"/><stop offset="1" stop-color="#c9d1d9" stop-opacity="0"/></radialGradient>
+<mask id="fade" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="360" mask-type="alpha"><rect width="800" height="360" fill="url(#fadeg)"/></mask>
+<linearGradient id="sky0" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="216"><stop offset="0" stop-color="#0d1117" stop-opacity="0"/><stop offset="0.45" stop-color="#58a6ff" stop-opacity="0.16"/><stop offset="0.8" stop-color="#58a6ff" stop-opacity="0.4"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0.45"/></linearGradient>
+<radialGradient id="halo0" gradientUnits="userSpaceOnUse" cx="400" cy="146" r="210"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.6"/><stop offset="0.4" stop-color="#f2cc60" stop-opacity="0.2"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></radialGradient>
+<radialGradient id="ray0" gradientUnits="userSpaceOnUse" cx="400" cy="146" r="420"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.3"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></radialGradient>
+<radialGradient id="sun0" gradientUnits="userSpaceOnUse" cx="400" cy="146" r="62"><stop offset="0" stop-color="#c9d1d9" stop-opacity="1"/><stop offset="0.7" stop-color="#f2cc60" stop-opacity="1"/><stop offset="1" stop-color="#f2cc60" stop-opacity="1"/></radialGradient>
+<linearGradient id="ground0" gradientUnits="userSpaceOnUse" x1="0" y1="216" x2="0" y2="360"><stop offset="0" stop-color="#21262d" stop-opacity="1"/><stop offset="1" stop-color="#21262d" stop-opacity="0"/></linearGradient>
+<radialGradient id="glow0" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.42"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></radialGradient>
+<linearGradient id="refl0" gradientUnits="userSpaceOnUse" x1="0" y1="216" x2="0" y2="290"><stop offset="0" stop-color="#0d1117" stop-opacity="0.85"/><stop offset="1" stop-color="#0d1117" stop-opacity="0"/></linearGradient>
+<radialGradient id="win0" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.5"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></radialGradient>
+<clipPath id="sk0"><rect x="0" y="0" width="800" height="216"/></clipPath>
+</defs>
+<g mask="url(#fade)">
+<rect x="0" y="0" width="800" height="216" fill="url(#sky0)"/>
+<rect x="120" y="92" width="220" height="3" rx="1.5" fill="#c9d1d9" opacity="0.07"/>
+<rect x="470" y="74" width="250" height="3" rx="1.5" fill="#c9d1d9" opacity="0.07"/>
+<rect x="60" y="130" width="180" height="3" rx="1.5" fill="#c9d1d9" opacity="0.07"/>
+<rect x="560" y="116" width="200" height="3" rx="1.5" fill="#c9d1d9" opacity="0.07"/>
+<g clip-path="url(#sk0)">
+<polygon points="400,146 -40,148.3 -38.8,113" fill="url(#ray0)"/>
+<polygon points="400,146 -33.4,70.4 -30.2,53.8" fill="url(#ray0)"/>
+<polygon points="400,146 -19.2,12.2 -7.1,-21" fill="url(#ray0)"/>
+<polygon points="400,146 11.1,-59.9 19.3,-74.7" fill="url(#ray0)"/>
+<polygon points="400,146 42.7,-110.8 64.4,-138.6" fill="url(#ray0)"/>
+<polygon points="400,146 93.8,-170 106.2,-181.5" fill="url(#ray0)"/>
+<polygon points="400,146 139.5,-208.6 168.8,-228.4" fill="url(#ray0)"/>
+<polygon points="400,146 206.4,-249.1 221.7,-256.3" fill="url(#ray0)"/>
+<polygon points="400,146 261.8,-271.7 295.8,-281.5" fill="url(#ray0)"/>
+<polygon points="400,146 338,-289.6 354.8,-291.7" fill="url(#ray0)"/>
+<polygon points="400,146 397.7,-294 433,-292.8" fill="url(#ray0)"/>
+<polygon points="400,146 475.6,-287.4 492.2,-284.2" fill="url(#ray0)"/>
+<polygon points="400,146 533.8,-273.2 567,-261.1" fill="url(#ray0)"/>
+<polygon points="400,146 605.9,-242.9 620.7,-234.7" fill="url(#ray0)"/>
+<polygon points="400,146 656.8,-211.3 684.6,-189.6" fill="url(#ray0)"/>
+<polygon points="400,146 716,-160.2 727.5,-147.8" fill="url(#ray0)"/>
+<polygon points="400,146 754.6,-114.5 774.4,-85.2" fill="url(#ray0)"/>
+<polygon points="400,146 795.1,-47.6 802.3,-32.3" fill="url(#ray0)"/>
+<polygon points="400,146 817.7,7.8 827.5,41.8" fill="url(#ray0)"/>
+<polygon points="400,146 835.6,84 837.7,100.8" fill="url(#ray0)"/>
+</g>
+<circle cx="400" cy="146" r="210" fill="url(#halo0)"/>
+<circle cx="400" cy="146" r="62" fill="url(#sun0)"/>
+<rect x="110" y="140" width="42" height="76" fill="#21262d" opacity="0.95"/>
+<path d="M110 140 H152" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="158" y="118" width="36" height="98" fill="#21262d" opacity="0.95"/>
+<path d="M158 118 H194" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="200" y="160" width="48" height="56" fill="#21262d" opacity="0.95"/>
+<path d="M200 160 H248" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="254" y="132" width="34" height="84" fill="#21262d" opacity="0.95"/>
+<path d="M254 132 H288" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="508" y="164" width="44" height="52" fill="#21262d" opacity="0.95"/>
+<path d="M508 164 H552" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="556" y="124" width="34" height="92" fill="#21262d" opacity="0.95"/>
+<path d="M556 124 H590" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="594" y="156" width="50" height="60" fill="#21262d" opacity="0.95"/>
+<path d="M594 156 H644" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="650" y="130" width="36" height="86" fill="#21262d" opacity="0.95"/>
+<path d="M650 130 H686" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<rect x="690" y="170" width="40" height="46" fill="#21262d" opacity="0.95"/>
+<path d="M690 170 H730" stroke="#c9d1d9" stroke-width="1" opacity="0.22"/>
+<g fill="#0d1117"><rect x="296" y="180" width="208" height="36"/><rect x="332" y="148" width="136" height="34"/><rect x="366" y="40" width="68" height="110"/><rect x="380" y="30" width="40" height="12"/><rect x="398.8" y="8" width="2.4" height="24"/></g>
+<g fill="#21262d">
+<rect x="371" y="48" width="6" height="4.5"/>
+<rect x="383" y="48" width="6" height="4.5"/>
+<rect x="395" y="48" width="6" height="4.5"/>
+<rect x="407" y="48" width="6" height="4.5"/>
+<rect x="419" y="48" width="6" height="4.5"/>
+<rect x="371" y="57" width="6" height="4.5"/>
+<rect x="383" y="57" width="6" height="4.5"/>
+<rect x="395" y="57" width="6" height="4.5"/>
+<rect x="407" y="57" width="6" height="4.5"/>
+<rect x="419" y="57" width="6" height="4.5"/>
+<rect x="371" y="66" width="6" height="4.5"/>
+<rect x="383" y="66" width="6" height="4.5"/>
+<rect x="395" y="66" width="6" height="4.5"/>
+<rect x="407" y="66" width="6" height="4.5"/>
+<rect x="419" y="66" width="6" height="4.5"/>
+<rect x="371" y="75" width="6" height="4.5"/>
+<rect x="383" y="75" width="6" height="4.5"/>
+<rect x="395" y="75" width="6" height="4.5"/>
+<rect x="407" y="75" width="6" height="4.5"/>
+<rect x="419" y="75" width="6" height="4.5"/>
+<rect x="371" y="84" width="6" height="4.5"/>
+<rect x="383" y="84" width="6" height="4.5"/>
+<rect x="395" y="84" width="6" height="4.5"/>
+<rect x="407" y="84" width="6" height="4.5"/>
+<rect x="419" y="84" width="6" height="4.5"/>
+<rect x="371" y="93" width="6" height="4.5"/>
+<rect x="383" y="93" width="6" height="4.5"/>
+<rect x="407" y="93" width="6" height="4.5"/>
+<rect x="419" y="93" width="6" height="4.5"/>
+<rect x="371" y="102" width="6" height="4.5"/>
+<rect x="383" y="102" width="6" height="4.5"/>
+<rect x="395" y="102" width="6" height="4.5"/>
+<rect x="407" y="102" width="6" height="4.5"/>
+<rect x="419" y="102" width="6" height="4.5"/>
+<rect x="371" y="111" width="6" height="4.5"/>
+<rect x="383" y="111" width="6" height="4.5"/>
+<rect x="395" y="111" width="6" height="4.5"/>
+<rect x="407" y="111" width="6" height="4.5"/>
+<rect x="419" y="111" width="6" height="4.5"/>
+<rect x="371" y="120" width="6" height="4.5"/>
+<rect x="383" y="120" width="6" height="4.5"/>
+<rect x="395" y="120" width="6" height="4.5"/>
+<rect x="407" y="120" width="6" height="4.5"/>
+<rect x="419" y="120" width="6" height="4.5"/>
+<rect x="371" y="129" width="6" height="4.5"/>
+<rect x="383" y="129" width="6" height="4.5"/>
+<rect x="395" y="129" width="6" height="4.5"/>
+<rect x="407" y="129" width="6" height="4.5"/>
+<rect x="419" y="129" width="6" height="4.5"/>
+<rect x="371" y="138" width="6" height="4.5"/>
+<rect x="383" y="138" width="6" height="4.5"/>
+<rect x="395" y="138" width="6" height="4.5"/>
+<rect x="407" y="138" width="6" height="4.5"/>
+<rect x="419" y="138" width="6" height="4.5"/>
+<rect x="340" y="156" width="8" height="5"/><rect x="340" y="167" width="8" height="5"/>
+<rect x="354" y="156" width="8" height="5"/><rect x="354" y="167" width="8" height="5"/>
+<rect x="368" y="156" width="8" height="5"/><rect x="368" y="167" width="8" height="5"/>
+<rect x="382" y="156" width="8" height="5"/><rect x="382" y="167" width="8" height="5"/>
+<rect x="396" y="156" width="8" height="5"/><rect x="396" y="167" width="8" height="5"/>
+<rect x="410" y="156" width="8" height="5"/><rect x="410" y="167" width="8" height="5"/>
+<rect x="424" y="156" width="8" height="5"/><rect x="424" y="167" width="8" height="5"/>
+<rect x="438" y="156" width="8" height="5"/><rect x="438" y="167" width="8" height="5"/>
+<rect x="452" y="156" width="8" height="5"/><rect x="452" y="167" width="8" height="5"/>
+<rect x="306" y="192" width="188" height="12"/></g>
+<g stroke="#0d1117" stroke-width="1.6">
+<path d="M322 192 V204"/>
+<path d="M338 192 V204"/>
+<path d="M354 192 V204"/>
+<path d="M370 192 V204"/>
+<path d="M386 192 V204"/>
+<path d="M402 192 V204"/>
+<path d="M418 192 V204"/>
+<path d="M434 192 V204"/>
+<path d="M450 192 V204"/>
+<path d="M466 192 V204"/>
+<path d="M482 192 V204"/>
+</g>
+<circle cx="400" cy="93" r="16" fill="url(#win0)"/>
+<rect x="395" y="93" width="6" height="4.5" fill="#f2cc60"/>
+<path d="M296 180 H332 V148 H366 V40 H380 V30 H420 V40 H434 V148 H468 V180 H504" fill="none" stroke="#c9d1d9" stroke-width="5" opacity="0.08" stroke-linejoin="round"/>
+<path d="M296 180 H332 V148 H366 V40 H380 V30 H420 V40 H434 V148 H468 V180 H504" fill="none" stroke="#c9d1d9" stroke-width="1.2" opacity="0.5" stroke-linejoin="round"/>
+<rect x="0" y="216" width="800" height="144" fill="url(#ground0)"/>
+<ellipse cx="400" cy="250" rx="150" ry="36" fill="url(#glow0)"/>
+<ellipse cx="400" cy="282" rx="42" ry="74" fill="url(#glow0)"/>
+<rect x="366" y="216" width="68" height="74" fill="url(#refl0)"/>
+<path d="M340 228 H460" stroke="#c9d1d9" stroke-width="1" opacity="0.14"/>
+<path d="M310 238 H490" stroke="#c9d1d9" stroke-width="1" opacity="0.14"/>
+<path d="M348 250 H452" stroke="#c9d1d9" stroke-width="1" opacity="0.14"/>
+<path d="M322 262 H478" stroke="#c9d1d9" stroke-width="1" opacity="0.14"/>
+<path d="M356 276 H444" stroke="#c9d1d9" stroke-width="1" opacity="0.14"/>
+<path d="M120 216 H680" stroke="#30363d" stroke-width="0.8"/>
+<g fill="#0d1117"><circle cx="400" cy="230" r="4.6"/><rect x="398.2" y="233.6" width="3.6" height="4"/><path d="M392.5 241 Q392.5 237 400 237 Q407.5 237 407.5 241 L409.5 254 H390.5 Z"/><rect x="394" y="253" width="4.6" height="5"/><rect x="401.4" y="253" width="4.6" height="5"/></g>
+<g fill="#0d1117" opacity="0.96"><path d="M394 258 H399 L397.5 282 H391 Z"/><path d="M401 258 H406 L409 282 H402.5 Z"/><path d="M391 280 H409 L414 298 H386 Z"/><path d="M396 296 H404 L403 302 H397 Z"/><ellipse cx="400" cy="308" rx="6.5" ry="5.5"/></g>
+</g>
+</svg>

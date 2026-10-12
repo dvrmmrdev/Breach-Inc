@@ -244,6 +244,12 @@
   function renderDivider(card, act) {
     var parts = act.split(": ");
     card.className = "card divider";
+    // Each act's art is art/act<N>.svg; a missing file is simply hidden.
+    var art = el("img", "divider-art");
+    art.src = "art/" + parts[0].toLowerCase().replace(/\s+/g, "") + ".svg";
+    art.alt = "";
+    art.onerror = function () { art.remove(); };
+    card.appendChild(art);
     card.appendChild(el("div", "divider-act", parts[0]));
     card.appendChild(el("h1", "divider-title", parts[1] || ""));
     var btn = el("button", "next-btn", "Continue");

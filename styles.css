@@ -291,9 +291,16 @@ body::before {
 }
 
 /* Act dividers: the number and title alone, centred. */
+.divider-art {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 0 auto 28px auto;
+}
 .divider {
   text-align: center;
-  padding: 72px 24px;
+  padding: 40px 24px;
   animation: reveal 1.2s ease;
 }
 .divider-act {
