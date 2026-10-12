@@ -59,7 +59,7 @@ var GAME_NODES = {
       "Attackers have been inside ACME Inc.'s network for months, and the card and transaction data they took could belong to millions of people. Your team's flights will leave as planned, and they're to be told nothing.",
       "The Legal representative slides a confidentiality agreement across the table.",
       "Then the CISO looks straight at you. 'Understand this. If you breach confidentiality on this incident, you'll be fired on the spot. And cyber is a small world. Leak this, and your career is over, here and everywhere else.'",
-      "Twenty minutes ago, you thought you belonged here.",
+      "Twenty minutes ago, you thought you belonged here. The cyber team was a community, or on good days, a family. Now you know what happens to family members who talk.",
     ],
     choices: [
       {
@@ -119,8 +119,10 @@ var GAME_NODES = {
     act: "Act 1: Living in Silence",
     title: "Just a Quick Update",
     text: [
-      "By the third day, the war room has visitors. Senior leaders drop in every hour or so for 'just a quick update'.",
+      "By the third day, the war room has visitors. Every hour or so the badge reader on the door beeps, and every head in the room turns to see who it is this time. Another senior leader, dropping in for 'just a quick update'.",
       "Each one pulls an analyst off the query replays to explain the same picture again, and each one leaves with a slightly different version of it. By evening, three of them are quoting three different numbers to the board.",
+      "This afternoon, your boss's boss peeled back the paper over the glass panel, looked in, and let themselves in without knocking. They stood behind an analyst's chair: 'Just run it again for me. From the top.' It was the fourth time that analyst had run it today.",
+      "Whatever happens after this, that person will have a say in what becomes of you.",
     ],
     choices: [
       {
@@ -144,7 +146,15 @@ var GAME_NODES = {
   act1_containment: {
     act: "Act 1: Living in Silence",
     title: "Overnight Changes",
-    text: "The containment plan lands on your desk. Thousands of network and service account passwords must be changed, the network reshaped, and upgraded security controls deployed, all without alerting staff outside the read-in group that anything is wrong.",
+    text: function (flags) {
+      return [
+        "Just after midnight, your network lead puts the containment plan on your desk and sits down without being asked. Thousands of network and service account passwords must be changed, the network reshaped, and upgraded security controls deployed, all without alerting staff outside the read-in group that anything is wrong.",
+        flags.shielded
+          ? "Because the war room is shielded, the people who would run the changes have had their days back. They're tired, but they're rested enough to try it in one night."
+          : "The people who would run the changes have spent the week explaining the picture to visiting leaders. They're exhausted before they start, and one night of changes leaves no room for mistakes.",
+        "'One night, and something will break. A week, and that's a week the attackers might still have a way in. Either way, the service desk takes the calls, and nobody can tell them why.'",
+      ];
+    },
     choices: [
       {
         text: "Run one coordinated overnight cutover and accept the risk of outages.",
@@ -168,11 +178,11 @@ var GAME_NODES = {
     title: "How Many People?",
     text: function (flags) {
       return (
-        "Lantern's replay of the attackers' queries points to records for a huge share of the adult population of your home market. " +
+        "Lantern's replay of the attackers' queries points to records for a huge share of the adult population of your home market. Someone writes the number on the war room whiteboard, and nobody reads it out loud. Legal's first question is whether it's every adult in the country. It isn't, quite. " +
         (flags.narrow_scope
           ? "Because you narrowed the scope, the secondary systems haven't been examined, so the number may grow. "
           : "") +
-        "Legal want certainty before any number is made public."
+        "Legal want certainty before any number is made public. Announce too high, and you've frightened millions of people for nothing. Announce too low, and every revision becomes a new headline."
       );
     },
     choices: [
@@ -253,7 +263,9 @@ var GAME_NODES = {
     title: "A Thousand New Voices",
     text: function (flags) {
       return [
-        "Contact centre partners can supply more than a thousand agents across several new sites. They need scripts, training, and a way to verify callers. You can't ask callers for the data that was stolen, so identity checks must rely on other data ACME Inc. holds.",
+        "Contact centre partners can supply more than a thousand agents across several new sites. You approve the numbers on a spreadsheet: so many agents per site, per shift, per language.",
+        "You'll never meet any of them. Most have never heard of ACME Inc. On announcement day, they'll become its voice to millions of frightened, angry people, and they'll take the abuse for a failure that had nothing to do with them.",
+        "They need scripts, training, and a way to verify callers, and they need them before Legal's date. You can't ask callers for the data that was stolen, so identity checks must rely on other data ACME Inc. holds.",
       ].concat(flags.separate_domain
         ? ["The scripts have a problem. Agents must reassure callers that a site on an unfamiliar domain, run by a company they've never heard of, is genuine and safe to type their details into. Every phishing awareness campaign has taught people never to trust exactly that."]
         : []);
@@ -279,18 +291,30 @@ var GAME_NODES = {
   act2_shifts: {
     act: "Act 2: Under Pressure",
     title: "Nobody Owns Rest",
-    text: [
-      "Nobody is making sure shifts end. Analysts are on their third double shift this week, and nobody is telling them to go home.",
-      "Nobody is telling the leaders either. They're the last to leave and the first in, and their teams copy them. You're no better: you can't remember your last day off, or your last meal that didn't come in a box.",
-    ],
+    text: function (flags, stats, left) {
+      return [
+        "Nobody is making sure shifts end. Analysts are on their third double shift this week, and nobody is telling them to go home. There's a sleeping bag under a desk in the war room now, and nobody remarks on it. One analyst has a wrapped present in a shop bag beside their monitor. Their daughter's party was on Saturday.",
+        "Last night, a tired engineer pushed a change to the live environment instead of the test one. A colleague spotted it in the change log by chance, and it was rolled back before anything broke. Nobody can say how close it came.",
+        "Nobody is telling the leaders either. They're the last to leave and the first in, and their teams copy them. You're no better: you can't remember your last day off, or your last meal that didn't come in a box.",
+        "Legal's date is " + (left === 1 ? "tomorrow" : left + " days away") + ". Every hour anyone spends asleep feels like an hour taken from it.",
+      ];
+    },
     choices: [
       {
-        text: "Appoint a wellbeing lead with the authority to end shifts and send anyone home: leaders included, you first.",
+        text: "Go home at a sensible hour tonight, where people can see you leave, and tell your leads you expect them to do the same.",
         nextNode: "act2_trading",
-        days: 2,
+        days: 1,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: 10 },
-        set: "rest_lead",
-        outcome: "The first person sent home is you. It's two days you can't spare, but people start sleeping again, and the mistakes in the overnight work drop.",
+        set: "role_model",
+        outcome: "Walking out while the floor is still busy feels like desertion, and someone senior notices you weren't there when they called. But two of your leads leave on time the next day, and their teams start to follow.",
+      },
+      {
+        text: "Send home anyone who has been in for more than two days straight, whatever they're in the middle of.",
+        nextNode: "act2_trading",
+        days: 1,
+        stats: { internalInfluence: -5, teamHealth: 10, playerHealth: 5 },
+        set: "forced_rest",
+        outcome: "There's grumbling, and a couple of handovers go badly, but the people who most needed sleep finally get some. Fewer mistakes land on your desk overnight.",
       },
       {
         text: "Let everyone keep going while the adrenaline holds.",
@@ -306,13 +330,17 @@ var GAME_NODES = {
     act: "Act 2: Under Pressure",
     title: "The Share Sale",
     text: function (flags) {
-      return (
-        "Compliance flag that a senior manager outside the read-in group, but close to Project Harbour, sold a large block of shares last week. " +
-        (flags.blackout
-          ? "Your trading blackout covered Harbour's leads, but not this manager."
-          : "No trading restrictions were in place for anyone near Harbour.") +
-        " Rumours suggest some staff have guessed the truth."
-      );
+      return [
+        flags.role_model
+          ? "The call comes at nine in the evening, while you're at home eating a meal at a table for the first time in weeks. You take it in the garden, where nobody can hear."
+          : "The compliance officer finds you in the war room at nine in the evening and asks for somewhere private. There isn't anywhere, so you talk in the stairwell.",
+        "A senior manager outside the read-in group, but close to Project Harbour, sold a large block of shares last week. " +
+          (flags.blackout
+            ? "Your trading blackout covered Harbour's leads, but not this manager."
+            : "No trading restrictions were in place for anyone near Harbour.") +
+          " Rumours suggest some staff have guessed the truth.",
+        "If one person traded on a guess, others may have too. Once the breach is announced, regulators will go through every share sale in the past month, and they'll want to know who knew what, and when.",
+      ];
     },
     choices: [
       {
@@ -338,10 +366,12 @@ var GAME_NODES = {
     act: "Act 3: Going Public",
     title: "Who Hears First?",
     text: function (flags, stats, left) {
-      return (
+      return [
         (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
-        " Most of your security team, and the wider company, still don't know. You must decide how much they are told, and when."
-      );
+          " Most of your security team, and the wider company, still don't know.",
+        "They can tell something is wrong. The war room door is always shut, and the rumours from the coffee machine have been getting closer to the truth. Elsewhere, the account managers will be on the phone to clients within minutes of the release, and right now they don't know there's anything to explain.",
+        "Tell people early, and one post from one employee means the announcement is no longer yours to make. Tell them nothing, and they'll find out from the news, like everyone else. You must decide how much they are told, and when.",
+      ];
     },
     choices: [
       {
@@ -392,12 +422,14 @@ var GAME_NODES = {
     act: "Act 3: Going Public",
     title: "The Wrong Website",
     text: function (flags) {
-      return (
+      return [
+        "You're still in the morning briefing when the screenshots start circulating.",
         "A researcher reports that ACME Inc.'s official social media accounts have sent consumers to a lookalike of the response site, registered by someone else to show how easy it was. " +
-        (flags.separate_domain
-          ? "The unfamiliar separate domain made the imitation easy to believe."
-          : "Even with the site on ACME Inc.'s own domain, a mistyped link in one post was enough.")
-      );
+          (flags.separate_domain
+            ? "The unfamiliar separate domain made the imitation easy to believe."
+            : "Even with the site on ACME Inc.'s own domain, a mistyped link in one post was enough."),
+        "By lunchtime, the post has been shared thousands of times, and people are asking which of ACME Inc.'s sites, if any, is real.",
+      ];
     },
     choices: [
       {
@@ -420,7 +452,12 @@ var GAME_NODES = {
   act3_storm: {
     act: "Act 3: Going Public",
     title: "The Storm",
-    text: "If you needed evidence that the world was against you, you don't have to check social media any more: the weather forecast proves it. A major hurricane makes landfall near two of your new contact centres just as call volumes peak. Hundreds of agents go offline, and the wait to reach an agent stretches to hours.",
+    text: [
+      "If you needed evidence that the world was against you, you don't have to check social media any more: the weather forecast proves it. A major hurricane makes landfall near two of your new contact centres just as call volumes peak.",
+      "On the war room screens, the hurricane's track sits beside the call-wait graph, and both are climbing. A contact centre manager calls in from a building running on generator power. Hundreds of agents are offline, and some of those still working are taking calls about stolen card data while their own homes are under evacuation orders.",
+      "The wait to reach an agent stretches to hours. Callers post screenshots of their hold times, and one journalist starts a live count.",
+      "Your own team could take the overflow. After the last few weeks, they have almost nothing left to give.",
+    ],
     choices: [
       {
         text: "Move overflow calls to your security team and internal volunteers.",
@@ -443,11 +480,12 @@ var GAME_NODES = {
     act: "Act 4: Aftermath",
     title: "Retirements",
     text: function (flags) {
-      return (
+      return [
         "The story hasn't gone away, as the communications team thought it would. " +
-        (flags.revised_up ? "Each upward revision of the numbers has restarted it. " : "") +
-        "Within a fortnight, ACME Inc. responds to industry and client outrage by having the CIO and the CISO 'retire', which prompts more media criticism, not less. Soon afterwards, the CEO steps down too. You are asked to hold the security function together until an interim leader is found."
-      );
+          (flags.revised_up ? "Each upward revision of the numbers has restarted it. " : "") +
+          "Within a fortnight, ACME Inc. responds to industry and client outrage by having the CIO and the CISO 'retire', which prompts more media criticism, not less. Soon afterwards, the CEO steps down too. You are asked to hold the security function together until an interim leader is found.",
+        "The CISO who sat across the table in the briefing room, and told you a leak would end your career, clears their office on a Friday afternoon. There are no leaving drinks. By Monday, their name has gone from the door."
+      ];
     },
     choices: [
       {
@@ -470,7 +508,11 @@ var GAME_NODES = {
   act4_testimony: {
     act: "Act 4: Aftermath",
     title: "Every Department on Fire",
-    text: "Business and technology leaders are called to testify before government committees. Weeks go into preparing them, and while they're in rehearsals and hearings, nobody is left who can make the big decisions. The response stalls at crucial moments, waiting for people in another city who are answering questions about the past. Meanwhile, Sales, Marketing, Legal, HR, IT and Compliance are each fighting their own fire, and all of them want the security team's time.",
+    text: [
+      "Business and technology leaders are called to testify before government committees. Weeks go into preparing them, and while they're in rehearsals and hearings, nobody is left who can make the big decisions. The response stalls at crucial moments, waiting for people in another city who are answering questions about the past.",
+      "Meanwhile, every department is fighting its own fire. Sales watch the breach response service, the fastest-growing line in the business, lose its clients one cancellation at a time: nobody wants breach response from the company that's in the news for a breach. Marketing pull every campaign. Reception staff have learned to spot journalists in the lobby. HR are supporting staff who've been abused by strangers for wearing the company lanyard on the train.",
+      "All of them want the security team's time.",
+    ],
     choices: [
       {
         text: "Set up a single security response cell that serves every department.",
@@ -492,7 +534,18 @@ var GAME_NODES = {
   act4_dutyofcare: {
     act: "Act 4: Aftermath",
     title: "Duty of Care",
-    text: "Months of crisis have taken their toll. People on your team are exhausted, some have stopped sleeping, and recruiters call them daily. They call you too.",
+    text: function (flags) {
+      return [
+        "Months of crisis have taken their toll. Your best analyst falls asleep mid-sentence in a review and doesn't notice. Two of your leads have stopped coming to the stand-up, and their teams cover for them. Recruiters call your people daily, and some have started taking the calls in the car park.",
+        "They call you too. Last week, you let one finish the pitch.",
+        flags.role_model
+          ? "The habit you started in the war room, leaders going home where people could see them, didn't survive the announcement. Nobody has left on time since, you included."
+          : flags.forced_rest
+            ? "You sent people home once, before the announcement. Since then, nobody has had the authority, or the nerve, to do it again."
+            : "Nobody has gone home at a sensible hour since the night you were briefed, you included.",
+        "The remediation programme is three months from done, and the board want it closed.",
+      ];
+    },
     choices: [
       {
         text: "Fund recovery: time off, counselling and retention bonuses, and take leave yourself.",

@@ -54,6 +54,12 @@
     return d && !d.done ? d.day - state.days : null;
   }
 
+  // The day of the incident, counting the briefing night as Day 1. The
+  // silence starts that night, so it marks the day. Null before then.
+  function incidentDay() {
+    return state.silence ? state.days - state.silence.from + 1 : null;
+  }
+
   // Days spent unable to tell anyone, so far or in total.
   function silenceDays() {
     if (!state.silence) return null;
@@ -163,7 +169,6 @@
       }
       hud.appendChild(b);
     }
-    box("Days", String(state.days));
     for (var id in STATS) box(STATS[id].label, String(state.stats[id]), state.stats[id]);
     if (state.silence && state.silence.to == null && !state.ended) {
       box("Days in silence", String(silenceDays()), null, "silence");
@@ -227,7 +232,8 @@
   function renderInterlude(card) {
     var node = GAME_NODES[state.node];
     card.className = "card interlude" + (node.turn ? " turning" : "");
-    card.appendChild(el("div", "clock", (node.when || "Day " + state.days) + " · " + node.time));
+    var day = incidentDay();
+    card.appendChild(el("div", "clock", (node.when || (day ? "Day " + day : "Summit week")) + " · " + node.time));
     card.appendChild(el("h1", null, node.title));
     var paragraphs = nodeText(node);
     renderParagraphs(card, node, "narrative reveal");
@@ -284,8 +290,9 @@
     card.appendChild(el("div", "act-tag", early ? "Game over" : "Epilogue"));
     card.appendChild(el("h1", null, ending.title));
     card.appendChild(el("p", "narrative", ending.text));
-    var summary = "You made " + state.log.filter(function (e) { return e.choice; }).length +
-      " decisions over " + state.days + " days.";
+    var day = incidentDay();
+    var summary = "You made " + state.log.filter(function (e) { return e.choice; }).length + " decisions" +
+      (day ? ". " + dayCount(day) + " passed between the night you were briefed and the end." : ".");
     var silent = silenceDays();
     if (silent != null) {
       summary += " For " + silent + " of those days, you couldn't tell anyone, not even your family, what you were going through.";

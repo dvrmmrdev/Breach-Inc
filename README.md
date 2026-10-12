@@ -46,7 +46,8 @@ Each choice can have:
 A scene's `text` can be a function of those flags and the stats.
 
 Interludes in `interludes.js` have:
-- `time`: shown beside the day count.
+- `time`: shown beside the day of the incident, where Day 1 is the night you're briefed. Before then, it shows "Summit week".
+- `when`: optional text shown instead of the day, such as "Months later".
 - `text`: an array of paragraphs.
 - `next`: the scene that follows.
 - optionally `stats` and `days`.
@@ -62,11 +63,11 @@ Choices show only how many days they take. The effect on people is revealed in t
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about 15% of the time, usually from burnout;
-- reaches the best ending about 14% of the time;
+- ends early about 11% of the time, usually from burnout;
+- reaches the best ending about 17% of the time;
 - most often ends with a Pyrrhic Victory (about 40%).
 
-No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, appointing a wellbeing lead, escalating the share sale, and funding recovery.
+No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, making people rest, escalating the share sale, and funding recovery.
 
 Re-check after changing any stats.
 

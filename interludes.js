@@ -1,6 +1,6 @@
 // Interludes: the moments between decisions. Each one is a few paragraphs
 // and a single Continue button. `time` is shown as a clock beside the day
-// count. `text` is an array of paragraphs, or a function of (flags, stats,
+// of the incident (Day 1 is the briefing night), or beside `when` if set. `text` is an array of paragraphs, or a function of (flags, stats,
 // days left before Legal's date) returning one. `stats` (also optionally a function) and `days` are optional, and are applied when the
 // player continues. `silence: "start"` / `"end"` marks the stretch when you
 // can't tell anyone what's happening. `deadlineCheck` is where Legal's date
@@ -13,6 +13,7 @@ var INTERLUDES = {
   i_inherit: {
     act: "Act 0: Things Are Looking Up",
     time: "18:20",
+    when: "Your first month", // before the summit; see game.js for the default
     title: "The Team You Inherit",
     text: [
       "The security team you inherit is one team only on the org chart. Years of budget cycles and performance management processes have left it as a collection of fragmented teams, spread across countries and time zones. They compete with each other on almost every front: for budget, for headcount, for credit, and for the top performance ratings.",
@@ -31,7 +32,7 @@ var INTERLUDES = {
     text: [
       "The week at ACME Inc.'s global headquarters is a success. Teams that spent years competing argue, then listen, then start finishing each other's sentences.",
       "By the last day, everyone is united behind a set of goals for the next 12 to 18 months that are achievable and genuinely valuable. Cross-cutting teams are named to deliver each one, drawn from every region.",
-      "After the wrap-up dinner, you stand at the hotel entrance waving people off to the airport. They leave with a spring in their step. The next year is going to be a great one.",
+      "After the wrap-up dinner, the coaches bring everyone back to headquarters to collect their bags, and you stand at the front entrance waving people off to the airport. They leave with a spring in their step. The next year is going to be a great one.",
       "The imposter syndrome you've always struggled with has quietened to a whisper. If you can bring these people and teams together and energise them in the space of a week, maybe you do belong in a leadership role.",
     ],
     stats: { teamHealth: 80 },
@@ -46,7 +47,7 @@ var INTERLUDES = {
     title: "A Quick Word",
     turn: true,
     text: [
-      "The last taxi pulls away. You turn from the hotel entrance, still smiling, and see the CISO across the lobby, gesturing for you to come over.",
+      "The last taxi pulls away. You turn back into the office, still smiling, and see the CISO across the empty lobby, gesturing for you to come over. You didn't know they were still in the building.",
       "You head over with a grin, ready to fill them in on your plans and share the good news: the team is finally one team.",
       "Before you can start, they usher you into a small meeting room and close the door behind you.",
       "Someone from the Legal department is already sitting at the table. They don't look happy.",
@@ -247,6 +248,9 @@ var INTERLUDES = {
     text: function (flags) {
       return [
         "Every day now is back-to-back client calls from 8am to 7pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
+        flags.staff_briefed
+          ? "ACME Inc.'s account managers had an hour's notice and a two-page FAQ. It wasn't enough. Their clients had been watching the news all evening, and rang with details of the attack that the account managers were hearing for the first time. Some of them now forward every client email to you, unread."
+          : "ACME Inc.'s account managers found out with everyone else. Within minutes, their clients were on the phone, quoting details from the news that the account managers were hearing for the first time. Some of them now forward every client email to you, unread.",
         "The security industry has turned on you. Commentators who've never met your team pick through their professional profiles. A gap between jobs becomes a scandal. Veteran leaders, whose degrees predate cybersecurity as a subject, are mocked for having no formal security education.",
         flags.separate_domain
           ? "Researchers line up to show that your response site looks exactly like a phishing site: a newly registered domain nobody has heard of, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
