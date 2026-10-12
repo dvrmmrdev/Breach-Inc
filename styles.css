@@ -273,6 +273,23 @@ body::before {
   to { color: #f85149; }
 }
 
+/* The author's note on the final screen. */
+.author-note {
+  border-top: 1px solid #30363d;
+  padding-top: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #c9d1d9;
+}
+.author-note p {
+  margin: 0 0 8px 0;
+}
+.author-note a {
+  color: var(--accent);
+  font-weight: bold;
+}
+
 /* Act dividers: the number and title alone, centred. */
 .divider {
   text-align: center;

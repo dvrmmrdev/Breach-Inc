@@ -164,9 +164,10 @@
     if (state.silence && state.silence.to == null && !state.ended) {
       box("Days in silence", String(silenceDays()), null, "silence");
     }
-    if (state.deadline && !state.deadline.done && !state.ended) {
+    var announcing = !state.ended && GAME_NODES[state.node].deadlineCheck;
+    if (state.deadline && !state.ended && (!state.deadline.done || announcing)) {
       var left = state.deadline.day - state.days;
-      box("Legal's date", left >= 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null, left <= 5 ? "silence" : "");
+      box("Legal's date", left === 0 ? "TODAY" : left > 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null, left <= 5 ? "silence" : "");
     }
   }
 
@@ -252,6 +253,18 @@
     card.appendChild(btn);
   }
 
+  // A paragraph of text ending in a link that opens in a new tab.
+  function link(before, label, href) {
+    var p = el("p", null, before);
+    var a = el("a", null, label);
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    p.appendChild(a);
+    p.appendChild(document.createTextNode("."));
+    return p;
+  }
+
   function renderEnding(card) {
     var early = state.ended.early && EARLY_ENDINGS[state.ended.early];
     var ending = early || ENDINGS.filter(function (e) { return e.test(state.stats); })[0];
@@ -270,6 +283,11 @@
     var list = el("ul", "lessons");
     LESSONS.forEach(function (l) { list.appendChild(el("li", null, l)); });
     card.appendChild(list);
+    var author = el("div", "author-note");
+    author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
+      "Get in touch on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
+    author.appendChild(link("If this game was useful to you, you can ", "support it on Ko-fi", "https://ko-fi.com/dvrmmr"));
+    card.appendChild(author);
     var again = el("button", "choice-btn restart-btn", "Play again");
     again.type = "button";
     again.addEventListener("click", restart);
