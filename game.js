@@ -57,6 +57,7 @@
   function enter(nodeId) {
     state.node = nodeId;
     var node = GAME_NODES[nodeId];
+    if (node.readIn) state.flags.readIn = true;
     if (node.silence === "start" && !state.silence) state.silence = { from: state.days, to: null };
     if (node.deadline && state.deadline == null) state.deadline = { day: state.days + node.deadline, done: false };
   }
@@ -246,6 +247,7 @@
   }
 
   function render() {
+    document.documentElement.classList.toggle("breached", !!(state.flags.readIn || state.silence));
     renderHud();
     renderPressure();
     var card = document.getElementById("main");

@@ -1,3 +1,10 @@
+/* The accent is blue until you're read in to the breach, then red. */
+:root {
+  --accent: #58a6ff;
+}
+:root.breached {
+  --accent: #f85149;
+}
 body {
   background-color: #0d1117;
   color: #c9d1d9;
@@ -36,7 +43,7 @@ body {
 }
 .link-btn:hover {
   color: #f0f6fc;
-  border-color: #58a6ff;
+  border-color: var(--accent);
 }
 .hud {
   display: flex;
@@ -92,13 +99,13 @@ body {
 .act-tag {
   font-size: 12px;
   font-weight: bold;
-  color: #f85149;
+  color: var(--accent);
   text-transform: uppercase;
   margin-bottom: 8px;
 }
 h1 {
   font-size: 22px;
-  color: #f85149;
+  color: var(--accent);
   margin: 0 0 16px 0;
 }
 h2 {
@@ -140,7 +147,7 @@ h2 {
 .choice-btn:hover,
 .choice-btn:focus-visible {
   background: #30363d;
-  border-color: #58a6ff;
+  border-color: var(--accent);
 }
 .restart-btn {
   text-align: center;
@@ -180,7 +187,7 @@ h2 {
   margin-top: 2px;
 }
 .log-effects {
-  color: #58a6ff;
+  color: var(--accent);
   margin-top: 2px;
 }
 .disclaimer {
@@ -204,7 +211,7 @@ h2 {
 .clock {
   font-family: monospace;
   font-size: 13px;
-  color: #f85149;
+  color: var(--accent);
   letter-spacing: 0.08em;
   margin-bottom: 8px;
 }
@@ -229,7 +236,7 @@ h2 {
 }
 .next-btn:hover,
 .next-btn:focus-visible {
-  border-color: #58a6ff;
+  border-color: var(--accent);
   color: #f0f6fc;
 }
 .stat-box.silence .stat-val {

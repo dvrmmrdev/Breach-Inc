@@ -44,6 +44,8 @@ var GAME_NODES = {
     title: "The Briefing Room",
     // Straight after the high of the summit: the cut should jar.
     jolt: true,
+    // From here on, the theme turns from blue to red.
+    readIn: true,
     text: [
       "'There has been a breach. One of the largest in corporate history.'",
       "The CISO doesn't sit down. Attackers have been inside ACME Inc.'s network for months, and the data they took covers a huge share of the country's adults. Your flight home is cancelled. Your team's flights are not, and they're to be told nothing.",
