@@ -7,6 +7,8 @@ A text adventure for security leaders, inspired by a real large-scale data breac
 - the announcement
 - the aftermath
 
+Between the decisions, short interludes with a single **Continue** button show what it was like to live through it. They include hotel rooms, a war room with no windows, calls home where you can't say anything, and lying to your own team. A **Days in silence** counter runs from the night you're told until the announcement, and the edges of the screen close in as your health falls.
+
 Every decision costs money and days, and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons from the real event.
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
@@ -18,6 +20,7 @@ Open `index.html` in a browser. There is no build step. Progress is saved in the
 ## Files
 
 - `story.js`: the scenes, choices, stats, endings and lessons. Edit this file to change the story.
+- `interludes.js`: the Continue-only moments between scenes.
 - `game.js`: the engine. It shows scenes, applies choices, and keeps the log and the saved game.
 - `styles.css`: the look.
 
@@ -33,7 +36,16 @@ Each choice can have:
 - `outcome`: shown in the log.
 - `set`: a flag that later scenes can test.
 
-A scene's `text` can be a function of those flags.
+A scene's `text` can be a function of those flags and the stats.
+
+Interludes in `interludes.js` have:
+- `time`: shown beside the day count.
+- `text`: an array of paragraphs.
+- `next`: the scene that follows.
+- optionally `stats` and `days`.
+- `silence: "start"` or `"end"`: marks when you can and can't talk about it.
+
+To add one, point a scene's `nextNode` at it.
 
 Choices show only their money and time costs. The effect on people is revealed in the log afterwards.
 

@@ -1,7 +1,8 @@
 // The story: scenes keyed by id. Each choice says where it leads, what it
 // costs in money and days, how it moves the three stats, and what happened
 // (shown in the log once chosen). `set` records a flag later scenes can read,
-// and `text` may be a function of those flags.
+// and `text` may be a function of those flags and the stats. Interludes
+// (interludes.js) sit between the scenes.
 //
 // Everything here is anonymised: the company, people, projects, products,
 // places and dates are fictional or generic.
@@ -46,7 +47,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Accept the confidentiality orders; say nothing to your departing team.",
-        nextNode: "act1_cert_alert",
+        nextNode: "i_hotel",
         cost: 0,
         days: 1,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -10 },
@@ -54,10 +55,11 @@ var GAME_NODES = {
       },
       {
         text: "Push for broader security leadership involvement to avoid single points of failure.",
-        nextNode: "act1_cert_alert",
+        nextNode: "i_hotel",
         cost: 50000,
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },
+        set: "shared_load",
         outcome: "Legal reluctantly read in two more of your leaders. The load is shared, but you've spent goodwill.",
       },
     ],
@@ -70,7 +72,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Mandate around-the-clock forensic reconstruction shifts to establish the full exposure.",
-        nextNode: "act1_containment",
+        nextNode: "i_warroom",
         cost: 200000,
         days: 10,
         stats: { internalInfluence: 5, teamHealth: -20, playerHealth: -15 },
@@ -78,7 +80,7 @@ var GAME_NODES = {
       },
       {
         text: "Limit the forensic scope to the primary databases to protect staff stamina ahead of the public fallout.",
-        nextNode: "act1_containment",
+        nextNode: "i_warroom",
         cost: 100000,
         days: 8,
         stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5 },
@@ -95,7 +97,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Run one coordinated overnight cutover and accept the risk of outages.",
-        nextNode: "act1_scope",
+        nextNode: "i_family",
         cost: 150000,
         days: 2,
         stats: { internalInfluence: -5, teamHealth: -10, playerHealth: -5 },
@@ -103,7 +105,7 @@ var GAME_NODES = {
       },
       {
         text: "Stage the changes over a week, disguised as routine maintenance.",
-        nextNode: "act1_scope",
+        nextNode: "i_family",
         cost: 100000,
         days: 7,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
@@ -127,7 +129,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Announce a cautious upper estimate, accepting it may later be revised down.",
-        nextNode: "act2_foothold",
+        nextNode: "i_number",
         cost: 50000,
         days: 2,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
@@ -135,7 +137,7 @@ var GAME_NODES = {
       },
       {
         text: "Wait until the number is exact.",
-        nextNode: "act2_foothold",
+        nextNode: "i_number",
         cost: 100000,
         days: 5,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
@@ -152,7 +154,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Keep the cover story; compartmentation protects the announcement.",
-        nextNode: "act2_scale",
+        nextNode: "i_coffee",
         cost: 0,
         days: 3,
         stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
@@ -160,7 +162,7 @@ var GAME_NODES = {
       },
       {
         text: "Read the team leads in under NDA and push for a blanket trading blackout.",
-        nextNode: "act2_scale",
+        nextNode: "i_coffee",
         cost: 25000,
         days: 3,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },
@@ -202,7 +204,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Use a tight script and route every unusual question to your team.",
-        nextNode: "act2_trading",
+        nextNode: "i_3am",
         cost: 300000,
         days: 4,
         stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
@@ -210,7 +212,7 @@ var GAME_NODES = {
       },
       {
         text: "Train agents in depth, accepting a later go-live.",
-        nextNode: "act2_trading",
+        nextNode: "i_3am",
         cost: 500000,
         days: 6,
         stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5 },
@@ -234,7 +236,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Escalate formally to Legal and the board immediately.",
-        nextNode: "act3_transparency",
+        nextNode: "i_countdown",
         cost: 25000,
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
@@ -242,7 +244,7 @@ var GAME_NODES = {
       },
       {
         text: "Leave it to Compliance and focus on the launch.",
-        nextNode: "act3_transparency",
+        nextNode: "i_countdown",
         cost: 0,
         days: 0,
         stats: { internalInfluence: 5, teamHealth: 0, playerHealth: -10 },
@@ -258,15 +260,16 @@ var GAME_NODES = {
     choices: [
       {
         text: "Brief all staff an hour before the press release, with FAQs and support lines ready.",
-        nextNode: "act3_announce",
+        nextNode: "i_morning",
         cost: 50000,
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 10, playerHealth: -5 },
+        set: "staff_briefed",
         outcome: "There's shock but no leak. Your team hear it from you, not the news.",
       },
       {
         text: "Staff learn with the public, to minimise the risk of a leak.",
-        nextNode: "act3_announce",
+        nextNode: "i_morning",
         cost: 0,
         days: 1,
         stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
@@ -282,7 +285,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Press Legal to let you brief trusted industry peers privately on the technical story.",
-        nextNode: "act3_lookalike",
+        nextNode: "i_aftershock",
         cost: 0,
         days: 2,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },
@@ -290,7 +293,7 @@ var GAME_NODES = {
       },
       {
         text: "Leave all communication to the corporate communications team.",
-        nextNode: "act3_lookalike",
+        nextNode: "i_aftershock",
         cost: 0,
         days: 2,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
@@ -337,7 +340,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Move overflow calls to your security team and internal volunteers.",
-        nextNode: "act4_fallout",
+        nextNode: "i_home",
         cost: 0,
         days: 5,
         stats: { internalInfluence: 10, teamHealth: -15, playerHealth: -5 },
@@ -345,7 +348,7 @@ var GAME_NODES = {
       },
       {
         text: "Pay a premium for emergency capacity elsewhere and publish honest wait times.",
-        nextNode: "act4_fallout",
+        nextNode: "i_home",
         cost: 600000,
         days: 3,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
@@ -391,7 +394,7 @@ var GAME_NODES = {
     choices: [
       {
         text: "Set up a single security response cell that serves every department.",
-        nextNode: "act4_dutyofcare",
+        nextNode: "i_hearing",
         cost: 200000,
         days: 10,
         stats: { internalInfluence: 10, teamHealth: -5, playerHealth: -5 },
@@ -399,7 +402,7 @@ var GAME_NODES = {
       },
       {
         text: "Ration support and put the security remediation programme first.",
-        nextNode: "act4_dutyofcare",
+        nextNode: "i_hearing",
         cost: 50000,
         days: 10,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },

@@ -189,3 +189,74 @@ h2 {
   text-align: center;
   margin-top: 20px;
 }
+
+/* Interludes: quieter, closer, one paragraph at a time. */
+.interlude {
+  background: #0f1319;
+  border-color: #21262d;
+}
+.interlude .narrative {
+  color: #c9d1d9;
+  font-size: 16px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.clock {
+  font-family: monospace;
+  font-size: 13px;
+  color: #f85149;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.reveal {
+  opacity: 0;
+  animation: reveal 0.8s ease forwards;
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.next-btn {
+  font-family: inherit;
+  margin-top: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  padding: 10px 28px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.next-btn:hover,
+.next-btn:focus-visible {
+  border-color: #58a6ff;
+  color: #f0f6fc;
+}
+.stat-box.silence .stat-val {
+  color: #f85149;
+}
+
+/* The edges of the screen close in as the pressure builds (set by game.js). */
+:root {
+  --pressure: 0;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: radial-gradient(ellipse at center, transparent 45%, #000 100%);
+  opacity: calc(var(--pressure) * 0.85);
+  transition: opacity 1.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+    opacity: 1;
+  }
+  body::before {
+    transition: none;
+  }
+}
