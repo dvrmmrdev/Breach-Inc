@@ -273,6 +273,25 @@ body::before {
   to { color: #f85149; }
 }
 
+/* Act dividers: the number and title alone, centred. */
+.divider {
+  text-align: center;
+  padding: 72px 24px;
+  animation: reveal 1.2s ease;
+}
+.divider-act {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin-bottom: 12px;
+}
+.divider-title {
+  font-size: 30px;
+  margin-bottom: 40px;
+}
+
 /* A scene that cuts in hard: a red flash and a shudder. */
 .jolt {
   animation: jolt 0.9s ease-out;
@@ -293,7 +312,8 @@ body::before {
     animation: none;
     color: #f85149;
   }
-  .jolt {
+  .jolt,
+  .divider {
     animation: none;
   }
   .reveal {

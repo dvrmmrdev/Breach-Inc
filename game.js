@@ -156,7 +156,7 @@
     }
     if (state.deadline && !state.deadline.done && !state.ended) {
       var left = state.deadline.day - state.days;
-      box("Legal's date", left >= 0 ? "in " + left + " days" : left + " days over", null, left <= 5 ? "silence" : "");
+      box("Legal's date", left >= 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null, left <= 5 ? "silence" : "");
     }
   }
 
@@ -225,6 +225,23 @@
     card.appendChild(btn);
   }
 
+  // A screen of its own at the start of each act: just the number and title.
+  function renderDivider(card, act) {
+    var parts = act.split(": ");
+    card.className = "card divider";
+    card.appendChild(el("div", "divider-act", parts[0]));
+    card.appendChild(el("h1", "divider-title", parts[1] || ""));
+    var btn = el("button", "next-btn", "Continue");
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      state.actShown = act;
+      save();
+      render();
+      document.getElementById("main").focus();
+    });
+    card.appendChild(btn);
+  }
+
   function renderEnding(card) {
     var early = state.ended.early && EARLY_ENDINGS[state.ended.early];
     var ending = early || ENDINGS.filter(function (e) { return e.test(state.stats); })[0];
@@ -255,7 +272,9 @@
     renderPressure();
     var card = document.getElementById("main");
     card.textContent = "";
+    var act = !state.ended && GAME_NODES[state.node].act;
     if (state.ended) renderEnding(card);
+    else if (act && act !== state.actShown) renderDivider(card, act);
     else if (GAME_NODES[state.node].type === "interlude") renderInterlude(card);
     else renderScene(card);
     renderLog();

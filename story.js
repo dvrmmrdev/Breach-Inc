@@ -475,9 +475,12 @@ var ENDINGS = [
 ];
 
 var LESSONS = [
-  "Focus on the basics, but plan and practise for the worst case.",
-  "Decide in advance how transparent you will be, internally and externally.",
-  "The security industry is immature about breaches: expect commentary from people without the facts.",
-  "Breach notification rules in law and contracts may help less than you'd hope.",
-  "Your employer's duty of care, and your own duty to your team and yourself, matter as much as the technical response.",
+  "Foundational controls (asset management, patching, logging and response) underpin everything.",
+  "Practise for the worst-case scenario, however unlikely it feels.",
+  "Set up a structure that lets people work on incident response without being distracted by leaders.",
+  "Have a leader in charge of people's wellbeing, making sure shifts end and people recover.",
+  "Have contracts and processes in place to bring in external help quickly if it's ever needed.",
+  "Plan how you'll maintain your team's health, wellbeing and availability during an extended crisis.",
+  "Understand which senior leaders have the authority and capability to make quick, informed decisions.",
+  "Think long and hard about how you and your team could \u201creturn to normal\u201d. How will you go back to discussing risk acceptance after living through a major breach?",
 ];
