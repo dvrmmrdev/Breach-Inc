@@ -98,7 +98,7 @@ body {
 }
 h1 {
   font-size: 22px;
-  color: #f0f6fc;
+  color: #f85149;
   margin: 0 0 16px 0;
 }
 h2 {
@@ -251,7 +251,24 @@ body::before {
   transition: opacity 1.5s ease;
 }
 
+/* A scene that cuts in hard: a red flash and a shudder. */
+.jolt {
+  animation: jolt 0.9s ease-out;
+}
+@keyframes jolt {
+  0% { background: #5a1414; border-color: #f85149; transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  20% { transform: translateX(6px); }
+  30% { transform: translateX(-4px); }
+  40% { transform: translateX(3px); }
+  50% { transform: translateX(0); }
+  100% { background: #161b22; border-color: #30363d; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .jolt {
+    animation: none;
+  }
   .reveal {
     animation: none;
     opacity: 1;

@@ -194,7 +194,7 @@
 
   function renderScene(card) {
     var node = GAME_NODES[state.node];
-    card.className = "card";
+    card.className = "card" + (node.jolt ? " jolt" : "");
     card.appendChild(el("div", "act-tag", node.act));
     card.appendChild(el("h1", null, node.title));
     renderParagraphs(card, node, "narrative");

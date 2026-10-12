@@ -10,7 +10,7 @@
 
 var STATS = {
   internalInfluence: { label: "Influence", start: 50 },
-  teamHealth: { label: "Team health", start: 100 },
+  teamHealth: { label: "Team health", start: 20 }, // the All Hands lifts it
   playerHealth: { label: "Your health", start: 100 },
 };
 
@@ -39,13 +39,20 @@ var GAME_NODES = {
     ],
   },
 
-  act0_allhands: {
+  act0_breach: {
     act: "Act 0: Prequel",
-    title: "The Global Summit",
-    text: "You host your international security team at ACME Inc.'s global headquarters. The summit ends on a high: new senior hires have joined, and morale is strong. As you say goodbye to engineers heading to the airport after the wrap-up dinner, the CISO pulls you into a secure briefing room: 'There has been a breach at ACME Inc. One of the largest in corporate history.' Your flight home is cancelled immediately.",
+    title: "The Briefing Room",
+    // Straight after the high of the summit: the cut should jar.
+    jolt: true,
+    text: [
+      "'There has been a breach. One of the largest in corporate history.'",
+      "The CISO doesn't sit down. Attackers have been inside ACME Inc.'s network for months, and the data they took covers a huge share of the country's adults. Your flight home is cancelled. Your team's flights are not, and they're to be told nothing.",
+      "Then the CISO looks straight at you. 'Understand this. If you breach confidentiality on this incident, you'll be fired on the spot. And cyber is a small world. Leak this, and your career is over, here and everywhere else.'",
+      "Twenty minutes ago, you thought you belonged here.",
+    ],
     choices: [
       {
-        text: "Accept the confidentiality orders; say nothing to your departing team.",
+        text: "Accept the confidentiality orders; say nothing to your team, already on their way to the airport.",
         nextNode: "i_hotel",
         days: 1,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -10 },

@@ -15,12 +15,27 @@ var INTERLUDES = {
     time: "18:20",
     title: "The Team You Inherit",
     text: [
-      "The security team you inherit is one team only on the org chart. Years of acquisitions have left it scattered across countries and time zones, with tangled reporting lines and different tools in every region. Old grudges about who got the budget still linger.",
+      "The security team you inherit is one team only on the org chart. Years of budget cycles and performance management processes have left it as a collection of fragmented teams, spread across countries and time zones. They compete with each other on almost every front: for budget, for headcount, for credit, and for the top performance ratings.",
       "Your skip-level meetings tell the same story everywhere. People feel unheard and under-resourced, and they're blamed for every incident. The best of them are taking calls from recruiters.",
       "You decide to bring everyone together in one place: a global All Hands at headquarters, where the whole team can unite behind a new strategy and a shared mission.",
       "You spend your evenings writing the mission statement and your days fighting for the travel budget.",
     ],
-    next: "act0_allhands",
+    days: 5, // planning the week, then the week itself
+    next: "i_summit",
+  },
+
+  i_summit: {
+    act: "Act 0: Prequel",
+    time: "21:40",
+    title: "The Global Summit",
+    text: [
+      "The week at ACME Inc.'s global headquarters is a success. Teams that spent years competing argue, then listen, then start finishing each other's sentences.",
+      "By the last day, everyone is united behind a set of goals for the next 12 to 18 months that are achievable and genuinely valuable. Cross-cutting teams are named to deliver each one, drawn from every region.",
+      "After the wrap-up dinner, you stand at the hotel entrance waving people off to the airport. They leave with a spring in their step. The next year is going to be a great one.",
+      "The imposter syndrome you've always struggled with has quietened to a whisper. If you can bring these people and teams together and energise them in the space of a week, maybe you do belong in a leadership role.",
+    ],
+    stats: { teamHealth: 80 },
+    next: "act0_breach",
   },
 
   i_hotel: {
