@@ -63,14 +63,14 @@ var GAME_NODES = {
       {
         text: "Accept the confidentiality orders; say nothing to your team, already on their way to the airport.",
         nextNode: "i_hotel",
-        days: 1,
+        days: 0,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -10 },
         outcome: "Your team fly home cheerful. You stay behind with a secret you can't share.",
       },
       {
         text: "Push for broader security leadership involvement to avoid single points of failure.",
         nextNode: "i_hotel",
-        days: 1,
+        days: 0,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },
         set: "shared_load",
         outcome: "Legal reluctantly read in two more of your leaders. The load is shared, but you've spent goodwill.",

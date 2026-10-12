@@ -73,6 +73,7 @@ var INTERLUDES = {
       ];
     },
     stats: { playerHealth: -5 },
+    days: 1, // the briefing room and this night are the same day
     next: "act1_cert_alert",
   },
 
