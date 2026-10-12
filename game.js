@@ -279,7 +279,7 @@
       summary += " For " + silent + " of those days, you couldn't tell anyone, not even your family, what you were going through.";
     }
     card.appendChild(el("p", "narrative summary", summary));
-    card.appendChild(el("h2", null, "Lessons from a real breach"));
+    card.appendChild(el("h2", null, "Lessons learned: how to prepare today for what might come tomorrow"));
     var list = el("ul", "lessons");
     LESSONS.forEach(function (l) { list.appendChild(el("li", null, l)); });
     card.appendChild(list);
