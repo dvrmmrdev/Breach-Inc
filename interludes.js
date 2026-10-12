@@ -116,10 +116,10 @@ var INTERLUDES = {
     time: "08:05",
     title: "Everyone on the Train",
     text: [
-      "Your morning commute is now a hotel shuttle and a short walk. The number from last night's briefing comes with you.",
-      "The woman with the pushchair. The man reading the sports pages. The teenager with a cracked phone screen. The driver. Statistically, most of them are in the data.",
+      "Your morning commute is now a crowded train from the hotel to headquarters. The number from last night's briefing comes with you.",
+      "The woman with the pushchair. The man reading the sports pages. The teenager with a cracked phone screen. The guard checking tickets. Statistically, most of them are in the data.",
       "So are you. So is your family, and probably every friend whose birthday you can remember.",
-      "You can't warn any of them. You can't even tell them to watch their bank statements. You hold the door for the woman with the pushchair, and she thanks you.",
+      "You can't warn any of them. You can't even tell them to watch their bank statements. At your stop, you help the woman lift her pushchair onto the platform, and she thanks you.",
     ],
     next: "act2_foothold",
   },
@@ -130,7 +130,7 @@ var INTERLUDES = {
     title: "By the Coffee Machine",
     text: function (flags) {
       return [
-        "Two engineers you hired yourself are by the coffee machine. 'Apparently it's a huge client,' one says. 'Bank, I reckon. Why else all the secrecy?'",
+        "Two engineers you've worked with for years are by the coffee machine. 'Apparently it's a huge client,' one says. 'Bank, I reckon. Why else all the secrecy?'",
         "They look at you, half joking, half hoping. 'You know, don't you?'",
         flags.blackout
           ? "Some of their leads have been read in, so the rumours have grown more precise and more dangerous. You give them the line you've been given."
@@ -260,8 +260,8 @@ var INTERLUDES = {
     time: "18:05",
     title: "Home",
     text: [
-      "You fly home weeks after you were meant to. The summit lanyard is still at the top of your suitcase.",
-      "You've been told not to name your employer to anyone while the story is running. At the car hire desk, the clerk sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
+      "Weeks after you were meant to, you finally head home. The summit lanyard is still at the top of your suitcase.",
+      "You've been told not to name your employer to anyone while the story is running. At the car hire desk, as you hand back the car you've had for weeks, the clerk sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
       "The dog reaches the door first. Your family stand behind it, unsure whether to be angry or relieved, and settle on both.",
       "That night, for the first time in weeks, you tell someone everything you're allowed to. It isn't everything. It's still more than you've said out loud since the briefing room.",
       "Halfway through, you stop talking and cry on your partner's shoulder. They hold on, and don't ask you to finish.",

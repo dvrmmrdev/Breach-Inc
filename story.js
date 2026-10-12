@@ -33,6 +33,7 @@ var GAME_NODES = {
         nextNode: "i_inherit",
         days: 10,
         stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5 },
+        set: "patching_first",
         outcome: "Business units grumble about change freezes, but your inventory finally matches reality more often than not.",
       },
       {
@@ -54,7 +55,7 @@ var GAME_NODES = {
     readIn: true,
     text: [
       "'There has been a breach. One of the largest in corporate history.'",
-      "Attackers have been inside ACME Inc.'s network for months, and the card and transaction data they took covers a huge share of the country's adults. Your team's flights will leave as planned, and they're to be told nothing.",
+      "Attackers have been inside ACME Inc.'s network for months, and the card and transaction data they took could belong to millions of people. Your team's flights will leave as planned, and they're to be told nothing.",
       "The Legal representative slides a confidentiality agreement across the table.",
       "Then the CISO looks straight at you. 'Understand this. If you breach confidentiality on this incident, you'll be fired on the spot. And cyber is a small world. Leak this, and your career is over, here and everywhere else.'",
       "Twenty minutes ago, you thought you belonged here.",
@@ -81,10 +82,16 @@ var GAME_NODES = {
   act1_cert_alert: {
     act: "Act 1: Living in Silence",
     title: "Reconstructing the Window",
-    text: [
-      "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy merchant portal, leaving the attackers a foothold for over two months. The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
-      "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
-    ],
+    text: function (flags) {
+      return [
+        "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy merchant portal, leaving the attackers a foothold for over two months.",
+        flags.patching_first
+          ? "You recognise the portal's name. It was on your asset-discovery list, due for patching next quarter."
+          : "You recognise the portal's name. It was in the patching backlog you decided to leave alone.",
+        "The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
+        "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
+      ];
+    },
     // Legal's announcement date, in days from now. Days spent before the
     // announcement count against it; it doesn't move for the security team.
     deadline: 26,
@@ -143,7 +150,7 @@ var GAME_NODES = {
     },
     choices: [
       {
-        text: "Announce a cautious upper estimate, accepting it may later be revised down.",
+        text: "Commit to a cautious upper estimate for the announcement, accepting it may later be revised down.",
         nextNode: "i_number",
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
@@ -272,7 +279,7 @@ var GAME_NODES = {
     text: function (flags, stats, left) {
       return (
         (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
-        " Your security team, and the wider company, still don't know. You must decide how much they are told, and when."
+        " Most of your security team, and the wider company, still don't know. You must decide how much they are told, and when."
       );
     },
     choices: [
@@ -378,7 +385,7 @@ var GAME_NODES = {
       return (
         "The story hasn't gone away, as the communications team thought it would. " +
         (flags.revised_up ? "Each upward revision of the numbers has restarted it. " : "") +
-        "Within a fortnight, ACME Inc. responds to industry and client outrage by having the CIO and the CISO 'retire', which prompts more media criticism, not less. You are asked to hold the security function together until an interim leader is found."
+        "Within a fortnight, ACME Inc. responds to industry and client outrage by having the CIO and the CISO 'retire', which prompts more media criticism, not less. Soon afterwards, the CEO steps down too. You are asked to hold the security function together until an interim leader is found."
       );
     },
     choices: [
