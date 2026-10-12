@@ -75,7 +75,10 @@ var GAME_NODES = {
   act1_cert_alert: {
     act: "Act 1: The Advisory & Reconstruction",
     title: "Reconstructing the Window",
-    text: "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy customer-facing portal, leaving the attackers a foothold for over two months. The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries. The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
+    text: [
+      "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy customer-facing portal, leaving the attackers a foothold for over two months. The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
+      "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
+    ],
     // Legal's announcement date, in days from now. Days spent before the
     // announcement count against it; it doesn't move for the security team.
     deadline: 26,
@@ -141,7 +144,7 @@ var GAME_NODES = {
         outcome: "Legal are unhappy with a number that could be too high, but you won't have to announce a bigger one later.",
       },
       {
-        text: "Wait until the number is exact.",
+        text: "Keep analysing until the number is exact, using days you may not have.",
         nextNode: "i_number",
         days: 4,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
@@ -200,7 +203,13 @@ var GAME_NODES = {
   act2_callcentres: {
     act: "Act 2: The Compartmented Build",
     title: "A Thousand New Voices",
-    text: "Contact centre partners can supply more than a thousand agents across several new sites. They need scripts, training, and a way to verify callers. You can't ask callers for the data that was stolen, so identity checks must rely on other data ACME Inc. holds.",
+    text: function (flags) {
+      return [
+        "Contact centre partners can supply more than a thousand agents across several new sites. They need scripts, training, and a way to verify callers. You can't ask callers for the data that was stolen, so identity checks must rely on other data ACME Inc. holds.",
+      ].concat(flags.separate_domain
+        ? ["The scripts have a problem. Agents must reassure callers that a site on an unfamiliar domain, run by a company they've never heard of, is genuine and safe to type their details into. Every phishing awareness campaign has taught people never to trust exactly that."]
+        : []);
+    },
     choices: [
       {
         text: "Use a tight script and route every unusual question to your team.",
@@ -210,11 +219,11 @@ var GAME_NODES = {
         outcome: "The agents are ready on time. Your team's inbox is about to become every caller's escalation route.",
       },
       {
-        text: "Train agents in depth, accepting a later go-live.",
+        text: "Train agents in depth, accepting the long hours and overtime it takes to hit Legal's date.",
         nextNode: "i_3am",
         days: 5,
         stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5 },
-        outcome: "The business pushes hard for an earlier launch, but the agents can answer most questions themselves.",
+        outcome: "The agents can answer most questions themselves, but the trainers and your team work late every night to get them there.",
       },
     ],
   },
@@ -238,6 +247,7 @@ var GAME_NODES = {
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
         deadlineShift: -3,
+        set: "date_forward",
         outcome: "It becomes a matter for the regulators. To limit the insider risk, Legal bring the announcement forward three days. Your concern is on record.",
       },
       {
@@ -276,7 +286,11 @@ var GAME_NODES = {
   act3_announce: {
     act: "Act 3: Announcement",
     title: "The Morning After",
-    text: "Traffic to the lookup portal dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
+    text: [
+      "Traffic to the lookup portal dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
+      "On LinkedIn, vendors who were flattering you for a meeting last week are now publicly shaming you and your team. What you thought of as a cyber community is in a feeding frenzy, and your team is the meat.",
+      "Journalists start messaging you and your team through your personal social media accounts. Former colleagues begin sharing their own theories about what went wrong.",
+    ],
     choices: [
       {
         text: "Press Legal to let you brief trusted industry peers privately on the technical story.",
@@ -327,7 +341,7 @@ var GAME_NODES = {
   act3_storm: {
     act: "Act 3: Announcement",
     title: "The Storm",
-    text: "A major hurricane makes landfall near two of your new contact centres just as call volumes peak. Hundreds of agents go offline, and the wait to reach an agent stretches to hours.",
+    text: "If you needed evidence that the world was against you, you don't have to check social media any more: the weather forecast proves it. A major hurricane makes landfall near two of your new contact centres just as call volumes peak. Hundreds of agents go offline, and the wait to reach an agent stretches to hours.",
     choices: [
       {
         text: "Move overflow calls to your security team and internal volunteers.",
@@ -351,9 +365,9 @@ var GAME_NODES = {
     title: "Retirements",
     text: function (flags) {
       return (
-        "Weeks later, the public, the industry and ACME Inc.'s clients are furious. " +
-        (flags.revised_up ? "Each upward revision of the numbers has restarted the story. " : "") +
-        "The CIO and the CISO 'retire'. You are asked to hold the security function together until an interim leader is found."
+        "The story hasn't gone away, as the communications team thought it would. " +
+        (flags.revised_up ? "Each upward revision of the numbers has restarted it. " : "") +
+        "Within a fortnight, ACME Inc. responds to industry and client outrage by having the CIO and the CISO 'retire', which prompts more media criticism, not less. You are asked to hold the security function together until an interim leader is found."
       );
     },
     choices: [

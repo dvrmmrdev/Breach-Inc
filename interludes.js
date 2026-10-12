@@ -1,7 +1,7 @@
 // Interludes: the moments between decisions. Each one is a few paragraphs
 // and a single Continue button. `time` is shown as a clock beside the day
 // count. `text` is an array of paragraphs, or a function of (flags, stats)
-// returning one. `stats` and `days` are optional, and are applied when the
+// returning one. `stats` (also optionally a function) and `days` are optional, and are applied when the
 // player continues. `silence: "start"` / `"end"` marks the stretch when you
 // can't tell anyone what's happening. `deadlineCheck` is where Legal's date
 // arrives: any days over it are squeezed into nights, at a cost to health.
@@ -79,9 +79,9 @@ var INTERLUDES = {
   i_warroom: {
     act: "Act 1: The Advisory & Reconstruction",
     time: "03:10",
-    title: "The Room",
+    title: "The War Room",
     text: [
-      "Project Lantern works from a conference room with no windows. A second badge reader went onto the door on the first day. Phones stay in a locker in the corridor.",
+      "Project Lantern works from a conference room with no windows, known to everyone in it as the war room. A second badge reader went onto the door on the first day. Phones stay in a locker in the corridor.",
       "Every evening, the whiteboards are photographed and then wiped. Every morning, the same diagrams are drawn again, a little bigger.",
       "You see the same faces in the same clothes three days running. Shifts stretch past sixteen hours, and some people stop going home between them at all.",
       "The room smells of stale pizza. On the first night, it was a treat. By the third day, nobody can face another slice, and the boxes keep arriving anyway.",
@@ -96,9 +96,12 @@ var INTERLUDES = {
     time: "19:30",
     title: "Video Call",
     text: [
-      "It's dinner time at home. The laptop is propped against the fruit bowl, and you can see the kitchen you haven't stood in for over a week.",
+      "It's dinner time at home. The laptop is propped against the fruit bowl, and you can see the kitchen you haven't stood in for over a week. The dog hears your voice and looks behind the screen for you.",
       "'When are you coming back?' 'Soon.' 'You said that on Tuesday.' 'I know.'",
-      "The dog hears your voice and looks behind the screen for you.",
+      "A pause. 'Is there someone else?'",
+      "You stumble over your words. No, of course not, it's work, just work, and you'll explain everything as soon as you're able to.",
+      "Another pause. 'When will that be?'",
+      "You can't answer.",
       "You want to tell them. A sentence would do it: it's bad, it's big, it isn't my fault, I'll explain everything. But it's market-sensitive information, and you've signed papers saying so. Telling them could make them insiders too.",
       "So you ask about their day and listen. After you hang up, you sit in the dark hotel room for a long time.",
     ],
@@ -143,7 +146,7 @@ var INTERLUDES = {
     title: "Three in the Morning",
     text: function (flags, stats) {
       return [
-        "You wake at 03:12, as you have every night this week. The laptop is on the other pillow.",
+        "You wake at 03:12, as you have every night this week. The laptop is on the other pillow, still turned on. The company's colourful screensaver is the only light in the room.",
         "Your feed is full of another company's breach. Commentators queue up to explain how they would never be so careless: they'd have patched it, segmented the network and spotted it in hours. In a few weeks, they'll be writing about you.",
         stats.teamHealth < 50
           ? "There's an email from one of your engineers, sent at 02:40. It's just a status update, but it's 02:40, and they're the third this week."
@@ -159,12 +162,16 @@ var INTERLUDES = {
     act: "Act 2: The Compartmented Build",
     time: "21:15",
     title: "A Date in the Diary",
-    text: [
-      "Legal's date is close now. In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
-      "The press release is on draft fourteen. The Q&A runs to forty pages. You rehearse answers to questions you hope nobody asks, and some that you know they will.",
-      "Legal ask everyone in the read-in group not to change their social media profiles, not to update their CVs, and not to cancel anything conspicuous. Act normal.",
-      "You haven't felt normal for weeks. You're starting to forget what it was like.",
-    ],
+    text: function (flags) {
+      return [
+        flags.date_forward
+          ? "Legal's date is closer than it was. After the share sale, they brought it forward three days: with a manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. In the shared calendar, it's an innocuous meeting title that nobody would look at twice."
+          : "Legal's date is close now. In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
+        "The press release is on draft fourteen. The Q&A runs to forty pages. You rehearse answers to questions you hope nobody asks, and some that you know they will.",
+        "Legal ask everyone in the read-in group not to change their social media profiles, not to update their CVs, and not to cancel anything conspicuous. Act normal.",
+        "You haven't felt normal for weeks. You're starting to forget what it was like.",
+      ];
+    },
     next: "act3_transparency",
   },
 
@@ -187,7 +194,7 @@ var INTERLUDES = {
           : "The release goes out, and the all-staff email lands in every inbox at the same moment. The open-plan floor goes completely silent.",
         "The only sound comes from the corner, where a colleague who has worked here for over thirty years is crying quietly at her desk. She is watching the company that has been so much of her life fall apart on her screen.",
         "Then every phone in the room starts buzzing at once.",
-        "The secret is out. You expected to feel lighter. Instead, it feels like the walls just moved.",
+        "The secret is out. You expected to feel lighter. Instead, you feel responsible for the weight that has just landed on everyone's shoulders, and on your team's most of all.",
       ];
     },
     next: "i_clients",
@@ -199,9 +206,11 @@ var INTERLUDES = {
     title: "On the Call",
     text: [
       "Nine minutes after the release, you're pulled into a conference room. One of ACME Inc.'s largest domestic clients is on the line, and they want answers now.",
+      "The CISO should be on this call. But they locked their office door and shut the blinds before the announcement went out, and they haven't come out since. Maybe it's all been too much. Feeling the way you do right now, you'd understand.",
       "Downstairs, your team are taking in the news. You should be with them. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
-      "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent approved answers on the fly. Legal sign each one off between calls, and you paste it into a shared document while the next call connects.",
-      "From then on, every day is back-to-back client calls from 8am to 6pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
+      "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent answers on the fly, based on what you're pretty sure are known facts, and paste each one into a shared document while the next call connects.",
+      "From then on, every day is back-to-back client calls from 8am to 7pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
+      "Each night, you slope back to your hotel room. It's the same small room it's been for weeks, and it feels smaller every night.",
     ],
     stats: { playerHealth: -5 },
     next: "i_aftershock",
@@ -212,10 +221,10 @@ var INTERLUDES = {
     time: "22:30",
     title: "Is This You?",
     text: [
-      "You have 63 unread messages. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I freeze my credit?' 'How could you let this happen?'",
+      "You have 63 unread messages on your phone. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I freeze my credit?' 'How could you let this happen?'",
       "Your family are kind on the phone. You can hear how hurt they are that they found out at the same time as everyone else.",
       "You can talk about it now, but only in the approved words. Anything beyond the press release is still off limits: to friends, to neighbours, even to former colleagues who'd understand better than anyone.",
-      "The silence hasn't ended. It's just changed shape.",
+      "The silence has ended. Now the noise is everywhere.",
     ],
     next: "act3_announce",
   },
@@ -224,14 +233,22 @@ var INTERLUDES = {
     act: "Act 3: Announcement",
     time: "12:30",
     title: "Open Season",
-    text: [
-      "The security industry turns on you. Commentators who've never met your team pick through their professional profiles. A gap between jobs becomes a scandal. Veteran leaders, whose degrees predate cybersecurity as a subject, are mocked for having no formal security education.",
-      "Corporate security gives every senior leader formal advice on physical safety: vary your route to work, check your car, and know who's at the door before you open it.",
-      "One of your team is served with a lawsuit naming them personally.",
-      "Another is told to change the domain registration for their personal website, because it gives their home address to anyone who looks.",
-      "They did their jobs. Now their names are part of the story.",
-    ],
-    stats: { teamHealth: -5 },
+    text: function (flags) {
+      return [
+        "The security industry has turned on you. Commentators who've never met your team pick through their professional profiles. A gap between jobs becomes a scandal. Veteran leaders, whose degrees predate cybersecurity as a subject, are mocked for having no formal security education.",
+        flags.separate_domain
+          ? "Researchers line up to show that your response site looks exactly like a phishing site: a domain nobody has heard of, run by a vendor, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
+          : null,
+        "Corporate security gives every senior leader formal advice on physical safety: vary your route to work, check your car, and know who's at the door before you open it.",
+        "One of your team is served with a lawsuit naming them personally.",
+        "Another is told to change the domain registration for their personal website, because it gives their home address to anyone who looks.",
+        "They did their jobs. Now their names are part of the story.",
+      ].filter(Boolean);
+    },
+    // A response site on a vendor's unfamiliar domain costs trust as well.
+    stats: function (flags) {
+      return flags.separate_domain ? { teamHealth: -5, internalInfluence: -10 } : { teamHealth: -5 };
+    },
     next: "act3_storm",
   },
 
@@ -241,6 +258,7 @@ var INTERLUDES = {
     title: "Home",
     text: [
       "You fly home weeks after you were meant to. The summit lanyard is still at the top of your suitcase.",
+      "You've been told not to name your employer to anyone while the story is running. At the car hire desk, the clerk sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
       "The dog reaches the door first. Your family stand behind it, unsure whether to be angry or relieved, and settle on both.",
       "That night, for the first time in weeks, you tell someone everything you're allowed to. It isn't everything. It's still more than you've said out loud since the briefing room.",
       "Halfway through, you stop talking and cry on your partner's shoulder. They hold on, and don't ask you to finish.",
@@ -258,7 +276,7 @@ var INTERLUDES = {
     text: [
       "The hearing is on every screen in the office. Nobody pretends to be working.",
       "The former CEO apologises again. A lawmaker reads out a list of failures, and you recognise work your team did, reduced to a single damning sentence.",
-      "Months of nights in the room with no windows, the overnight cutovers and the forty-page Q&A get no mention at all. Nobody outside the read-in group will ever know what it took.",
+      "Weeks of nights in the war room, the overnight cutovers and the forty-page Q&A get no mention at all. Nobody outside the read-in group will ever know what it took.",
       "You switch off the screen, and somebody quietly switches it back on.",
     ],
     next: "act4_dutyofcare",

@@ -63,6 +63,7 @@
   }
 
   function applyStats(stats, changes) {
+    if (typeof stats === "function") stats = stats(state.flags, state.stats);
     for (var id in stats || {}) {
       var delta = stats[id];
       state.stats[id] = Math.max(0, Math.min(100, state.stats[id] + delta));
