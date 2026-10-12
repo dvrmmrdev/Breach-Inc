@@ -9,7 +9,7 @@
   function freshState() {
     var stats = {};
     for (var id in STATS) stats[id] = STATS[id].start;
-    return { node: START_NODE, spent: 0, days: 0, stats: stats, flags: {}, log: [], silence: null, ended: null };
+    return { node: START_NODE, days: 0, stats: stats, flags: {}, log: [], silence: null, deadline: null, ended: null };
   }
 
   function save() {
@@ -24,10 +24,12 @@
     return null;
   }
 
-  function money(n) {
-    if (n >= 1000000) return "$" + (n / 1000000).toFixed(n % 1000000 ? 2 : 0) + "m";
-    if (n >= 1000) return "$" + Math.round(n / 1000) + "k";
-    return "$" + n;
+  // Each day of work that doesn't fit before Legal's date is done at night,
+  // costing this much Team health and Your health.
+  var OVERRUN_COST = 2;
+
+  function dayCount(n) {
+    return (n || 0) + (n === 1 ? " day" : " days");
   }
 
   function signed(n) {
@@ -56,20 +58,46 @@
     state.node = nodeId;
     var node = GAME_NODES[nodeId];
     if (node.silence === "start" && !state.silence) state.silence = { from: state.days, to: null };
+    if (node.deadline && state.deadline == null) state.deadline = { day: state.days + node.deadline, done: false };
+  }
+
+  function applyStats(stats, changes) {
+    for (var id in stats || {}) {
+      var delta = stats[id];
+      state.stats[id] = Math.max(0, Math.min(100, state.stats[id] + delta));
+      if (delta) changes.push(STATS[id].label + " " + signed(delta));
+    }
+  }
+
+  // Legal's date arrives whether or not the work is done. Work that didn't
+  // fit was squeezed into nights; either way, the clock jumps to the date.
+  function arriveAtDeadline() {
+    var deadline = state.deadline;
+    if (!deadline || deadline.done) return;
+    var over = state.days - deadline.day;
+    state.flags.overrun = Math.max(0, over);
+    if (over > 0) {
+      var changes = [];
+      applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over }, changes);
+      state.log.push({
+        title: "Legal's deadline",
+        choice: "",
+        outcome: "The date didn't move. " + over + " days of work were squeezed into nights.",
+        effects: changes.join(" · "),
+      });
+    }
+    state.days = deadline.day;
+    deadline.done = true;
   }
 
   // Applies a choice, or an interlude's Continue, then moves on.
   function advance(step, logChoice) {
     var node = GAME_NODES[state.node];
-    state.spent += step.cost || 0;
     state.days += step.days || 0;
     var changes = [];
-    for (var id in step.stats || {}) {
-      var delta = step.stats[id];
-      state.stats[id] = Math.max(0, Math.min(100, state.stats[id] + delta));
-      if (delta) changes.push(STATS[id].label + " " + signed(delta));
-    }
+    applyStats(step.stats, changes);
     if (step.set) state.flags[step.set] = true;
+    if (step.deadlineShift && state.deadline) state.deadline.day += step.deadlineShift;
     // The silence ends once you've read the interlude that ends it.
     if (node.silence === "end" && state.silence && state.silence.to == null) state.silence.to = state.days;
     if (logChoice || changes.length) {
@@ -77,15 +105,16 @@
         title: node.title,
         choice: logChoice || "",
         outcome: step.outcome || "",
-        effects: (logChoice ? [money(step.cost || 0), (step.days || 0) + " days"] : []).concat(changes).join(" · "),
+        effects: (logChoice ? [dayCount(step.days)] : []).concat(changes).join(" · "),
       });
     }
+    var next = step.nextNode || step.next;
+    if (GAME_NODES[next] && GAME_NODES[next].deadlineCheck) arriveAtDeadline();
 
     for (var stat in EARLY_ENDINGS) {
       if (state.stats[stat] <= 0) { state.ended = { early: stat }; break; }
     }
     if (!state.ended) {
-      var next = step.nextNode || step.next;
       if (GAME_NODES[next]) enter(next);
       else state.ended = { early: null };
     }
@@ -118,11 +147,14 @@
       }
       hud.appendChild(b);
     }
-    box("Spent", money(state.spent));
     box("Days", String(state.days));
     for (var id in STATS) box(STATS[id].label, String(state.stats[id]), state.stats[id]);
     if (state.silence && state.silence.to == null && !state.ended) {
       box("Days in silence", String(silenceDays()), null, "silence");
+    }
+    if (state.deadline && !state.deadline.done && !state.ended) {
+      var left = state.deadline.day - state.days;
+      box("Legal's date", left >= 0 ? "in " + left + " days" : left + " days over", null, left <= 5 ? "silence" : "");
     }
   }
 
@@ -169,7 +201,7 @@
     node.choices.forEach(function (choice) {
       var btn = el("button", "choice-btn", choice.text);
       btn.type = "button";
-      btn.appendChild(el("span", "choice-cost", money(choice.cost || 0) + " · " + (choice.days || 0) + " days"));
+      btn.appendChild(el("span", "choice-cost", dayCount(choice.days)));
       btn.addEventListener("click", function () { advance(choice, choice.text); });
       card.appendChild(btn);
     });
@@ -196,8 +228,8 @@
     card.appendChild(el("div", "act-tag", early ? "Game over" : "Epilogue"));
     card.appendChild(el("h1", null, ending.title));
     card.appendChild(el("p", "narrative", ending.text));
-    var summary = "You spent " + money(state.spent) + " over " + state.days + " days and made " +
-      state.log.filter(function (e) { return e.choice; }).length + " decisions.";
+    var summary = "You made " + state.log.filter(function (e) { return e.choice; }).length +
+      " decisions over " + state.days + " days.";
     var silent = silenceDays();
     if (silent != null) {
       summary += " For " + silent + " of those days, you couldn't tell anyone, not even your family, what you were going through.";

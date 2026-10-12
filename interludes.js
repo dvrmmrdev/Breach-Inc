@@ -3,12 +3,26 @@
 // count. `text` is an array of paragraphs, or a function of (flags, stats)
 // returning one. `stats` and `days` are optional, and are applied when the
 // player continues. `silence: "start"` / `"end"` marks the stretch when you
-// can't tell anyone what's happening.
+// can't tell anyone what's happening. `deadlineCheck` is where Legal's date
+// arrives: any days over it are squeezed into nights, at a cost to health.
 //
 // Like the rest of the story, these are anonymised: no real names, places or
 // dates.
 
 var INTERLUDES = {
+  i_inherit: {
+    act: "Act 0: Prequel",
+    time: "18:20",
+    title: "The Team You Inherit",
+    text: [
+      "The security team you inherit is one team only on the org chart. Years of acquisitions have left it scattered across countries and time zones, with tangled reporting lines and different tools in every region. Old grudges about who got the budget still linger.",
+      "Your skip-level meetings tell the same story everywhere. People feel unheard and under-resourced, and they're blamed for every incident. The best of them are taking calls from recruiters.",
+      "You decide to bring everyone together in one place: a global All Hands at headquarters, where the whole team can unite behind a new strategy and a shared mission.",
+      "You spend your evenings writing the mission statement and your days fighting for the travel budget.",
+    ],
+    next: "act0_allhands",
+  },
+
   i_hotel: {
     act: "Act 0: Prequel",
     time: "23:48",
@@ -36,7 +50,9 @@ var INTERLUDES = {
     text: [
       "Project Lantern works from a conference room with no windows. A second badge reader went onto the door on the first day. Phones stay in a locker in the corridor.",
       "Every evening, the whiteboards are photographed and then wiped. Every morning, the same diagrams are drawn again, a little bigger.",
-      "The air conditioning hums. The pizza boxes multiply. Someone has taped a sheet of paper over the glass panel in the door.",
+      "You see the same faces in the same clothes three days running. Shifts stretch past sixteen hours, and some people stop going home between them at all.",
+      "The room smells of stale pizza. On the first night, it was a treat. By the third day, nobody can face another slice, and the boxes keep arriving anyway.",
+      "Under the strip lights, everyone's skin turns the same pasty grey. Someone has taped a sheet of paper over the glass panel in the door.",
       "You lose track of whether it's day or night. The query replays run on, line after line, each one a set of real people's records.",
     ],
     next: "act1_containment",
@@ -111,7 +127,7 @@ var INTERLUDES = {
     time: "21:15",
     title: "A Date in the Diary",
     text: [
-      "The announcement has a date. In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
+      "Legal's date is close now. In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
       "The press release is on draft fourteen. The Q&A runs to forty pages. You rehearse answers to questions you hope nobody asks, and some that you know they will.",
       "Legal ask everyone in the read-in group not to change their social media profiles, not to update their CVs, and not to cancel anything conspicuous. Act normal.",
       "You haven't felt normal for weeks. You're starting to forget what it was like.",
@@ -124,18 +140,38 @@ var INTERLUDES = {
     time: "15:52",
     title: "Eight Minutes",
     silence: "end",
+    // Legal's date has arrived, whether or not the work is done.
+    deadlineCheck: true,
     text: function (flags) {
       return [
         "Eight minutes to go. Everyone in the room is watching the same clock.",
-        flags.staff_briefed
-          ? "Your team were told an hour ago. You saw the moment it landed on each face: shock first, then a quiet 'so that's what it was'."
-          : "Your team still don't know. In eight minutes, they'll find out from a news alert like everyone else.",
+        flags.overrun
+          ? "Legal's date didn't move. The work didn't fit, so the last " + flags.overrun + " days of it were squeezed into nights. Half the room hasn't slept properly in a week."
+          : "The work fit inside Legal's date, just. For the last few days, the team could sleep before it all began.",
         "You text home: 'Watch the news at four. That's what it's been.'",
-        "The release goes out. For a second, nothing happens. Then every phone in the room starts buzzing at once.",
+        flags.staff_briefed
+          ? "Your team were told an hour ago. When the all-staff email landed, the open-plan floor went completely silent, and it hasn't recovered."
+          : "The release goes out, and the all-staff email lands in every inbox at the same moment. The open-plan floor goes completely silent.",
+        "The only sound comes from the corner, where a colleague who has worked here for over thirty years is crying quietly at her desk. She is watching the company that has been so much of her life fall apart on her screen.",
+        "Then every phone in the room starts buzzing at once.",
         "The secret is out. You expected to feel lighter. Instead, it feels like the walls just moved.",
       ];
     },
-    next: "act3_announce",
+    next: "i_clients",
+  },
+
+  i_clients: {
+    act: "Act 3: Announcement",
+    time: "16:09",
+    title: "On the Call",
+    text: [
+      "Nine minutes after the release, you're pulled into a conference room. One of ACME Inc.'s largest domestic clients is on the line, and they want answers now.",
+      "Downstairs, your team are taking in the news. You should be with them. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
+      "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent approved answers on the fly. Legal sign each one off between calls, and you paste it into a shared document while the next call connects.",
+      "From then on, every day is back-to-back client calls from 8am to 6pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
+    ],
+    stats: { playerHealth: -5 },
+    next: "i_aftershock",
   },
 
   i_aftershock: {
@@ -148,7 +184,22 @@ var INTERLUDES = {
       "You can talk about it now, but only in the approved words. Anything beyond the press release is still off limits: to friends, to neighbours, even to former colleagues who'd understand better than anyone.",
       "The silence hasn't ended. It's just changed shape.",
     ],
-    next: "act3_lookalike",
+    next: "act3_announce",
+  },
+
+  i_exposed: {
+    act: "Act 3: Announcement",
+    time: "12:30",
+    title: "Open Season",
+    text: [
+      "The security industry turns on you. Commentators who've never met your team pick through their professional profiles. A gap between jobs becomes a scandal. Veteran leaders, whose degrees predate cybersecurity as a subject, are mocked for having no formal security education.",
+      "Corporate security gives every senior leader formal advice on physical safety: vary your route to work, check your car, and know who's at the door before you open it.",
+      "One of your team is served with a lawsuit naming them personally.",
+      "Another is told to change the domain registration for their personal website, because it gives their home address to anyone who looks.",
+      "They did their jobs. Now their names are part of the story.",
+    ],
+    stats: { teamHealth: -5 },
+    next: "act3_storm",
   },
 
   i_home: {
@@ -159,9 +210,10 @@ var INTERLUDES = {
       "You fly home weeks after you were meant to. The summit lanyard is still at the top of your suitcase.",
       "The dog reaches the door first. Your family stand behind it, unsure whether to be angry or relieved, and settle on both.",
       "That night, for the first time in weeks, you tell someone everything you're allowed to. It isn't everything. It's still more than you've said out loud since the briefing room.",
+      "Halfway through, you stop talking and cry on your partner's shoulder. They hold on, and don't ask you to finish.",
       "You sleep for eleven hours.",
     ],
-    stats: { playerHealth: 15 },
+    stats: { playerHealth: 25 },
     days: 2,
     next: "act4_fallout",
   },

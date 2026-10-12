@@ -9,7 +9,9 @@ A text adventure for security leaders, inspired by a real large-scale data breac
 
 Between the decisions, short interludes with a single **Continue** button show what it was like to live through it. They include hotel rooms, a war room with no windows, calls home where you can't say anything, and lying to your own team. A **Days in silence** counter runs from the night you're told until the announcement, and the edges of the screen close in as your health falls.
 
-Every decision costs money and days, and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons from the real event.
+The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 2 Team health and 2 Your health for each day over (`OVERRUN_COST` in `game.js`).
+
+Every decision takes days and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons from the real event.
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
 
@@ -30,7 +32,7 @@ Each scene in `GAME_NODES` has an `act`, a `title`, `text` and `choices`.
 
 Each choice can have:
 - `nextNode`: the scene it leads to. Any id that isn't a scene leads to the epilogue.
-- `cost`: in dollars.
+- `deadlineShift`: moves Legal's date by this many days.
 - `days`
 - `stats`: changes to the three stats.
 - `outcome`: shown in the log.
@@ -44,16 +46,20 @@ Interludes in `interludes.js` have:
 - `next`: the scene that follows.
 - optionally `stats` and `days`.
 - `silence: "start"` or `"end"`: marks when you can and can't talk about it.
+- `deadlineCheck`: marks where Legal's date arrives.
+
+A scene with `deadline: N` starts the countdown N days from that point.
 
 To add one, point a scene's `nextNode` at it.
 
-Choices show only their money and time costs. The effect on people is revealed in the log afterwards.
+Choices show only how many days they take. The effect on people is revealed in the log afterwards.
 
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about a quarter of the time, usually from burnout;
-- reaches the best ending about 1 time in 10.
+- ends early about a third of the time, usually from burnout;
+- reaches the best ending about 1 time in 10;
+- misses Legal's date about 45% of the time.
 
 Re-check after changing any stats.
 
