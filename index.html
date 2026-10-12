@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breach Inc.</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="story.js"></script>
+  <script src="game.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="top">
+      <div class="brand">ACME Inc. &middot; Incident Simulation</div>
+      <button type="button" id="restart" class="link-btn">Restart</button>
+    </header>
+    <div id="hud" class="hud" aria-label="Status"></div>
+    <main id="main" class="card" tabindex="-1" aria-live="polite"></main>
+    <section aria-label="Decision log">
+      <div class="stat-label log-heading">Decision log</div>
+      <div id="log" class="log-panel"></div>
+    </section>
+    <footer class="disclaimer">
+      Inspired by real events. All companies, people, projects and details are fictional or anonymised.
+    </footer>
+  </div>
+</body>
+</html>
