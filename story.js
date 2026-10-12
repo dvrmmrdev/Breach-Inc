@@ -558,3 +558,74 @@ var LESSONS = [
   "Understand which senior leaders have the authority and capability to make quick, informed decisions.",
   "Think long and hard about how you and your team could \u201creturn to normal\u201d. How will you go back to discussing risk acceptance after living through a major breach?",
 ];
+
+// ASCII art for the act dividers, keyed by act number. Text in {braces}
+// glows like lamplight; text in «guillemets» is in the theme's accent colour.
+// Keep each line under about 34 characters so it fits a phone screen.
+var ACT_ART = {
+  "Act 0": String.raw`
+{              \   |   /}
+{           .   .-'''-.   .}
+{         --  (       )  --}
+{           '   '-...-'   '}
+{              /   |   \}
+    _     ____         __     ___
+   | |   |    |   _   |  |   |   |
+___| |___|    |__| |__|  |___|   |__`,
+
+  "Act 1": String.raw`
+   ______________________
+  |  __________________  |
+  | |                  | |
+  | |       1412       | |
+  | |                  | |
+  | |                  | |
+  | |                o | |
+  | |                  | |
+  | |                  | |
+  | |__________________| |
+  |{======================}|
+{  .:;;;;;;;;;;;;;;;;;;;:.  }
+{     .:;;;;;;;;;;;;;;:.     }
+{         ..::::::..         }`,
+
+  "Act 2": String.raw`
+   __o__________________o__
+  |      LEGAL'S DATE      |
+  |------------------------|
+  |  X  X  X  X  X  X  X   |
+  |  X  X  X  X  X  X  X   |
+  |  X  X  X  X  X  X  X   |
+  |  X  X  X  X «(26)»       |
+  |________________________|`,
+
+  "Act 3": String.raw`
+        ______________
+       |  __________  |
+  (((  | |«  63 NEW  »| |  )))
+       | | Is this  | |
+       | | you?     | |
+       | |----------| |
+       | | Are you  | |
+       | | OK?      | |
+       | |----------| |
+       | | How could| |
+       | |__________| |
+       |      ()      |
+       |______________|`,
+
+  "Act 4": String.raw`
+          \            /
+           \          /
+            \        /
+             \      /
+              \    /
+               \__/
+                ||
+          .----''''----.
+          |   GLOBAL   |
+          |   SUMMIT   |
+          |  ________  |
+          |  ALL HANDS |
+          '------------'`,
+};
