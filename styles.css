@@ -291,28 +291,9 @@ body::before {
 }
 
 /* Act dividers: the number and title alone, centred. */
-.divider-art {
-  display: inline-block;
-  text-align: left;
-  margin: 0 0 28px 0;
-  font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
-  font-size: 12px;
-  line-height: 1.2;
-  color: #6e7681;
-  max-width: 100%;
-  overflow: hidden;
-}
-.divider-art .glow {
-  color: #f2cc60;
-  text-shadow: 0 0 8px rgba(242, 204, 96, 0.6);
-}
-.divider-art .accent {
-  color: var(--accent);
-  font-weight: bold;
-}
 .divider {
   text-align: center;
-  padding: 48px 24px;
+  padding: 72px 24px;
   animation: reveal 1.2s ease;
 }
 .divider-act {

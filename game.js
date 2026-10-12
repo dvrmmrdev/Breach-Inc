@@ -236,23 +236,10 @@
     card.appendChild(btn);
   }
 
-  // ASCII art in a <pre>, with {glowing} and «accent» spans picked out.
-  function asciiArt(art) {
-    var pre = el("pre", "divider-art");
-    pre.setAttribute("aria-hidden", "true");
-    art.replace(/^\n/, "").split(/(\{[^}]*\}|«[^»]*»)/).forEach(function (part) {
-      if (!part) return;
-      var marked = part.charAt(0) === "{" ? "glow" : part.charAt(0) === "«" ? "accent" : null;
-      pre.appendChild(marked ? el("span", marked, part.slice(1, -1)) : document.createTextNode(part));
-    });
-    return pre;
-  }
-
   // A screen of its own at the start of each act: just the number and title.
   function renderDivider(card, act) {
     var parts = act.split(": ");
     card.className = "card divider";
-    if (typeof ACT_ART !== "undefined" && ACT_ART[parts[0]]) card.appendChild(asciiArt(ACT_ART[parts[0]]));
     card.appendChild(el("div", "divider-act", parts[0]));
     card.appendChild(el("h1", "divider-title", parts[1] || ""));
     var btn = el("button", "next-btn", "Continue");
