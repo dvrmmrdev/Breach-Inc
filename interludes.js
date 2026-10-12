@@ -212,8 +212,7 @@ var INTERLUDES = {
       "The CISO should be on this call. But they locked their office door and shut the blinds before the announcement went out, and they haven't come out since. Maybe it's all been too much. Feeling the way you do right now, you'd understand.",
       "Downstairs, your team are taking in the news. You should be with them. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
       "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent answers on the fly, based on what you're pretty sure are known facts, and paste each one into a shared document while the next call connects.",
-      "From then on, every day is back-to-back client calls from 8am to 7pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
-      "Each night, you slope back to your hotel room. It's the same small room it's been for weeks, and it feels smaller every night.",
+      "The last call ends after nine. You slope back to your hotel room. It's the same small room it's been for weeks, and tonight it feels smaller than ever.",
     ],
     stats: { playerHealth: -5 },
     next: "i_aftershock",
@@ -238,6 +237,7 @@ var INTERLUDES = {
     title: "Open Season",
     text: function (flags) {
       return [
+        "Every day now is back-to-back client calls from 8am to 7pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
         "The security industry has turned on you. Commentators who've never met your team pick through their professional profiles. A gap between jobs becomes a scandal. Veteran leaders, whose degrees predate cybersecurity as a subject, are mocked for having no formal security education.",
         flags.separate_domain
           ? "Researchers line up to show that your response site looks exactly like a phishing site: a domain nobody has heard of, run by a vendor, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
