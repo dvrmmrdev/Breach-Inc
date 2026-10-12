@@ -114,6 +114,32 @@ var GAME_NODES = {
     ],
   },
 
+  act1_visitors: {
+    act: "Act 1: Living in Silence",
+    title: "Just a Quick Update",
+    text: [
+      "By the third day, the war room has visitors. Senior leaders drop in every hour or so for 'just a quick update'.",
+      "Each one pulls an analyst off the query replays to explain the same picture again, and each one leaves with a slightly different version of it. By evening, three of them are quoting three different numbers to the board.",
+    ],
+    choices: [
+      {
+        text: "Shield the war room: one point of contact for leaders, and one fixed update a day.",
+        nextNode: "act1_containment",
+        days: 1,
+        stats: { internalInfluence: -5, teamHealth: 10, playerHealth: 5 },
+        set: "shielded",
+        outcome: "Some leaders are put out at being kept at the door. The analysts get their days back, and the board hears one version of the truth.",
+      },
+      {
+        text: "Answer every leader yourself, whenever they ask.",
+        nextNode: "act1_containment",
+        days: 0,
+        stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
+        outcome: "The leaders feel informed. You spend your days repeating yourself, and the team still get pulled in when you're not there.",
+      },
+    ],
+  },
+
   act1_containment: {
     act: "Act 1: Living in Silence",
     title: "Overnight Changes",
@@ -237,6 +263,32 @@ var GAME_NODES = {
         days: 5,
         stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5 },
         outcome: "The agents can answer most questions themselves, but the trainers and your team work late every night to get them there.",
+      },
+    ],
+  },
+
+  act2_shifts: {
+    act: "Act 2: Under Pressure",
+    title: "Nobody Owns Rest",
+    text: [
+      "Nobody is making sure shifts end. Analysts are on their third double shift this week, and nobody is telling them to go home.",
+      "Nobody is telling the leaders either. They're the last to leave and the first in, and their teams copy them. You're no better: you can't remember your last day off, or your last meal that didn't come in a box.",
+    ],
+    choices: [
+      {
+        text: "Appoint a wellbeing lead with the authority to end shifts and send anyone home: leaders included, you first.",
+        nextNode: "act2_trading",
+        days: 2,
+        stats: { internalInfluence: -5, teamHealth: 10, playerHealth: 20 },
+        set: "rest_lead",
+        outcome: "The first person sent home is you. It's two days you can't spare, but people start sleeping again, and the mistakes in the overnight work drop.",
+      },
+      {
+        text: "Let everyone keep going while the adrenaline holds.",
+        nextNode: "act2_trading",
+        days: 0,
+        stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
+        outcome: "The pace holds, for now. Small mistakes start creeping into the overnight work, and nobody has the energy to catch them.",
       },
     ],
   },
@@ -435,14 +487,14 @@ var GAME_NODES = {
     choices: [
       {
         text: "Fund recovery: time off, counselling and retention bonuses, and take leave yourself.",
-        nextNode: "epilogue",
+        nextNode: "i_normal",
         days: 10,
         stats: { internalInfluence: -5, teamHealth: 20, playerHealth: 20 },
         outcome: "The remediation plan slips a month. Most of your team are still there a year later.",
       },
       {
         text: "Push through to finish the remediation programme first.",
-        nextNode: "epilogue",
+        nextNode: "i_normal",
         days: 10,
         stats: { internalInfluence: 10, teamHealth: -10, playerHealth: -10 },
         outcome: "The programme closes on schedule. The resignation letters arrive soon after.",

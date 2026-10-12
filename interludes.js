@@ -89,7 +89,7 @@ var INTERLUDES = {
       "Under the strip lights, everyone's skin turns the same pasty grey. Someone has taped a sheet of paper over the glass panel in the door.",
       "You lose track of whether it's day or night. The query replays run on, line after line, each one a set of real people's records.",
     ],
-    next: "act1_containment",
+    next: "act1_visitors",
   },
 
   i_family: {
@@ -156,7 +156,7 @@ var INTERLUDES = {
       ];
     },
     stats: { playerHealth: -5 },
-    next: "act2_trading",
+    next: "act2_shifts",
   },
 
   i_countdown: {
@@ -270,6 +270,24 @@ var INTERLUDES = {
     stats: { playerHealth: 25 },
     days: 2,
     next: "act4_fallout",
+  },
+
+  i_normal: {
+    act: "Act 4: Aftermath",
+    time: "10:00",
+    title: "Back to Normal?",
+    text: function (flags) {
+      return [
+        "Months later, the diary starts to look ordinary again. Today is your first routine risk meeting since the breach.",
+        "A product manager presents a request: accept the risk of an unpatched system for one more quarter. It sits behind other controls, the fix needs a code freeze, and the release it would delay is worth millions. A year ago, you'd have signed it off with a couple of conditions.",
+        "Everyone turns to you. You open your mouth, and the war room comes back: the strip lights, the query replays, and the merchant portal " +
+          (flags.patching_first ? "that was due for patching next quarter." : "that sat in the backlog nobody touched."),
+        "You can't say yes. You're not sure you'll ever be able to say yes again. But a security team that says no to everything is the source of paranoid friction and delay you promised you'd never be.",
+        "'Let me come back to you,' you say. It's the first time you've ever said that in this meeting.",
+      ];
+    },
+    days: 60,
+    next: "epilogue",
   },
 
   i_hearing: {

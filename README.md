@@ -59,7 +59,7 @@ Choices show only how many days they take. The effect on people is revealed in t
 
 With the current numbers, a player choosing at random:
 - ends early about a third of the time, usually from burnout;
-- reaches the best ending about 1 time in 10;
+- reaches the best ending about 1 time in 8;
 - misses Legal's date about 45% of the time.
 
 Re-check after changing any stats.
