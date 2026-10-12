@@ -240,7 +240,7 @@ var INTERLUDES = {
         "Every day now is back-to-back client calls from 8am to 7pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
         "The security industry has turned on you. Commentators who've never met your team pick through their professional profiles. A gap between jobs becomes a scandal. Veteran leaders, whose degrees predate cybersecurity as a subject, are mocked for having no formal security education.",
         flags.separate_domain
-          ? "Researchers line up to show that your response site looks exactly like a phishing site: a domain nobody has heard of, run by a vendor, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
+          ? "Researchers line up to show that your response site looks exactly like a phishing site: a newly registered domain nobody has heard of, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
           : null,
         "Corporate security gives every senior leader formal advice on physical safety: vary your route to work, check your car, and know who's at the door before you open it.",
         "One of your team is served with a lawsuit naming them personally.",

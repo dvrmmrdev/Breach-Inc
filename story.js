@@ -22,6 +22,7 @@ var GAME_NODES = {
     title: "Promotion & Inherited Architecture",
     text: [
       "You are promoted to the Global Cyber Senior Leadership Team at ACME Inc., a market-leading payments processor that handles card payments for banks and retailers across the country. Most of the people whose data you hold have never heard of you.",
+      "Alongside processing, ACME Inc. sells a breach response service: when a client bank or retailer suffers a card compromise, ACME stands up the notification site, call centres and card reissue on their behalf. It's one of the fastest-growing lines in the business.",
       "This is a huge career step: global responsibility for the business-facing part of the cyber team, across all business units. You're now a key part of how the company perceives and responds to cyber risk, and your decisions will decide whether the cyber team is seen as a source of paranoid friction and delay, or as a core part of helping the business to succeed.",
       "Behind the congratulatory emails lies an enterprise shaped by years of rapid acquisitions, legacy application stacks, and relentless pressure to ship revenue-generating products ahead of routine control maintenance. Cyber strategy, like business strategy, has had to cater to three-month planning cycles between earnings reports to the stock markets.",
       "You feel like you can make a real difference here, for your team and for your employer.",
@@ -196,7 +197,11 @@ var GAME_NODES = {
   act2_foothold: {
     act: "Act 2: Under Pressure",
     title: "Project Harbour & the Blind Build",
-    text: "To build a response site where the public can check whether they're affected, and to bring in more than a thousand external contact centre agents, ACME Inc. sets up a separate unit, Project Harbour. To prevent leaks, its staff are told they are supporting an incident at an unnamed client, without knowing the victim is ACME Inc. itself. The secrecy creates tension, rumours spread, and the engineers have no clear trading restrictions.",
+    text: [
+      "To build a response site where the public can check whether they're affected, and to bring in more than a thousand external contact centre agents, ACME Inc. turns to its own breach response service. The work is run as Project Harbour.",
+      "To prevent leaks, Harbour's staff are told it's the biggest engagement the service has ever taken on, for an unnamed client. Nobody questions it: this is what the service does. Nobody tells them the victim is ACME Inc. itself.",
+      "The secrecy creates tension, rumours spread, and the engineers have no clear trading restrictions.",
+    ],
     choices: [
       {
         text: "Keep the cover story; compartmentation protects the announcement.",
@@ -219,22 +224,26 @@ var GAME_NODES = {
   act2_scale: {
     act: "Act 2: Under Pressure",
     title: "Built for Everyone",
-    text: "On announcement day, every adult in the country may try to check whether they were affected. Harbour's engineers want to build on ACME Inc.'s own platform and domain. A vendor offers a hosted site on a separate, newly registered domain that could be live in days.",
+    text: [
+      "On announcement day, every adult in the country may try to check whether they were affected.",
+      "Harbour's engineers are building the site the way the service always does for a client: a white-label site on a newly registered domain, hosted on the service's own platform. It will scale, and it keeps the cover story intact.",
+      "But you know who the 'client' really is. A site on ACME Inc.'s own domain would be far easier for the public to trust. The read-in group would have to build it themselves, though, and every Harbour engineer would work out the truth the moment they saw the address.",
+    ],
     choices: [
       {
-        text: "Use the vendor's hosted site on a separate domain.",
+        text: "Keep the standard white-label site on a new domain.",
         nextNode: "act2_callcentres",
         days: 4,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: 0 },
         set: "separate_domain",
-        outcome: "Load tests pass easily. A few people raise concerns that the new domain looks nothing like ACME Inc.",
+        outcome: "The cover holds, and load tests pass easily. A few people point out that the new domain looks nothing like anything ACME Inc. has used before.",
       },
       {
-        text: "Build it on ACME Inc.'s own domain and infrastructure.",
+        text: "Insist on ACME Inc.'s own domain, built by the read-in group behind Harbour's back.",
         nextNode: "act2_callcentres",
         days: 8,
         stats: { internalInfluence: -5, teamHealth: -15, playerHealth: -5 },
-        outcome: "Customers will recognise the address, but scaling legacy infrastructure in under a fortnight nearly breaks the team.",
+        outcome: "Customers will recognise the address, but scaling legacy infrastructure in under a fortnight, in secret, nearly breaks the team.",
       },
     ],
   },
