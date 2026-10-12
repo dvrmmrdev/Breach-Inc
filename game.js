@@ -268,8 +268,10 @@
     var p = el("p", null, before);
     var a = el("a", null, label);
     a.href = href;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
+    if (/^https?:/.test(href)) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
     p.appendChild(a);
     p.appendChild(document.createTextNode("."));
     return p;
@@ -296,7 +298,7 @@
     var author = el("div", "author-note");
     author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
       "Get in touch on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
-    author.appendChild(link("Feedback on the game is very welcome: ", "send me a message on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
+    author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:dave.rimmer@gmail.com?subject=Breach%20Inc.%20feedback"));
     author.appendChild(link("If this game was useful to you, you can ", "support it on Ko-fi", "https://ko-fi.com/dvrmmr"));
     card.appendChild(author);
     var again = el("button", "choice-btn restart-btn", "Play again");
