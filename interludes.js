@@ -248,7 +248,7 @@ var INTERLUDES = {
         "They did their jobs. Now their names are part of the story.",
       ].filter(Boolean);
     },
-    // A response site on a vendor's unfamiliar domain costs trust as well.
+    // A white-label response site on an unfamiliar domain costs trust as well.
     stats: function (flags) {
       return flags.separate_domain ? { teamHealth: -5, internalInfluence: -10 } : { teamHealth: -5 };
     },
