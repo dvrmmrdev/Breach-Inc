@@ -235,7 +235,7 @@ var INTERLUDES = {
       "You have 63 unread messages on your phone. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I cancel my cards?' 'How could you let this happen?'",
       "Your family are kind on the phone. You can hear how hurt they are that they found out from the news, like everyone else.",
       "You can talk about it now, but only in the approved words. Anything beyond the press release is still off limits: to friends, to neighbours, even to former colleagues who'd understand better than anyone.",
-      "The silence has ended. Now the noise is everywhere.",
+      "The silence has ended. Now the noise is overwhelming.",
     ],
     next: "act3_announce",
   },
