@@ -48,7 +48,8 @@ var GAME_NODES = {
     readIn: true,
     text: [
       "'There has been a breach. One of the largest in corporate history.'",
-      "The CISO doesn't sit down. Attackers have been inside ACME Inc.'s network for months, and the data they took covers a huge share of the country's adults. Your flight home is cancelled. Your team's flights are not, and they're to be told nothing.",
+      "Attackers have been inside ACME Inc.'s network for months, and the data they took covers a huge share of the country's adults. Your team's flights will leave as planned, and they're to be told nothing.",
+      "The Legal representative slides a confidentiality agreement across the table.",
       "Then the CISO looks straight at you. 'Understand this. If you breach confidentiality on this incident, you'll be fired on the spot. And cyber is a small world. Leak this, and your career is over, here and everywhere else.'",
       "Twenty minutes ago, you thought you belonged here.",
     ],

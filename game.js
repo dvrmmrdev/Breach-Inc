@@ -210,7 +210,7 @@
 
   function renderInterlude(card) {
     var node = GAME_NODES[state.node];
-    card.className = "card interlude";
+    card.className = "card interlude" + (node.turn ? " turning" : "");
     card.appendChild(el("div", "clock", "Day " + state.days + " · " + node.time));
     card.appendChild(el("h1", null, node.title));
     var paragraphs = nodeText(node);
@@ -218,6 +218,8 @@
     var btn = el("button", "next-btn reveal", "Continue");
     btn.type = "button";
     btn.style.animationDelay = paragraphs.length * 0.6 + "s";
+    // A turning interlude drains to red as its last paragraph appears.
+    card.style.setProperty("--turn-delay", (paragraphs.length - 1) * 0.6 + "s");
     btn.addEventListener("click", function () { advance(node); });
     card.appendChild(btn);
   }

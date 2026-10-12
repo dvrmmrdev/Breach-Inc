@@ -35,6 +35,24 @@ var INTERLUDES = {
       "The imposter syndrome you've always struggled with has quietened to a whisper. If you can bring these people and teams together and energise them in the space of a week, maybe you do belong in a leadership role.",
     ],
     stats: { teamHealth: 80 },
+    next: "i_gesture",
+  },
+
+  // The turn from the happy era to the breach: the colours drain to red as
+  // the CISO starts to speak.
+  i_gesture: {
+    act: "Act 0: Prequel",
+    time: "22:05",
+    title: "A Quick Word",
+    turn: true,
+    text: [
+      "The last taxi pulls away. You turn from the hotel entrance, still smiling, and see the CISO across the lobby, gesturing for you to come over.",
+      "You head over with a grin, ready to fill them in on your plans and share the good news: the team is finally one team.",
+      "Before you can start, they usher you into a small meeting room and close the door behind you.",
+      "Someone from the Legal department is already sitting at the table. They don't look happy.",
+      "The CISO begins to speak, and the happy, optimistic world you were living in a moment ago starts to fall apart.",
+      "'I'm afraid you're not going to be able to fly home to your family this evening.'",
+    ],
     next: "act0_breach",
   },
 

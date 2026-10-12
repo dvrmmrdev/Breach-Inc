@@ -258,6 +258,21 @@ body::before {
   transition: opacity 1.5s ease;
 }
 
+/* An interlude where the mood turns: blue drains to red, and the last
+   line lands in red. */
+.turning h1,
+.turning .clock {
+  animation: turn 1.6s ease forwards;
+  animation-delay: var(--turn-delay, 0s);
+}
+.turning .narrative:last-of-type {
+  color: #f85149;
+  font-weight: bold;
+}
+@keyframes turn {
+  to { color: #f85149; }
+}
+
 /* A scene that cuts in hard: a red flash and a shudder. */
 .jolt {
   animation: jolt 0.9s ease-out;
@@ -273,6 +288,11 @@ body::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .turning h1,
+  .turning .clock {
+    animation: none;
+    color: #f85149;
+  }
   .jolt {
     animation: none;
   }
