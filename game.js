@@ -296,6 +296,7 @@
     var author = el("div", "author-note");
     author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
       "Get in touch on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
+    author.appendChild(link("Feedback on the game is very welcome: ", "send me a message on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
     author.appendChild(link("If this game was useful to you, you can ", "support it on Ko-fi", "https://ko-fi.com/dvrmmr"));
     card.appendChild(author);
     var again = el("button", "choice-btn restart-btn", "Play again");

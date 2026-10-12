@@ -16,6 +16,10 @@ Every decision takes days and moves three stats: **Influence**, **Team health** 
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
 
+## Updating the live site
+
+breach-inc.com is updated by uploading files by hand. On every upload, increase the `?v=` number on the file links in `index.html`, so browsers fetch the new files instead of using cached copies, and upload `index.html` too.
+
 ## Playing
 
 Open `index.html` in a browser. There is no build step. Progress is saved in the browser, and **Restart** starts again.

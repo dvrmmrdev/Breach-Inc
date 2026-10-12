@@ -190,6 +190,9 @@ h2 {
   color: var(--accent);
   margin-top: 2px;
 }
+.disclaimer a {
+  color: #8b949e;
+}
 .disclaimer {
   font-size: 11px;
   color: #6e7681;
