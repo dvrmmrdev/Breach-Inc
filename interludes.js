@@ -177,10 +177,11 @@ var INTERLUDES = {
     act: "Act 2: Under Pressure",
     time: "03:12",
     title: "Three in the Morning",
-    text: function (flags, stats) {
+    text: function (flags, stats, left) {
       return [
         "You wake at 03:12, as you have every night this week. The laptop is on the other pillow, still turned on. The company's colourful screensaver is the only light in the room.",
-        "Your feed is full of another company's breach. Commentators queue up to explain how they would never be so careless: they'd have patched it, segmented the network and spotted it in hours. In a few weeks, they'll be writing about you.",
+        "Your feed is full of another company's breach. Commentators queue up to explain how they would never be so careless: they'd have patched it, segmented the network and spotted it in hours. " +
+          (left === 1 ? "By tomorrow night" : left ? "In " + left + " days" : "Soon") + ", they'll be writing about you.",
         stats.teamHealth < 50
           ? "There's an email from one of your engineers, sent at 02:40. It's just a status update, but it's 02:40, and they're the third this week."
           : "Your team are holding up better than you'd feared. You still check the timestamps on their emails.",
@@ -329,7 +330,7 @@ var INTERLUDES = {
     set: "home",
     text: [
       "Weeks after you were meant to, you finally head home. The summit lanyard is still at the top of your suitcase.",
-      "You've been told not to name your employer to anyone while the story is running. At the car hire desk, as you hand back the car you've had for weeks, the clerk sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
+      "You've been told not to name your employer to anyone while the story is running. At the hotel desk, as you finally check out after weeks, the receptionist sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
       "The dog reaches the door first. Your family stand behind it, unsure whether to be angry or relieved, and settle on both.",
       "That night, for the first time in weeks, you tell someone everything you're allowed to. It isn't everything. It's still more than you've said out loud since the briefing room.",
       "Halfway through, you stop talking and cry on your partner's shoulder. They hold on, and don't ask you to finish.",

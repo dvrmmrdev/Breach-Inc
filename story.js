@@ -121,7 +121,7 @@ var GAME_NODES = {
     act: "Act 1: Living in Silence",
     title: "Just a Quick Update",
     text: [
-      "By the third day, the war room has visitors. Every hour or so the badge reader on the door beeps, and every head in the room turns to see who it is this time. Another senior leader, dropping in for 'just a quick update'.",
+      "By the end of the first week, the war room has visitors. Every hour or so the badge reader on the door beeps, and every head in the room turns to see who it is this time. Another senior leader, dropping in for 'just a quick update'.",
       "Each one pulls an analyst off the query replays to explain the same picture again, and each one leaves with a slightly different version of it. By evening, three of them are quoting three different numbers to the board.",
       "This afternoon, your boss's boss peeled back the paper over the glass panel, looked in, and let themselves in without knocking. They stood behind an analyst's chair: 'Just run it again for me. From the top.' It was the fourth time that analyst had run it today.",
       "Whatever happens after this, that person will have a say in what becomes of you.",
@@ -536,7 +536,7 @@ var GAME_NODES = {
     title: "Duty of Care",
     text: function (flags) {
       return [
-        "Months of crisis have taken their toll. Your best analyst falls asleep mid-sentence in a review and doesn't notice. Two of your leads have stopped coming to the stand-up, and their teams cover for them. Recruiters call your people daily, and some have started taking the calls in the car park.",
+        "Nearly two months of crisis have taken their toll. Your best analyst falls asleep mid-sentence in a review and doesn't notice. Two of your leads have stopped coming to the stand-up, and their teams cover for them. Recruiters call your people daily, and some have started taking the calls in the car park.",
         "They call you too. Last week, you let one finish the pitch.",
         flags.role_model
           ? "The habit you started in the war room, leaders going home where people could see them, didn't survive the announcement. Nobody has left on time since, you included."
