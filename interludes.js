@@ -5,6 +5,22 @@
 // player continues. `silence: "start"` / `"end"` marks the stretch when you
 // can't tell anyone what's happening. `deadlineCheck` is where Legal's date
 // arrives: any days over it are squeezed into nights, at a cost to health.
+// `set` names a flag to raise when the player continues.
+//
+// Effects, for the moments that should be felt as well as read:
+//   `turn`        the colours drain to red as the last paragraph appears.
+//   `pace`        seconds between paragraphs appearing (default 0.6).
+//   `pauses`      extra seconds to wait before particular paragraphs, as
+//                 { paragraph: seconds }.
+//   `countdown`   the clock ticks on to `to`, arriving as paragraph `at`
+//                 appears (paragraphs count from 0).
+//   `buzz`        the card shudders like a vibrating phone at that paragraph.
+//   `noise`       `messages` pile in, and the unread count climbs to
+//                 `unread`, before the text appears.
+//   `homecoming`  the red drains back to blue, the edges of the screen lift,
+//                 and Continue fades out like falling asleep.
+//   `flashback`   the card flickers grey under strip lights, in full red, at
+//                 that paragraph.
 //
 // Like the rest of the story, these are anonymised: no real names, places or
 // dates.
@@ -16,9 +32,9 @@ var INTERLUDES = {
     when: "Your first month", // before the summit; see game.js for the default
     title: "The Team You Inherit",
     text: [
-      "The security team you inherit is one team only on the org chart. Years of budget cycles and performance management processes have left it as a collection of fragmented teams, spread across countries and time zones. They compete with each other on almost every front: for budget, for headcount, for credit, and for the top performance ratings.",
+      "The security team you inherit is one team only on the org chart. Years of budget cycles and performance management processes have left it as a collection of fragmented teams, spread across offices and time zones. They compete with each other on almost every front: for budget, for headcount, for credit, and for the top performance ratings.",
       "Your skip-level meetings tell the same story everywhere. People feel unheard and under-resourced, and they're blamed for every incident. The best of them are taking calls from recruiters.",
-      "You decide to bring everyone together in one place: a global All Hands at headquarters, where the whole team can unite behind a new strategy and a shared mission.",
+      "You decide to bring everyone together in one place: a national All Hands at headquarters, where the whole team can unite behind a new strategy and a shared mission.",
       "You spend your evenings writing the mission statement and your days fighting for the travel budget.",
     ],
     days: 5, // planning the week, then the week itself
@@ -28,9 +44,9 @@ var INTERLUDES = {
   i_summit: {
     act: "Act 0: Things Are Looking Up",
     time: "21:40",
-    title: "The Global Summit",
+    title: "The Summit",
     text: [
-      "The week at ACME Inc.'s global headquarters is a success. Teams that spent years competing argue, then listen, then start finishing each other's sentences.",
+      "The week at ACME Inc.'s headquarters is a success. Teams that spent years competing argue, then listen, then start finishing each other's sentences.",
       "By the last day, everyone is united behind a set of goals for the next 12 to 18 months that are achievable and genuinely valuable. Cross-cutting teams are named to deliver each one, drawn from every region.",
       "After the wrap-up dinner, the coaches bring everyone back to headquarters to collect their bags, and you stand at the front entrance waving people off to the airport. They leave with a spring in their step. The next year is going to be a great one.",
       "The imposter syndrome you've always struggled with has quietened to a whisper. If you can bring these people and teams together and energise them in the space of a week, maybe you do belong in a leadership role.",
@@ -193,13 +209,22 @@ var INTERLUDES = {
     time: "15:52",
     title: "Eight Minutes",
     silence: "end",
+    // Slower than usual, so the clock can run down: it reaches 16:00 as the
+    // release goes out, and the phones go off two paragraphs later.
+    pace: 1.2,
+    countdown: { to: "16:00", at: 3 },
+    buzz: 5,
     // Legal's date has arrived, whether or not the work is done.
     deadlineCheck: true,
     text: function (flags) {
       return [
         "Eight minutes to go. Everyone in the room is watching the same clock.",
         flags.overrun
-          ? "Legal's date didn't move. The work didn't fit, so the last " + flags.overrun + " days of it were squeezed into nights. Half the room hasn't slept properly in a week."
+          ? "Legal's date didn't move. The work didn't fit, so " +
+            (flags.overrun === 1
+              ? "the last day of it was squeezed in overnight."
+              : "the last " + flags.overrun + " days of it were squeezed into nights.") +
+            " Half the room hasn't slept properly in a week."
           : "The work fit inside Legal's date, just. For the last few days, the team could sleep before it all began.",
         "You text home: 'Watch the news at four. That's what it's been.'",
         flags.staff_briefed
@@ -232,6 +257,24 @@ var INTERLUDES = {
     act: "Act 3: Going Public",
     time: "22:30",
     title: "Is This You?",
+    // After weeks of silence, the noise arrives all at once.
+    noise: {
+      unread: 63,
+      messages: [
+        "Is this you?",
+        "Isn't this where you work?",
+        "Just seen the news. Are you OK?",
+        "Should I cancel my cards?",
+        "Call me when you can x",
+        "Did you know about this?",
+        "Hi, I'm writing a piece on the breach and wondered if you'd talk to me",
+        "How could you let this happen?",
+        "Is my data in it?",
+        "Thinking of you",
+        "Mate. Is this your lot?",
+        "Are you going to lose your job?",
+      ],
+    },
     text: [
       "You have 63 unread messages on your phone. 'Is this you?' 'Isn't this where you work?' 'Are you OK?' 'Should I cancel my cards?' 'How could you let this happen?'",
       "Your family are kind on the phone. You can hear how hurt they are that they found out from the news, like everyone else.",
@@ -255,7 +298,7 @@ var INTERLUDES = {
         flags.separate_domain
           ? "Researchers line up to show that your response site looks exactly like a phishing site: a newly registered domain nobody has heard of, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
           : null,
-        "Corporate security gives every senior leader formal advice on physical safety: vary your route to work, check your car, and know who's at the door before you open it.",
+        "Corporate security sends every senior leader formal advice: if a stranger asks where you work, name a different employer, and report anything suspicious in or around the building. Private security for the executives is quietly increased.",
         "One of your team is served with a lawsuit naming them personally.",
         "Another is told to change the domain registration for their personal website, because it gives their home address to anyone who looks.",
         "They did their jobs. Now their names are part of the story.",
@@ -272,6 +315,9 @@ var INTERLUDES = {
     act: "Act 3: Going Public",
     time: "18:05",
     title: "Home",
+    // A reprieve, not a recovery: Act 4 opens red again, a little muted.
+    homecoming: true,
+    set: "home",
     text: [
       "Weeks after you were meant to, you finally head home. The summit lanyard is still at the top of your suitcase.",
       "You've been told not to name your employer to anyone while the story is running. At the car hire desk, as you hand back the car you've had for weeks, the clerk sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
@@ -290,11 +336,16 @@ var INTERLUDES = {
     time: "10:00",
     title: "Back to Normal?",
     when: "Months later", // shown instead of the day count
+    // Everyone waits for your answer. Then "...the war room comes back", and
+    // it takes a moment to come back from it.
+    pauses: { 3: 1.5, 4: 2.5 },
+    flashback: 3,
     text: function (flags) {
       return [
         "Months later, the diary starts to look ordinary again. Today is your first routine risk meeting since the breach.",
         "A product manager presents a request: accept the risk of an unpatched system for one more quarter. It sits behind other controls, the fix needs a code freeze, and the release it would delay is worth millions. A year ago, you'd have signed it off with a couple of conditions.",
-        "Everyone turns to you. You open your mouth, and the war room comes back: the strip lights, the query replays, and the merchant portal " +
+        "Everyone turns to you.",
+        "You open your mouth, and the war room comes back: the strip lights, the query replays, and the merchant portal " +
           (flags.patching_first ? "that was due for patching next quarter." : "that sat in the backlog nobody touched."),
         "You can't say yes. You're not sure you'll ever be able to say yes again. But a security team that says no to everything is the source of paranoid friction and delay you promised you'd never be.",
         "'Let me come back to you,' you say. It's the first time you've ever said that in this meeting.",

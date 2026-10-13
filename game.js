@@ -9,7 +9,9 @@
   function freshState() {
     var stats = {};
     for (var id in STATS) stats[id] = STATS[id].start;
-    return { node: START_NODE, days: 0, stats: stats, flags: {}, log: [], silence: null, deadline: null, ended: null };
+    // `started` is false until the player leaves the opening screen. Saves
+    // from before there was one don't have it, and carry on where they were.
+    return { node: START_NODE, days: 0, stats: stats, flags: {}, log: [], silence: null, deadline: null, ended: null, started: false };
   }
 
   function save() {
@@ -27,6 +29,18 @@
   // Each day of work that doesn't fit before Legal's date is done at night,
   // costing this much Team health and Your health.
   var OVERRUN_COST = 2;
+
+  // Seconds between an interlude's paragraphs appearing, unless it sets its
+  // own `pace`.
+  var PACE = 0.6;
+
+  // Timed effects within a screen, cancelled whenever it's redrawn. With
+  // reduced motion, they jump straight to how they end.
+  var REDUCED = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var timers = [];
+  function later(seconds, fn) {
+    timers.push(setTimeout(fn, REDUCED ? 0 : seconds * 1000));
+  }
 
   function dayCount(n) {
     return (n || 0) + (n === 1 ? " day" : " days");
@@ -171,7 +185,7 @@
     }
     for (var id in STATS) box(STATS[id].label, String(state.stats[id]), state.stats[id]);
     if (state.silence && state.silence.to == null && !state.ended) {
-      box("Days in silence", String(silenceDays()), null, "silence");
+      box("Days in silence", String(silenceDays()), null, "silence days-silent");
     }
     var announcing = !state.ended && GAME_NODES[state.node].deadlineCheck;
     if (state.deadline && !state.ended && (!state.deadline.done || announcing)) {
@@ -181,11 +195,13 @@
   }
 
   // The edges of the screen close in as your health falls, and more so
-  // while you can't talk to anyone.
+  // while you can't talk to anyone. At home, for a while, they lift.
   function renderPressure() {
     var health = state.ended ? 100 : state.stats.playerHealth;
     var silent = state.silence && state.silence.to == null && !state.ended;
-    var pressure = Math.min(1, (100 - health) / 80 + (silent ? 0.25 : 0));
+    var home = !state.ended && !!GAME_NODES[state.node].homecoming;
+    var pressure = home ? 0 : Math.min(1, (100 - health) / 80 + (silent ? 0.25 : 0));
+    document.documentElement.classList.toggle("unwinding", home);
     document.documentElement.style.setProperty("--pressure", pressure.toFixed(2));
   }
 
@@ -206,12 +222,64 @@
     }
   }
 
-  function renderParagraphs(card, node, cls) {
+  // When paragraph i appears, in seconds: one every `pace`, plus any pauses
+  // up to and including it.
+  function appearAt(node, i, offset) {
+    var at = (offset || 0) + i * (node.pace || PACE);
+    for (var j in node.pauses || {}) if (j <= i) at += node.pauses[j];
+    return at;
+  }
+
+  function renderParagraphs(card, node, cls, offset) {
     nodeText(node).forEach(function (text, i) {
       var p = el("p", cls, text);
-      p.style.animationDelay = i * 0.6 + "s";
+      p.style.animationDelay = appearAt(node, i, offset) + "s";
       card.appendChild(p);
     });
+  }
+
+  function minutes(time) {
+    var parts = time.split(":");
+    return parts[0] * 60 + Number(parts[1]);
+  }
+
+  function clockTime(mins) {
+    return ("0" + Math.floor(mins / 60)).slice(-2) + ":" + ("0" + (mins % 60)).slice(-2);
+  }
+
+  // Ticks the clock on a minute at a time, reaching `to` after `seconds`.
+  function countDown(clock, time, from, to, seconds) {
+    var start = minutes(from), steps = minutes(to) - start;
+    for (var i = 1; i <= steps; i++) {
+      (function (i) {
+        later(seconds * i / steps, function () {
+          time.textContent = clockTime(start + i);
+          if (i === steps) clock.classList.add("zero");
+        });
+      })(i);
+    }
+  }
+
+  // Messages pile in faster than anyone could read them, newest on top,
+  // while the unread count climbs. Returns how long that takes, in seconds.
+  function renderNoise(card, noise) {
+    var box = el("div", "noise");
+    box.setAttribute("aria-hidden", "true");
+    var badge = el("div", "noise-badge", "0 unread");
+    var stack = el("div", "noise-stack");
+    box.appendChild(badge);
+    box.appendChild(stack);
+    card.appendChild(box);
+    var gap = 0.15, count = noise.messages.length;
+    noise.messages.forEach(function (text, i) {
+      later(0.3 + i * gap, function () {
+        stack.insertBefore(el("div", "noise-msg", text), stack.firstChild);
+        badge.textContent = Math.round(noise.unread * (i + 1) / count) + " unread";
+      });
+    });
+    var done = 0.3 + count * gap + 0.4;
+    later(done, function () { box.classList.add("settled"); });
+    return done;
   }
 
   function renderScene(card) {
@@ -231,18 +299,94 @@
 
   function renderInterlude(card) {
     var node = GAME_NODES[state.node];
-    card.className = "card interlude" + (node.turn ? " turning" : "");
+    var pace = node.pace || PACE;
+    card.className = "card interlude" + (node.turn ? " turning" : "") + (node.homecoming ? " homecoming" : "");
     var day = incidentDay();
-    card.appendChild(el("div", "clock", (node.when || (day ? "Day " + day : "Summit week")) + " · " + node.time));
+    var clock = el("div", "clock", (node.when || (day ? "Day " + day : "Summit week")) + " · ");
+    var time = el("span", null, node.time);
+    clock.appendChild(time);
+    card.appendChild(clock);
     card.appendChild(el("h1", null, node.title));
+    var offset = node.noise ? renderNoise(card, node.noise) : 0;
     var paragraphs = nodeText(node);
-    renderParagraphs(card, node, "narrative reveal");
+    renderParagraphs(card, node, "narrative reveal", offset);
+    var last = appearAt(node, paragraphs.length - 1, offset);
     var btn = el("button", "next-btn reveal", "Continue");
     btn.type = "button";
-    btn.style.animationDelay = paragraphs.length * 0.6 + "s";
-    // A turning interlude drains to red as its last paragraph appears.
-    card.style.setProperty("--turn-delay", (paragraphs.length - 1) * 0.6 + "s");
-    btn.addEventListener("click", function () { advance(node); });
+    btn.style.animationDelay = last + pace + "s";
+    // A turning interlude drains to red as its last paragraph appears; a
+    // homecoming drains back to blue across the whole card.
+    card.style.setProperty("--turn-delay", last + "s");
+    card.style.setProperty("--reveal-time", last + pace + "s");
+    if (node.countdown) countDown(clock, time, node.time, node.countdown.to, appearAt(node, node.countdown.at, offset));
+    if (node.buzz != null) later(appearAt(node, node.buzz, offset), function () { card.classList.add("buzz"); });
+    if (node.flashback != null) later(appearAt(node, node.flashback, offset), function () { card.classList.add("flashback"); });
+    // The silence ends on screen: the counter is struck through.
+    if (node.silence === "end") {
+      later(last, function () {
+        var counter = document.querySelector(".days-silent");
+        if (counter) counter.classList.add("ended");
+      });
+    }
+    btn.addEventListener("click", function () {
+      if (!node.homecoming) return advance(node);
+      // Falling asleep: the screen fades out before the story moves on.
+      btn.disabled = true;
+      card.classList.add("asleep");
+      later(1.8, function () { advance(node); });
+    });
+    card.appendChild(btn);
+  }
+
+  // A narrative paragraph mixing text with links, given as [label, href]
+  // or [label, href, true] to open in a new tab.
+  function paragraph(parts) {
+    var p = el("p", "narrative");
+    parts.forEach(function (part) {
+      if (typeof part === "string") return p.appendChild(document.createTextNode(part));
+      var a = el("a", null, part[0]);
+      a.href = part[1];
+      if (part[2]) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      p.appendChild(a);
+    });
+    return p;
+  }
+
+  // The opening screen, before Act 0: what the game is, where it comes from,
+  // and how it may be used.
+  function renderIntro(card) {
+    card.className = "card intro";
+    card.appendChild(el("div", "act-tag", "Before you begin"));
+    card.appendChild(el("h1", null, "Breach Inc."));
+    [
+      "Breach Inc. is a text-based game for security leaders. You'll live through a major data breach from the inside: the weeks of secrecy before the announcement, the storm that follows it, and what it costs the people who respond.",
+      "It's a dramatisation of real events that happened to me as a security leader during a major cyber breach. Companies, people, projects and details have been changed or anonymised, but the pressure, the silence and the choices are real.",
+      "Every decision takes time and moves three things: your influence, your team's health and your own. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow.",
+    ].forEach(function (text) { card.appendChild(el("p", "narrative", text)); });
+    card.appendChild(el("h2", null, "Using Breach Inc."));
+    card.appendChild(paragraph([
+      "You're welcome to use Breach Inc. in your organisation's security awareness programmes, as long as you use it as it is and include a link to ",
+      ["breach-inc.com", "https://breach-inc.com/"],
+      ". To include it in a paid course, please get in touch first. ",
+      ["Read the licence", "licence.html"],
+      " for the details.",
+    ]));
+    card.appendChild(paragraph([
+      "If it's useful to your organisation, please consider ",
+      ["supporting it on Ko-fi", "https://ko-fi.com/dvrmmr", true],
+      ".",
+    ]));
+    var btn = el("button", "next-btn", "Begin");
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      state.started = true;
+      save();
+      render();
+      document.getElementById("main").focus();
+    });
     card.appendChild(btn);
   }
 
@@ -290,6 +434,9 @@
     card.appendChild(el("div", "act-tag", early ? "Game over" : "Epilogue"));
     card.appendChild(el("h1", null, ending.title));
     card.appendChild(el("p", "narrative", ending.text));
+    if (state.flags.overrun) {
+      card.appendChild(el("p", "narrative", "You failed to deliver everything that was required before Legal's deadline, and your team paid the price in overtime and lost sleep."));
+    }
     var day = incidentDay();
     var summary = "You made " + state.log.filter(function (e) { return e.choice; }).length + " decisions" +
       (day ? ". " + dayCount(day) + " passed between the night you were briefed and the end." : ".");
@@ -315,13 +462,17 @@
   }
 
   function render() {
+    timers.forEach(clearTimeout);
+    timers = [];
     document.documentElement.classList.toggle("breached", !!(state.flags.readIn || state.silence));
+    document.documentElement.classList.toggle("aftermath", !!state.flags.home);
     renderHud();
     renderPressure();
     var card = document.getElementById("main");
     card.textContent = "";
     var act = !state.ended && GAME_NODES[state.node].act;
     if (state.ended) renderEnding(card);
+    else if (state.started === false) renderIntro(card);
     else if (act && act !== state.actShown) renderDivider(card, act);
     else if (GAME_NODES[state.node].type === "interlude") renderInterlude(card);
     else renderScene(card);

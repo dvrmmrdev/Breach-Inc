@@ -21,16 +21,17 @@ var GAME_NODES = {
     act: "Act 0: Things Are Looking Up",
     title: "Promotion & Inherited Architecture",
     text: [
-      "You are promoted to the Global Cyber Senior Leadership Team at ACME Inc., a market-leading payments processor that handles card payments for banks and retailers across the country. Most of the people whose data you hold have never heard of you.",
+      "You are promoted to the Cyber Senior Leadership Team at ACME Inc., a market-leading payments processor that handles card payments for banks and retailers across the country. Most of the people whose data you hold have never heard of you.",
       "Alongside processing, ACME Inc. sells a breach response service: when a client bank or retailer suffers a card compromise, ACME stands up the notification site, call centres and card reissue on their behalf. It's one of the fastest-growing lines in the business.",
-      "This is a huge career step: global responsibility for the business-facing part of the cyber team, across all business units. You're now a key part of how the company perceives and responds to cyber risk, and your decisions will decide whether the cyber team is seen as a source of paranoid friction and delay, or as a core part of helping the business to succeed.",
+      "This is a huge career step: national responsibility for the business-facing part of the cyber team, across all business units. You're now a key part of how the company perceives and responds to cyber risk, and your decisions will decide whether the cyber team is seen as a source of paranoid friction and delay, or as a core part of helping the business to succeed.",
       "Behind the congratulatory emails lies an enterprise shaped by years of rapid acquisitions, legacy application stacks, and relentless pressure to ship revenue-generating products ahead of routine control maintenance. Cyber strategy, like business strategy, has had to cater to three-month planning cycles between earnings reports to the stock markets.",
       "You feel like you can make a real difference here, for your team and for your employer.",
-      "In your first week, you must set your technical priorities.",
+      "You know the organisation inside out, and are aware that there are improvements which need to be delivered quickly. In your first week, you want to clearly state your technical priorities.",
+      "You can only lead with one of these two. Which do you choose?",
     ],
     choices: [
       {
-        text: "Prioritise asset discovery, CMDB reconciliation, and clearing ACME Inc.'s legacy patching debt.",
+        text: "Burn down technical cyber risk: prioritise asset discovery, CMDB reconciliation, and clearing ACME Inc.'s legacy patching debt.",
         nextNode: "i_inherit",
         days: 10,
         stats: { internalInfluence: 0, teamHealth: -5, playerHealth: -5 },
@@ -38,7 +39,7 @@ var GAME_NODES = {
         outcome: "Business units grumble about change freezes, but your inventory finally matches reality more often than not.",
       },
       {
-        text: "Prioritise commercial alignment and developer velocity; avoid operational friction with business units.",
+        text: "Fix the relationship with the business, and support growth: prioritise commercial alignment and developer velocity; avoid operational friction with business units.",
         nextNode: "i_inherit",
         days: 5,
         stats: { internalInfluence: 10, teamHealth: 5, playerHealth: 5 },

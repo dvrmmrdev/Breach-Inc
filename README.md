@@ -16,6 +16,10 @@ Every decision takes days and moves three stats: **Influence**, **Team health** 
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
 
+## Licence
+
+Breach Inc. is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/), with an additional permission for organisations to use it in their own internal security awareness programmes. Credit it with a link to [breach-inc.com](https://breach-inc.com) and use it as it is. To include it in a paid course, get in touch first. See [LICENSE](LICENSE) and the [licence page](https://breach-inc.com/licence.html).
+
 ## Updating the live site
 
 breach-inc.com is updated by uploading files by hand. On every upload, increase the `?v=` number on the file links in `index.html`, so browsers fetch the new files instead of using cached copies, and upload `index.html` too.
