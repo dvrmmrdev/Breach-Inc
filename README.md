@@ -72,7 +72,7 @@ After the ending, **What this breach taught you** opens the lessons screen. Each
 
 With the current numbers, a player choosing at random:
 - ends early about 11% of the time, usually from burnout;
-- reaches the best ending about 17% of the time;
+- reaches the best ending about 21% of the time;
 - most often ends with a Pyrrhic Victory (about 40%).
 
 No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, making people rest, escalating the share sale, and funding recovery.

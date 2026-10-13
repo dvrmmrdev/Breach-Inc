@@ -146,10 +146,6 @@ h2 {
   background: #30363d;
   border-color: var(--accent);
 }
-.restart-btn {
-  text-align: center;
-  font-weight: bold;
-}
 .choice-cost {
   display: block;
   font-size: 12px;
@@ -288,6 +284,58 @@ body::before {
 .author-note a {
   color: var(--accent);
   font-weight: bold;
+}
+
+/* The key buttons (Begin, the lessons, Play again) are filled, so they
+   stand out from Continue without shouting. */
+.primary-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d1117;
+  font-weight: bold;
+}
+.primary-btn:hover,
+.primary-btn:focus-visible {
+  background: #f0f6fc;
+  border-color: #f0f6fc;
+  color: #0d1117;
+}
+#restart {
+  color: #c9d1d9;
+  border-color: #484f58;
+}
+
+/* Legal's date bites: work that didn't fit has just been squeezed into
+   nights. */
+.stat-box.bite {
+  animation: bite 0.9s ease-out;
+}
+@keyframes bite {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-4px); }
+  30% { transform: translateX(4px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(0); }
+}
+.stat-note {
+  display: block;
+  font-size: 11px;
+  color: #f85149;
+  margin-top: 4px;
+}
+
+/* An early ending: the edges of the screen close almost to black. */
+:root.collapsing body::before {
+  background: radial-gradient(ellipse at center, transparent 30%, #000 95%);
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+/* The lessons step out of the story: the title drains from red back to
+   the blue of before the breach. */
+.lessons-screen > .act-tag,
+.lessons-screen > h1 {
+  animation: unturn 2s ease forwards;
 }
 
 /* The lessons: one card per lesson, then every question in one list. */
@@ -619,9 +667,14 @@ a.link-btn {
     animation: none;
     color: #58a6ff;
   }
+  .lessons-screen > .act-tag,
+  .lessons-screen > h1 {
+    animation: none;
+  }
   .jolt,
   .divider,
   .intro,
+  .stat-box.bite,
   .buzz,
   .flashback,
   .flashback h1,
@@ -631,6 +684,7 @@ a.link-btn {
   }
   .noise,
   .asleep,
+  :root.collapsing body::before,
   .days-silent .stat-val,
   .days-silent .stat-label,
   :root.unwinding body::before {

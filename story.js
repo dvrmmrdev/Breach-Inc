@@ -368,8 +368,7 @@ var GAME_NODES = {
     title: "Who Hears First?",
     text: function (flags, stats, left) {
       return [
-        (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
-          " Most of your security team, and the wider company, still don't know.",
+        "Most of your security team, and the wider company, still don't know.",
         "They can tell something is wrong. The war room door is always shut, and the rumours from the coffee machine have been getting closer to the truth. Elsewhere, the account managers will be on the phone to clients within minutes of the release, and right now they don't know there's anything to explain.",
         "Tell people early, and one post from one employee means the announcement is no longer yours to make. Tell them nothing, and they'll find out from the news, like everyone else. You must decide how much they are told, and when.",
       ];
@@ -571,15 +570,29 @@ var GAME_NODES = {
 var EARLY_ENDINGS = {
   playerHealth: {
     title: "Signed Off",
-    text: "Your doctor signs you off with burnout. The crisis carries on without you. Duty of care applies to you as well as your team.",
+    text: [
+      "You don't remember deciding to see a doctor. Someone who cares about you made the appointment, and made sure you went.",
+      "The doctor listens for ten minutes, then signs you off with burnout, starting today. You try to explain that it's the worst possible time. They've heard that before.",
+      "Your phone keeps buzzing for two more days. Then someone else takes over, and it stops. The crisis carries on without you.",
+      "Duty of care applies to you as well as your team.",
+    ],
   },
   teamHealth: {
     title: "The Team Walks",
-    text: "Your best engineers resign within weeks of each other, and recruiters had been ready for it. Without them, the response stalls.",
+    text: [
+      "The first resignation letter is polite and apologetic. The second arrives the same afternoon. By the end of the week there are five, and recruiters were ready for every one of them.",
+      "Your best engineers take with them everything nobody had time to write down. The work they were carrying stalls, and the people left behind take on even more.",
+      "Nobody blames you to your face. They don't have to.",
+      "A response is only as strong as the people still standing to deliver it.",
+    ],
   },
   internalInfluence: {
     title: "Sidelined",
-    text: "Decisions are now made in meetings you aren't invited to. Your title stays, but you no longer shape the response.",
+    text: [
+      "The meeting invitations stop first. Then decisions you'd have argued against start appearing as announcements, made in rooms you weren't in.",
+      "Your title stays the same, and your diary is still full, but people have stopped asking what you think. Your team notice before you admit it to yourself.",
+      "Influence isn't vanity in a crisis. Without it, you can't protect your team or shape the response, however right you are.",
+    ],
   },
 };
 
@@ -773,7 +786,10 @@ var LESSONS = [
         "You let everyone keep going while the adrenaline held, and mistakes crept into the overnight work.",
       ][c];
       var over = r.flags.overrun;
-      if (over) text += " The work also ran " + (over === 1 ? "a day" : over + " days") + " past Legal's date, squeezed into nights.";
+      if (over) {
+        text += " The work also ran " + (over === 1 ? "a day" : over + " days") + " past Legal's date, squeezed into nights" +
+          (r.flags.forward_overrun ? ", after Legal brought the date forward." : ".");
+      }
       return { verdict: c === 2 ? "manage" : "paid", text: text };
     },
     lesson: "In a crisis, rest doesn't happen by itself. Someone with authority has to make it normal, and keep doing so once the adrenaline wears off. That only works if the load can be shared, so spread the knowledge before you need it.",

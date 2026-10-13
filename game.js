@@ -113,6 +113,11 @@
     var over = state.days - (deadline.day - 1);
     if (over <= 0) return;
     state.flags.overrun = (state.flags.overrun || 0) + over;
+    // Escalating the share sale brings the date forward: overrunning after
+    // that isn't the player's failure, and the epilogue says so.
+    if (state.flags.date_forward) state.flags.forward_overrun = true;
+    // Shown on the next screen, so the deadline bites when it happens.
+    state.squeezed = over;
     var changes = [];
     applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over }, changes);
     state.log.push({
@@ -128,6 +133,7 @@
   function advance(step, logChoice) {
     var node = GAME_NODES[state.node];
     var startDay = state.days;
+    state.squeezed = 0;
     state.days += step.days || 0;
     var changes = [];
     applyStats(step.stats, changes);
@@ -193,7 +199,11 @@
     var announcing = !state.ended && GAME_NODES[state.node].deadlineCheck;
     if (state.deadline && !state.ended && (!state.deadline.done || announcing)) {
       var left = state.deadline.day - state.days;
-      box("Legal's date", left === 0 ? "TODAY" : left > 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null, left <= 5 ? "silence" : "");
+      box("Legal's date", left === 0 ? "TODAY" : left > 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null,
+        (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""));
+      if (state.squeezed) {
+        hud.lastChild.appendChild(el("span", "stat-note", dayCount(state.squeezed) + " squeezed into nights"));
+      }
     }
   }
 
@@ -203,8 +213,10 @@
     var health = state.ended ? 100 : state.stats.playerHealth;
     var silent = state.silence && state.silence.to == null && !state.ended;
     var home = !state.ended && !!GAME_NODES[state.node].homecoming;
-    var pressure = home ? 0 : Math.min(1, (100 - health) / 80 + (silent ? 0.25 : 0));
+    var collapse = !!(state.ended && state.ended.early && !state.ended.reviewed);
+    var pressure = home ? 0 : collapse ? 1 : Math.min(1, (100 - health) / 80 + (silent ? 0.25 : 0));
     document.documentElement.classList.toggle("unwinding", home);
+    document.documentElement.classList.toggle("collapsing", collapse);
     document.documentElement.style.setProperty("--pressure", pressure.toFixed(2));
   }
 
@@ -383,7 +395,7 @@
       ["supporting it on Ko-fi", "https://ko-fi.com/dvrmmr", true],
       ".",
     ]));
-    var btn = el("button", "next-btn", "Begin");
+    var btn = el("button", "next-btn primary-btn", "Begin");
     btn.type = "button";
     btn.addEventListener("click", function () {
       state.started = true;
@@ -434,12 +446,15 @@
   function renderEnding(card) {
     var early = state.ended.early && EARLY_ENDINGS[state.ended.early];
     var ending = early || ENDINGS.filter(function (e) { return e.test(state.stats); })[0];
-    card.className = "card";
-    card.appendChild(el("div", "act-tag", early ? "Game over" : "Epilogue"));
-    card.appendChild(el("h1", null, ending.title));
-    card.appendChild(el("p", "narrative", ending.text));
+    // An early ending collapses: the edges close to black, then the words
+    // come through one at a time.
+    card.className = "card" + (early ? " collapse" : "");
+    var parts = [el("div", "act-tag", early ? "Game over" : "Epilogue"), el("h1", null, ending.title)];
+    [].concat(ending.text).forEach(function (text) { parts.push(el("p", "narrative", text)); });
     if (state.flags.overrun) {
-      card.appendChild(el("p", "narrative", "You failed to deliver everything that was required before Legal's deadline, and your team paid the price in overtime and lost sleep."));
+      parts.push(el("p", "narrative", state.flags.forward_overrun
+        ? "Legal brought the date forward after you escalated the share sale, and the work that no longer fitted was squeezed into nights. Doing the right thing had a price, and your team paid it in overtime and lost sleep."
+        : "You weren't able to deliver everything that was required before Legal's deadline, and your team paid the price in overtime and lost sleep."));
     }
     var day = incidentDay();
     var summary = "You made " + state.log.filter(function (e) { return e.choice; }).length + " decisions" +
@@ -448,8 +463,16 @@
     if (silent != null) {
       summary += " For " + silent + " of those days, you couldn't tell anyone, not even your family, what you were going through.";
     }
-    card.appendChild(el("p", "narrative summary", summary));
-    var btn = el("button", "next-btn", "What this breach taught you →");
+    parts.push(el("p", "narrative summary", summary));
+    var btn = el("button", "next-btn primary-btn", "What this breach taught you →");
+    parts.push(btn);
+    parts.forEach(function (part, i) {
+      if (early) {
+        part.classList.add("reveal");
+        part.style.animationDelay = 1.6 + i * 0.9 + "s";
+      }
+      card.appendChild(part);
+    });
     btn.type = "button";
     btn.addEventListener("click", function () {
       state.ended.reviewed = true;
@@ -458,7 +481,6 @@
       window.scrollTo(0, 0);
       document.getElementById("main").focus();
     });
-    card.appendChild(btn);
   }
 
   var VERDICTS = { paid: "Paid off", manage: "Impact to manage", tradeoff: "Trade-off" };
@@ -522,7 +544,7 @@
       "Get in touch on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
     author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:dave.rimmer@gmail.com?subject=Breach%20Inc.%20feedback"));
     card.appendChild(author);
-    var again = el("button", "choice-btn restart-btn", "Play again with different choices");
+    var again = el("button", "next-btn primary-btn", "Play again with different choices");
     again.type = "button";
     again.addEventListener("click", restart);
     card.appendChild(again);
@@ -531,7 +553,11 @@
   function render() {
     timers.forEach(clearTimeout);
     timers = [];
-    document.documentElement.classList.toggle("breached", !!(state.flags.readIn || state.silence));
+    // The lessons step out of the story: the red goes, and the calm blue
+    // of before the breach comes back.
+    var reflecting = !!(state.ended && state.ended.reviewed);
+    document.documentElement.classList.toggle("reflecting", reflecting);
+    document.documentElement.classList.toggle("breached", !reflecting && !!(state.flags.readIn || state.silence));
     document.documentElement.classList.toggle("aftermath", !!state.flags.home);
     renderHud();
     renderPressure();

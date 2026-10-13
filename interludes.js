@@ -379,18 +379,24 @@ var INTERLUDES = {
           ? "The lawmaker reads out the latest revision of the number, and asks why it keeps changing."
           : null,
         flags.date_forward
-          ? null
+          ? "Then the share sale. Investigators want to know what senior staff knew, and when. Your escalation is on the record, with the date and time, and the board know it."
           : "Then the share sale. Investigators want to know what senior staff knew, and when, and your name is on their list. You raised nothing at the time.",
+        flags.shielded
+          ? "The lawmaker's timeline matches the updates the war room gave the board, line for line. Nobody can claim they weren't told."
+          : null,
         "Weeks of nights in the war room, the password resets and the forty-page Q&A get no mention at all. Nobody outside the read-in group will ever know what it took.",
         "You switch off the screen, and somebody quietly switches it back on.",
       ].filter(Boolean);
     },
-    // Choices that looked cheap at the time cost you here.
+    // Choices that looked cheap at the time cost you here, and some that
+    // cost you at the time pay off.
     stats: function (flags) {
       var influence = 0, you = 0;
       if (flags.narrow_scope) { influence -= 5; you -= 5; }
       if (flags.revised_up) influence -= 5;
-      if (!flags.date_forward) { influence -= 5; you -= 5; }
+      if (flags.date_forward) influence += 5;
+      else { influence -= 5; you -= 5; }
+      if (flags.shielded) influence += 5;
       return { internalInfluence: influence, playerHealth: you };
     },
     next: "act4_dutyofcare",
