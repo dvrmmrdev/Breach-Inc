@@ -501,16 +501,26 @@
       lesson.ask.forEach(function (q) { list.appendChild(el("li", null, q)); });
     });
     questions.appendChild(list);
+    // The one place the game asks for support: straight after it has given
+    // the player something to take away. A plain link, not Ko-fi's widget,
+    // so nothing loads from another site.
+    questions.appendChild(el("p", "narrative support", "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. If you're using it in your organisation's awareness programme, a contribution from your training budget goes a long way."));
+    var actions = el("div", "actions");
     var print = el("button", "next-btn", "Print or save as PDF");
     print.type = "button";
     print.addEventListener("click", function () { window.print(); });
-    questions.appendChild(print);
+    actions.appendChild(print);
+    var kofi = el("a", "next-btn", "Support Breach Inc. on Ko-fi");
+    kofi.href = "https://ko-fi.com/dvrmmr";
+    kofi.target = "_blank";
+    kofi.rel = "noopener noreferrer";
+    actions.appendChild(kofi);
+    questions.appendChild(actions);
     card.appendChild(questions);
     var author = el("div", "author-note");
     author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
       "Get in touch on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
     author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:dave.rimmer@gmail.com?subject=Breach%20Inc.%20feedback"));
-    author.appendChild(link("If this game was useful to you, you can ", "support it on Ko-fi", "https://ko-fi.com/dvrmmr"));
     card.appendChild(author);
     var again = el("button", "choice-btn restart-btn", "Play again with different choices");
     again.type = "button";

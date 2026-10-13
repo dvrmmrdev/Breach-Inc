@@ -366,6 +366,19 @@ body::before {
 .questions li + li {
   margin-top: 6px;
 }
+.questions .support {
+  color: #c9d1d9;
+  margin-bottom: 4px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+a.next-btn {
+  display: inline-block;
+  text-decoration: none;
+}
 
 /* Printing the lessons: black on white, without the game around them. */
 @media print {
@@ -380,6 +393,8 @@ body::before {
   section[aria-label="Decision log"],
   .disclaimer,
   button,
+  .actions,
+  .support,
   .author-note {
     display: none !important;
   }
