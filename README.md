@@ -1,6 +1,6 @@
 # Breach Inc.
 
-A text adventure for security leaders, loosely inspired by real events which happened to the game's creator. You join the security leadership of ACME Inc., a payments processor, just before a major breach is discovered, and steer the response through five acts:
+A text adventure for security leaders: a work of fiction, inspired by the creator's experience of a major cyber breach. You join the security leadership of ACME Inc., a payments processor, just before a major breach is discovered, and steer the response through five acts:
 
 - Things Are Looking Up
 - Living in Silence

@@ -59,7 +59,8 @@ var GAME_NODES = {
       "'There has been a breach. One of the largest in corporate history.'",
       "Attackers have been inside ACME Inc.'s network for months, and the card and transaction data they took could belong to millions of people. Your team's flights will leave as planned, and they're to be told nothing.",
       "The Legal representative slides a confidentiality agreement across the table.",
-      "Then the CISO looks straight at you. 'Understand this. If you breach confidentiality on this incident, you'll be fired on the spot. And cyber is a small world. Leak this, and your career is over, here and everywhere else.'",
+      "'Confidentiality on this is paramount,' the CISO says. 'Anyone who leaks it will be leaving the company immediately.'",
+      "You sign. Cyber is a small world, and you know how it works: whoever leaks a breach like this won't just lose their job. They'll struggle to find senior roles in the industry again.",
       "Twenty minutes ago, you thought you belonged here. The cyber team was a community, or on good days, a family. Now you know what happens to family members who talk.",
     ],
     choices: [
@@ -335,11 +336,10 @@ var GAME_NODES = {
         flags.role_model
           ? "The call comes at nine in the evening, while you're at home eating a meal at a table for the first time in weeks. You take it in the garden, where nobody can hear."
           : "The compliance officer finds you in the war room at nine in the evening and asks for somewhere private. There isn't anywhere, so you talk in the stairwell.",
-        "A senior manager outside the read-in group, but close to Project Harbour, sold a large block of shares last week. " +
-          (flags.blackout
-            ? "Your trading blackout covered Harbour's leads, but not this manager."
-            : "No trading restrictions were in place for anyone near Harbour.") +
-          " Rumours suggest some staff have guessed the truth.",
+        "People on Project Harbour have been talking. Nothing explicit, just hints over lunch and in corridors, but enough for people outside the project to start putting the pieces together. One of them, a mid-level manager in HR, made an educated guess about what was coming and sold a large block of shares last week.",
+        flags.blackout
+          ? "Your trading blackout covered everyone on Harbour, but not the people they'd been talking to."
+          : "Without a trading blackout, nothing stopped anyone on Harbour from trading either.",
         "If one person traded on a guess, others may have too. Once the breach is announced, regulators will go through every share sale in the past month, and they'll want to know who knew what, and when.",
       ];
     },
@@ -484,8 +484,8 @@ var GAME_NODES = {
       return [
         "The story hasn't gone away, as the communications team thought it would. " +
           (flags.revised_up ? "Each upward revision of the numbers has restarted it. " : "") +
-          "Within a fortnight, ACME Inc. responds to industry and client outrage by having the CIO and the CISO 'retire', which prompts more media criticism, not less. Soon afterwards, the CEO steps down too. You are asked to hold the security function together until an interim leader is found.",
-        "The CISO who sat across the table in the briefing room, and told you a leak would end your career, clears their office on a Friday afternoon. There are no leaving drinks. By Monday, their name has gone from the door."
+          "Within weeks, ACME Inc. announces that several senior leaders, the CISO among them, are leaving, which prompts more media criticism, not less. Soon afterwards, the CEO steps down too. You are asked to hold the security function together until an interim leader is found.",
+        "Leaders you've worked alongside for years are gone within days. There are no leaving drinks. By Monday, their names have gone from the doors."
       ];
     },
     choices: [

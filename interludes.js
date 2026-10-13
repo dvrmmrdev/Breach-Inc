@@ -192,7 +192,7 @@ var INTERLUDES = {
     text: function (flags, stats, left) {
       return [
         (flags.date_forward
-          ? "Legal's date is closer than it was. After the share sale, they brought it forward: with a manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. "
+          ? "Legal's date is closer than it was. After the share sale, they brought it forward: with an HR manager's trades under investigation, every extra day of secrecy is another day for someone else to trade on what they know. "
           : "") +
           (left === 1 ? "The announcement is tomorrow." : "The announcement is " + left + " days away.") +
           " In the shared calendar, it's an innocuous meeting title that nobody would look at twice.",
@@ -230,7 +230,7 @@ var INTERLUDES = {
         flags.staff_briefed
           ? "Your team were told an hour ago. When the all-staff email landed, the open-plan floor went completely silent, and it hasn't recovered."
           : "The release goes out, and the all-staff email lands in every inbox at the same moment. The open-plan floor goes completely silent.",
-        "The only sound comes from the corner, where a colleague who has worked here for over thirty years is crying quietly at her desk. She is watching the company that has been so much of her life fall apart on her screen.",
+        "The only sound comes from the corner, where a colleague who has given most of their working life to this company is crying quietly at their desk, watching it fall apart on their screen.",
         "Then every phone in the room starts buzzing at once.",
         "The secret is out. You expected to feel lighter. Instead, you feel responsible for the weight that has just landed on everyone's shoulders, and on your team's most of all.",
       ];
@@ -244,7 +244,7 @@ var INTERLUDES = {
     title: "On the Call",
     text: [
       "Nine minutes after the release, you're pulled into a conference room. One of the country's biggest banks, an ACME Inc. client, is on the line, and they want answers now.",
-      "The CISO should be on this call. But they locked their office door and shut the blinds before the announcement went out, and they haven't come out since. Maybe it's all been too much. Feeling the way you do right now, you'd understand.",
+      "The bank expected the CISO to be on the call, but they're not here. Perhaps they're with the board, now that the announcement is out. Perhaps they're on the phone to their family, explaining why they haven't been home in so long. Perhaps this moment is just too much, on top of the pressure of the last few weeks. Feeling the way you do, you'd understand.",
       "Downstairs, your team are taking in the news. You should be with them. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
       "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent answers on the fly, based on what you're pretty sure are known facts, and paste each one into a shared document while the next call connects.",
       "The last call ends after nine. You slope back to your hotel room. It's the same small room it's been for weeks, and tonight it feels smaller than ever.",
