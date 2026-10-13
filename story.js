@@ -51,8 +51,11 @@ var GAME_NODES = {
   act0_breach: {
     act: "Act 0: Things Are Looking Up",
     title: "The Briefing Room",
-    // Straight after the high of the summit: the cut should jar.
+    // Straight after the high of the summit: the cut should jar, and then
+    // the briefing unfolds a line at a time, once the shudder has passed.
     jolt: true,
+    stage: 0.5,
+    pace: 0.8,
     // From here on, the theme turns from blue to red.
     readIn: true,
     text: [

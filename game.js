@@ -302,9 +302,15 @@
     card.className = "card" + (node.jolt ? " jolt" : "");
     card.appendChild(el("div", "act-tag", node.act));
     card.appendChild(el("h1", null, node.title));
-    renderParagraphs(card, node, "narrative");
-    node.choices.forEach(function (choice) {
-      var btn = el("button", "choice-btn", choice.text);
+    // Scenes normally appear at once, so the player can weigh the whole
+    // situation. A `stage`d scene unfolds like an interlude instead, starting
+    // `stage` seconds in, and its choices appear only after the last line.
+    var offset = node.stage || 0;
+    renderParagraphs(card, node, "narrative" + (node.stage ? " reveal" : ""), offset);
+    var choicesAt = appearAt(node, nodeText(node).length, offset);
+    node.choices.forEach(function (choice, i) {
+      var btn = el("button", "choice-btn" + (node.stage ? " reveal" : ""), choice.text);
+      if (node.stage) btn.style.animationDelay = choicesAt + i * 0.2 + "s";
       btn.type = "button";
       btn.appendChild(el("span", "choice-cost", dayCount(choice.days)));
       btn.addEventListener("click", function () { advance(choice, choice.text); });

@@ -49,6 +49,8 @@ Each choice can have:
 
 A scene's `text` can be a function of those flags and the stats.
 
+Scenes appear all at once, so the player can weigh the whole situation. A scene with `stage: N` unfolds a paragraph at a time instead, starting N seconds in (with `pace` and `pauses` as for interludes), and its choices appear after the last line. Only The Briefing Room does this; keep it rare.
+
 Interludes in `interludes.js` have:
 - `time`: shown beside the day of the incident, where Day 1 is the night you're briefed. Before then, it shows "Summit week".
 - `when`: optional text shown instead of the day, such as "Months later".

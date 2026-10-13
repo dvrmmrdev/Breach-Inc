@@ -124,8 +124,8 @@ var INTERLUDES = {
     act: "Act 1: Living in Silence",
     time: "19:30",
     title: "Video Call",
-    // The two silences the conversation names.
-    pauses: { 2: 1.5, 5: 2 },
+    // The two silences the conversation names, and a beat after you can't answer.
+    pauses: { 2: 1.5, 5: 2, 6: 1 },
     text: [
       "It's dinner time at home. The laptop is propped against the fruit bowl, and you can see the kitchen you haven't stood in for over a week. The dog hears your voice and looks behind the screen for you.",
       "'When are you coming back?' 'Soon.' 'You said that on Tuesday.' 'I know.'",
