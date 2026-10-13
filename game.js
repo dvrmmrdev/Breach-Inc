@@ -11,7 +11,9 @@
     for (var id in STATS) stats[id] = STATS[id].start;
     // `started` is false until the player leaves the opening screen. Saves
     // from before there was one don't have it, and carry on where they were.
-    return { node: START_NODE, days: 0, stats: stats, flags: {}, log: [], silence: null, deadline: null, ended: null, started: false };
+    // `choices` records the option picked in each scene, by index, for the
+    // lessons at the end.
+    return { node: START_NODE, days: 0, stats: stats, flags: {}, choices: {}, log: [], silence: null, deadline: null, ended: null, started: false };
   }
 
   function save() {
@@ -130,6 +132,7 @@
     var changes = [];
     applyStats(step.stats, changes);
     if (step.set) state.flags[step.set] = true;
+    if (logChoice && state.choices) state.choices[state.node] = node.choices.indexOf(step);
     // Legal can bring the date forward, but never to before tomorrow.
     if (step.deadlineShift && state.deadline) {
       state.deadline.day = Math.max(startDay + 1, state.deadline.day + step.deadlineShift);
@@ -446,17 +449,70 @@
       summary += " For " + silent + " of those days, you couldn't tell anyone, not even your family, what you were going through.";
     }
     card.appendChild(el("p", "narrative summary", summary));
-    card.appendChild(el("h2", null, "Lessons learned: how to prepare today for what might come tomorrow"));
-    var list = el("ul", "lessons");
-    LESSONS.forEach(function (l) { list.appendChild(el("li", null, l)); });
-    card.appendChild(list);
+    var btn = el("button", "next-btn", "What this breach taught you →");
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      state.ended.reviewed = true;
+      save();
+      render();
+      window.scrollTo(0, 0);
+      document.getElementById("main").focus();
+    });
+    card.appendChild(btn);
+  }
+
+  var VERDICTS = { paid: "Paid off", manage: "Impact to manage", tradeoff: "Trade-off" };
+
+  // The lessons, as the final act: each one looks back at the player's own
+  // choices, then turns them into questions to take back to work. Saves from
+  // before choices were recorded get the lessons without the look back.
+  function renderLessons(card) {
+    card.className = "card lessons-screen";
+    card.appendChild(el("div", "act-tag", "Lessons learned"));
+    card.appendChild(el("h1", null, "Your breach in review"));
+    card.appendChild(el("p", "narrative", LESSONS_INTRO));
+    var record = state.choices && { choices: state.choices, flags: state.flags, finished: !state.ended.early };
+    LESSONS.forEach(function (lesson, i) {
+      var box = el("section", "lesson reveal");
+      box.style.animationDelay = i * 0.3 + "s";
+      box.appendChild(el("div", "lesson-scenes", lesson.scenes));
+      var head = el("div", "lesson-head");
+      head.appendChild(el("h2", null, (i + 1) + ". " + lesson.title));
+      var review = record && lesson.review(record);
+      if (review) head.appendChild(el("span", "verdict " + review.verdict, VERDICTS[review.verdict]));
+      box.appendChild(head);
+      if (record) {
+        box.appendChild(el("div", "lesson-label", "In your game"));
+        box.appendChild(el("p", review ? null : "lesson-missed", review ? review.text : "Your breach ended before this point."));
+      }
+      box.appendChild(el("div", "lesson-label", "The lesson"));
+      box.appendChild(el("p", null, lesson.lesson));
+      box.appendChild(el("div", "lesson-label", "Ask your team"));
+      var asks = el("ul");
+      lesson.ask.forEach(function (q) { asks.appendChild(el("li", null, q)); });
+      box.appendChild(asks);
+      card.appendChild(box);
+    });
+    // Every question in one place, ready to print or save as a PDF.
+    var questions = el("section", "questions");
+    questions.appendChild(el("h2", null, "Questions to take to your leadership team"));
+    var list = el("ol");
+    LESSONS.forEach(function (lesson) {
+      lesson.ask.forEach(function (q) { list.appendChild(el("li", null, q)); });
+    });
+    questions.appendChild(list);
+    var print = el("button", "next-btn", "Print or save as PDF");
+    print.type = "button";
+    print.addEventListener("click", function () { window.print(); });
+    questions.appendChild(print);
+    card.appendChild(questions);
     var author = el("div", "author-note");
     author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
       "Get in touch on LinkedIn", "https://www.linkedin.com/in/rimmerd/"));
     author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:dave.rimmer@gmail.com?subject=Breach%20Inc.%20feedback"));
     author.appendChild(link("If this game was useful to you, you can ", "support it on Ko-fi", "https://ko-fi.com/dvrmmr"));
     card.appendChild(author);
-    var again = el("button", "choice-btn restart-btn", "Play again");
+    var again = el("button", "choice-btn restart-btn", "Play again with different choices");
     again.type = "button";
     again.addEventListener("click", restart);
     card.appendChild(again);
@@ -472,7 +528,7 @@
     var card = document.getElementById("main");
     card.textContent = "";
     var act = !state.ended && GAME_NODES[state.node].act;
-    if (state.ended) renderEnding(card);
+    if (state.ended) (state.ended.reviewed ? renderLessons : renderEnding)(card);
     else if (state.started === false) renderIntro(card);
     else if (act && act !== state.actShown) renderDivider(card, act);
     else if (GAME_NODES[state.node].type === "interlude") renderInterlude(card);

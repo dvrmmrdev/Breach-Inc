@@ -601,14 +601,220 @@ var ENDINGS = [
   },
 ];
 
+// The lessons at the end, in the order the game reaches them. Each one looks
+// back at the player's own game: `review` gets { choices, flags, finished },
+// where `choices` maps each scene's id to the index of the option picked,
+// and `finished` is false if the game ended early. It returns the verdict
+// ("paid", "manage" or "tradeoff") and what happened, or null if the player
+// never reached that point. `ask` is what to take back to your own team.
+var LESSONS_INTRO = "Every choice you made had an impact, and there were no perfect choices. During a breach, you have to make the best choice available for your team and your company, and keep track of the impacts you'll need to manage.";
+
 var LESSONS = [
-  "Foundational controls (asset management, patching, logging and response) underpin everything.",
-  "Practise for the worst-case scenario, however unlikely it feels.",
-  "Set up a structure that lets people work on incident response without being distracted by leaders.",
-  "Discuss your \u2018read-in\u2019 approach with business leaders. Too small a group, and you risk burnout. Too large a group, and you risk information leaks and insider trading. Find a balance.",
-  "Have a leader in charge of people's wellbeing, making sure shifts end and people recover.",
-  "Have contracts and processes in place to bring in external help quickly if it's ever needed.",
-  "Plan how you'll maintain your team's health, wellbeing and availability during an extended crisis.",
-  "Understand which senior leaders have the authority and capability to make quick, informed decisions.",
-  "Think long and hard about how you and your team could \u201creturn to normal\u201d. How will you go back to discussing risk acceptance after living through a major breach?",
+  {
+    title: "Foundations, automation and rehearsal",
+    scenes: "Promotion & Inherited Architecture \u00b7 Overnight Changes",
+    review: function (r) {
+      var first = r.choices.act0_start, containment = r.choices.act1_containment;
+      if (first == null) return null;
+      var text = first === 0
+        ? "In your first week, you put asset discovery and the patching backlog first. The breached portal was on your list, but not yet patched. Because of your inventory, the war room knew which systems existed and where their logs were, and that saved days."
+        : "In your first week, you put commercial alignment first. The breached portal was in the backlog you left alone, and the war room lost days finding out which systems existed.";
+      if (containment === 0) text += " Later, you contained the attackers with one overnight cutover, and two business systems failed to start.";
+      if (containment === 1) text += " Later, you staged the containment changes over a week, and lay awake wondering what the attackers could still reach.";
+      return { verdict: first === 0 ? "paid" : "manage", text: text };
+    },
+    lesson: "Asset inventory, patching and logging are what you'll depend on when it matters. They never feel as urgent as this quarter's release, until they are. Practise for the worst case too: every containment step you rehearse, automate or remove the need for now is one less impossible call in the middle of the night.",
+    ask: [
+      "If we were breached tonight, how long would it take to list every internet-facing system we own, and who owns each one?",
+      "What actions would we need to take to contain a breach, and how many of them could we remove or automate now, such as regular credential rotation?",
+      "When did we last rehearse a breach we couldn't tell most of our own staff about?",
+    ],
+  },
+  {
+    title: "Who's read in, and who they can talk to",
+    scenes: "The Briefing Room",
+    review: function (r) {
+      var c = r.choices.act0_breach;
+      if (c == null) return null;
+      return c === 1
+        ? { verdict: "paid", text: "You pushed to read in two more of your leaders. It cost goodwill, but you weren't carrying it alone." }
+        : { verdict: "manage", text: "You accepted being the only one of your leaders read in, and carried it alone, unable to tell anyone, not even your family." };
+    },
+    lesson: "Too small a read-in group burns people out. Too large a group risks leaks and insider trading. Agree the balance in advance, and make sure everyone read in has someone cleared to talk to, including about how they're coping.",
+    ask: [
+      "Who decides who's read in during a major incident, and is it written down?",
+      "Who can the people who are read in talk to, including about how they're coping?",
+    ],
+  },
+  {
+    title: "Scope, and the number",
+    scenes: "Reconstructing the Window \u00b7 How Many People?",
+    review: function (r) {
+      if (r.choices.act1_scope == null) return null;
+      var narrow = r.flags.narrow_scope, revised = r.flags.revised_up;
+      // The narrow scope's cost lands at the hearing, if the player got that far.
+      var heard = r.choices.act4_testimony != null;
+      if (narrow) {
+        return {
+          verdict: "manage",
+          text: "You limited the investigation to the primary databases to protect your team's stamina" +
+            (revised ? ", then waited for an exact number. " : ". ") +
+            (heard
+              ? "The systems nobody examined later turned up more records, and the number went up live on air."
+              : "The systems nobody examined left room for the number to grow."),
+        };
+      }
+      return revised
+        ? { verdict: "manage", text: "You waited for an exact number. Months later, further analysis pushed it up, and every revision restarted the story." }
+        : { verdict: "paid", text: "You examined everything and announced a cautious upper estimate. Legal worried it was too high, but you never had to announce a bigger one." };
+    },
+    lesson: "A number that keeps growing does more damage than a cautious one. Investigate fully, and announce a number you won't have to raise.",
+    ask: [
+      "Who signs off the number of people affected, and what will we do if it changes?",
+    ],
+  },
+  {
+    title: "Leadership: one channel, and clear decision-makers",
+    scenes: "Just a Quick Update \u00b7 Every Department on Fire",
+    review: function (r) {
+      var visitors = r.choices.act1_visitors, later = r.choices.act4_testimony;
+      if (visitors == null) return null;
+      var text = visitors === 0
+        ? "You shielded the war room with one point of contact and one update a day. Some leaders were put out, but the analysts got their days back."
+        : "You answered every leader whenever they asked, and analysts kept being pulled away from the work.";
+      if (later != null) {
+        text += " Later, while leaders prepared for hearings, the response stalled waiting for decisions. " +
+          (later === 0
+            ? "You set up a single response cell, and your best people were tied up giving answers."
+            : "You put remediation first, and Sales told the board security wasn't engaging.");
+      }
+      return { verdict: visitors === 0 ? "paid" : "manage", text: text };
+    },
+    lesson: "Senior attention is a load on the people doing the work. Give leaders one channel and a fixed rhythm of updates, so the board hears one version of the truth. And know who can make quick, informed decisions, and who deputises when they're tied up for weeks.",
+    ask: [
+      "In our incident plan, how do executives get updates without walking into the response room?",
+      "If our CEO and CIO were unavailable for a month, who could approve spending, and sign off what we tell clients?",
+    ],
+  },
+  {
+    title: "Insider risk",
+    scenes: "Project Harbour & the Blind Build \u00b7 The Share Sale",
+    review: function (r) {
+      var blackout = r.choices.act2_foothold, sale = r.choices.act2_trading;
+      if (blackout == null) return null;
+      var text = blackout === 1
+        ? "You read Harbour's leads in and pushed for a trading blackout."
+        : "You kept the cover story, with no trading restrictions.";
+      if (sale == null) return { verdict: blackout === 1 ? "paid" : "manage", text: text };
+      text += " When an HR manager outside the project traded on a guess anyway, " +
+        (sale === 0
+          ? "you escalated it formally, and Legal brought the date forward."
+          : "you left it to Compliance, and months later investigators asked what you knew.");
+      return { verdict: sale === 0 ? "paid" : "manage", text: text };
+    },
+    lesson: "Secrets leak through people talking, not just through documents. Put trading restrictions in place early, cast them wider than the project, and escalate concerns formally, on the record.",
+    ask: [
+      "What triggers a trading blackout, who puts it in place, and how far does it reach? Is it all documented in our incident response playbook?",
+    ],
+  },
+  {
+    title: "A public response people can trust",
+    scenes: "Built for Everyone \u00b7 The Wrong Website",
+    review: function (r) {
+      var site = r.choices.act2_scale, lookalike = r.choices.act3_lookalike != null;
+      if (site == null) return null;
+      return site === 0
+        ? {
+          verdict: "manage",
+          text: "You kept the white-label site on a new domain. It protected the cover story, but it looked exactly like phishing" +
+            (lookalike ? ", and ACME Inc.'s own social media posts ended up sending people to a lookalike." : "."),
+        }
+        : {
+          verdict: "paid",
+          text: "You insisted on ACME Inc.'s own domain, built in secret by the read-in group. People recognised the address" +
+            (lookalike ? ", although a single mistyped link still sent some of them to a lookalike." : "."),
+        };
+    },
+    lesson: "Send people somewhere they already trust. Prepare your public response, from the website to the call scripts, and register likely lookalike domains, before you need them.",
+    ask: [
+      "Where would we send millions of worried people, and would they believe it was really us?",
+      "Could we stand up the public-facing communications and services we'd need after a breach? How long would it take, and how would we do it within the confidentiality of an incident response?",
+    ],
+  },
+  {
+    title: "Help on contract before you need it",
+    scenes: "A Thousand New Voices \u00b7 The Storm",
+    review: function (r) {
+      var agents = r.choices.act2_callcentres, storm = r.choices.act3_storm;
+      if (agents == null) return null;
+      var text = agents === 0
+        ? "You gave the contact centre agents a tight script and routed every unusual question to your team."
+        : "You trained the contact centre agents in depth, and the trainers and your team worked late every night to get them there.";
+      if (storm == null) return { verdict: "tradeoff", text: text };
+      return storm === 0
+        ? { verdict: "manage", text: text + " When the storm hit, you moved overflow calls to your security team, and your analysts spent a week reading out call scripts." }
+        : { verdict: "tradeoff", text: text + " When the storm hit, you paid a premium for emergency capacity and published honest wait times. It cost money and headlines, but your team kept working on security." };
+    },
+    lesson: "Have contracts and processes in place to bring in outside help quickly: contact centres, forensic analysts, legal and communications. Capacity bought in the middle of a crisis costs more and arrives later.",
+    ask: [
+      "If we needed a thousand extra people answering calls next week, whose number would we ring?",
+      "If we needed dozens of extra cyber analysts to comb through logs, how would we give them access? Would we need to build and deliver laptops, or provide an internet-facing virtual desktop? Is all of that documented and practised?",
+    ],
+  },
+  {
+    title: "Someone has to make rest happen",
+    scenes: "Nobody Owns Rest",
+    review: function (r) {
+      var c = r.choices.act2_shifts, after = r.choices.act4_dutyofcare != null;
+      if (c == null) return null;
+      var text = [
+        "You went home where people could see you, and your leads followed." + (after ? " The habit didn't survive the announcement." : ""),
+        "You sent home anyone who'd been in for two days straight, and fewer mistakes landed on your desk overnight." + (after ? " After the announcement, nobody had the authority to do it again." : ""),
+        "You let everyone keep going while the adrenaline held, and mistakes crept into the overnight work.",
+      ][c];
+      var over = r.flags.overrun;
+      if (over) text += " The work also ran " + (over === 1 ? "a day" : over + " days") + " past Legal's date, squeezed into nights.";
+      return { verdict: c === 2 ? "manage" : "paid", text: text };
+    },
+    lesson: "In a crisis, rest doesn't happen by itself. Someone with authority has to make it normal, and keep doing so once the adrenaline wears off. That only works if the load can be shared, so spread the knowledge before you need it.",
+    ask: [
+      "If our next incident ran for six weeks, who would make sure people went home, and would they be listened to?",
+      "Would the burden fall on a few people whose skills and knowledge make them essential, and a single point of failure? Or is our work documented and shared well enough for a larger group to carry it?",
+    ],
+  },
+  {
+    title: "Tell your own people first",
+    scenes: "Who Hears First?",
+    review: function (r) {
+      var c = r.choices.act3_transparency;
+      if (c == null) return null;
+      return c === 0
+        ? { verdict: "paid", text: "You briefed all staff an hour before the release. There was shock, but your team heard it from you." }
+        : { verdict: "manage", text: "Your staff learned with the public, from news alerts on their phones. Some never quite forgave it." };
+    },
+    lesson: "Your own staff are your first audience, not your last. Plan when and how they'll be told, what they can say when friends ask, and how you'll support them when journalists come looking.",
+    ask: [
+      "Who would we tell about a breach, when would we tell them, and what would we say?",
+      "Would our staff hear about it from us, or from the news?",
+      "How would we deal with journalists contacting potentially disgruntled employees through social media?",
+    ],
+  },
+  {
+    title: "The crisis doesn't end at the announcement",
+    scenes: "Duty of Care \u00b7 Back to Normal?",
+    review: function (r) {
+      var c = r.choices.act4_dutyofcare;
+      if (c == null) return null;
+      var text = c === 0
+        ? "You funded recovery and took leave yourself. Remediation slipped a month, and most of your team were still there a year later."
+        : "You pushed through to finish remediation first. It closed on schedule, and then the resignations arrived.";
+      if (r.finished) text += " Months later, you couldn't bring yourself to sign off a routine risk.";
+      return { verdict: c === 0 ? "paid" : "manage", text: text };
+    },
+    lesson: "Plan for recovery as seriously as for the response, including how you'll make risk decisions again after living through the worst.",
+    ask: [
+      "After a major breach, how would we rebuild the team, and how would we accept risk again without saying no to everything?",
+      "How many of our best people would stay with us rather than leave? What would our culture and workforce look like afterwards?",
+    ],
+  },
 ];

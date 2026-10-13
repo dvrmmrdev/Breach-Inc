@@ -126,13 +126,6 @@ h2 {
 .summary {
   color: #8b949e;
 }
-.lessons {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #e6edf3;
-  padding-left: 20px;
-  margin: 0 0 24px 0;
-}
 .choice-btn {
   font-family: inherit;
   display: block;
@@ -295,6 +288,123 @@ body::before {
 .author-note a {
   color: var(--accent);
   font-weight: bold;
+}
+
+/* The lessons: one card per lesson, then every question in one list. */
+.lesson {
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  background: #0f1319;
+}
+.lesson-scenes {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin-bottom: 6px;
+}
+.lesson-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.lesson-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.verdict {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.verdict.paid { color: #3fb950; }
+.verdict.manage { color: #d29922; }
+.verdict.tradeoff { color: #8b949e; }
+.lesson-label {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 12px 0 4px 0;
+}
+.lesson p,
+.lesson li,
+.questions li {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e6edf3;
+}
+.lesson p {
+  margin: 0;
+}
+.lesson .lesson-missed {
+  color: #8b949e;
+  font-style: italic;
+}
+.lesson ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.questions {
+  margin: 32px 0 24px 0;
+}
+.questions ol {
+  padding-left: 22px;
+  margin: 0 0 16px 0;
+}
+.questions li + li {
+  margin-top: 6px;
+}
+
+/* Printing the lessons: black on white, without the game around them. */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+    padding: 0;
+  }
+  body::before,
+  .top,
+  .hud,
+  section[aria-label="Decision log"],
+  .disclaimer,
+  button,
+  .author-note {
+    display: none !important;
+  }
+  .card,
+  .lesson {
+    background: #fff;
+    border-color: #999;
+  }
+  .lesson {
+    break-inside: avoid;
+  }
+  .reveal {
+    animation: none;
+    opacity: 1;
+  }
+  h1,
+  h2,
+  .act-tag,
+  .lesson-label,
+  .narrative,
+  .lesson p,
+  .lesson li,
+  .questions li {
+    color: #000;
+  }
 }
 
 /* The opening screen. */

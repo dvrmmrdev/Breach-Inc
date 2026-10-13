@@ -62,6 +62,8 @@ var INTERLUDES = {
     time: "22:05",
     title: "A Quick Word",
     turn: true,
+    // A beat before the last line, which turns red as it lands.
+    pauses: { 5: 1.5 },
     text: [
       "The last taxi pulls away. You turn back into the office, still smiling, and see the CISO across the empty lobby, gesturing for you to come over. You didn't know they were still in the building.",
       "You head over with a grin, ready to fill them in on your plans and share the good news: the team is finally one team.",
@@ -122,6 +124,8 @@ var INTERLUDES = {
     act: "Act 1: Living in Silence",
     time: "19:30",
     title: "Video Call",
+    // The two silences the conversation names.
+    pauses: { 2: 1.5, 5: 2 },
     text: [
       "It's dinner time at home. The laptop is propped against the fruit bowl, and you can see the kitchen you haven't stood in for over a week. The dog hears your voice and looks behind the screen for you.",
       "'When are you coming back?' 'Soon.' 'You said that on Tuesday.' 'I know.'",
@@ -154,6 +158,8 @@ var INTERLUDES = {
     act: "Act 2: Under Pressure",
     time: "10:40",
     title: "By the Coffee Machine",
+    // Deciding whether to lie.
+    pauses: { 2: 1.2 },
     text: function (flags) {
       return [
         "Two engineers you've worked with for years are by the coffee machine. 'Apparently it's a huge client,' one says. 'Bank, I reckon. Why else all the secrecy?'",
@@ -245,7 +251,7 @@ var INTERLUDES = {
     text: [
       "Nine minutes after the release, you're pulled into a conference room. One of the country's biggest banks, an ACME Inc. client, is on the line, and they want answers now.",
       "The bank expected the CISO to be on the call, but they're not here. Perhaps they're with the board, now that the announcement is out. Perhaps they're on the phone to their family, explaining why they haven't been home in so long. Perhaps this moment is just too much, on top of the pressure of the last few weeks. Feeling the way you do, you'd understand.",
-      "Downstairs, your team are taking in the news. You should be with them. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
+      "Downstairs, your team are taking in the news. You should be with them. Hundreds of miles away, your family are seeing the story on the news. You should be with them. You're not. Instead, you're on mute, listening to a client's general counsel read out contract clauses.",
       "A client Q&A was on the plan before the announcement, but under pressure, it slipped. So you invent answers on the fly, based on what you're pretty sure are known facts, and paste each one into a shared document while the next call connects.",
       "The last call ends after nine. You slope back to your hotel room. It's the same small room it's been for weeks, and tonight it feels smaller than ever.",
     ],
@@ -291,6 +297,7 @@ var INTERLUDES = {
     text: function (flags) {
       return [
         "Every day now is back-to-back client calls from 8am to 7pm. Your team pass the angriest and rudest clients up to you, as they should. By evening your voice is hoarse, and there are four hundred unopened emails from people who also needed you.",
+        "Every hour on those calls is an hour you're not with your own team. They're living through the same headlines and the same questions from their families, and they need you to help them through it. You pass them in the corridor between calls and promise to catch up properly. You don't get the chance.",
         flags.staff_briefed
           ? "ACME Inc.'s account managers had an hour's notice and a two-page FAQ. It wasn't enough. Their clients had been watching the news all evening, and rang with details of the attack that the account managers were hearing for the first time. Some of them now forward every client email to you, unread."
           : "ACME Inc.'s account managers found out with everyone else. Within minutes, their clients were on the phone, quoting details from the news that the account managers were hearing for the first time. Some of them now forward every client email to you, unread.",
@@ -315,6 +322,8 @@ var INTERLUDES = {
     act: "Act 3: Going Public",
     time: "18:05",
     title: "Home",
+    // A moment before sleep, and the fade.
+    pauses: { 5: 1.5 },
     // A reprieve, not a recovery: Act 4 opens red again, a little muted.
     homecoming: true,
     set: "home",

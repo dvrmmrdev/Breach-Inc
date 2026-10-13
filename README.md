@@ -64,6 +64,10 @@ To add one, point a scene's `nextNode` at it.
 
 Choices show only how many days they take. The effect on people is revealed in the log afterwards.
 
+## Lessons
+
+After the ending, **What this breach taught you** opens the lessons screen. Each lesson in `LESSONS` (in `story.js`) looks back at the player's own choices through its `review` function, which gets the option picked in each scene (`choices`, by scene id), the `flags`, and whether the game was `finished`. It returns a verdict (`paid`, `manage` or `tradeoff`) and what happened, or null if the player never got that far. Each lesson also has `ask`: questions to take back to your own team, which are gathered into one printable list. If you change or reorder a scene's choices, update the lessons that read them.
+
 ## Balance
 
 With the current numbers, a player choosing at random:
