@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Breach Inc.</title>
-  <meta name="description" content="A text-based game for leaders: live through a major data breach, written by someone who&#39;s been there.">
+  <title>Breach Inc. | A data breach simulation for leaders</title>
+  <meta name="description" content="An interactive data breach simulation and security awareness exercise for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
   <!-- Link previews (LinkedIn, Teams, Slack, WhatsApp, X) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Breach Inc.">
   <meta property="og:url" content="https://breach-inc.com/">
-  <meta property="og:title" content="Breach Inc.">
-  <meta property="og:description" content="A text-based game for leaders: live through a major data breach, written by someone who&#39;s been there.">
+  <meta property="og:title" content="Breach Inc.: a data breach simulation for leaders">
+  <meta property="og:description" content="An interactive data breach simulation and security awareness exercise for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
   <meta property="og:image" content="https://breach-inc.com/art/preview.jpg?v=4">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -30,7 +30,13 @@
       <button type="button" id="restart" class="link-btn">Restart</button>
     </header>
     <div id="hud" class="hud" aria-label="Status"></div>
-    <main id="main" class="card" tabindex="-1" aria-live="polite"></main>
+    <!-- What crawlers, and anyone without JavaScript, see. The game replaces
+         it as soon as it starts, so players never see it. -->
+    <main id="main" class="card" tabindex="-1" aria-live="polite">
+      <h1>Breach Inc.</h1>
+      <p class="narrative">An interactive data breach simulation and security awareness exercise for security, tech and business leaders. You make the decisions through a fictional company's response to a major data breach: the weeks of secrecy before the announcement, the public fallout, and what it costs the people who respond. At the end, it shows how your choices played out, with lessons and questions to take back to your own organisation.</p>
+      <p class="narrative">It runs in your browser, with no download, account, adverts or tracking. JavaScript needs to be switched on to play.</p>
+    </main>
     <section aria-label="Decision log">
       <div class="stat-label log-heading">Decision log</div>
       <div id="log" class="log-panel"></div>
