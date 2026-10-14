@@ -442,6 +442,8 @@ a.next-btn {
   .disclaimer,
   button,
   .actions,
+  .copy-status,
+  .print-note,
   .support,
   .author-note {
     display: none !important;

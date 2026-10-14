@@ -491,6 +491,43 @@
 
   var VERDICTS = { paid: "Paid off", manage: "Impact to manage", tradeoff: "Trade-off" };
 
+  // The browsers built into other apps (LinkedIn, Facebook, Instagram, the
+  // Google app...) mostly ignore window.print(), so the Print button does
+  // nothing there. They say who they are in the user agent.
+  var IN_APP_BROWSER = /LinkedInApp|FBAN|FBAV|Instagram|GSA\/|MicroMessenger|Line\/|Snapchat|Twitter/i.test(navigator.userAgent || "");
+
+  // Every question as plain text, for email or the clipboard.
+  function questionsText() {
+    var lines = ["Questions to take to your leadership team, from Breach Inc. (https://breach-inc.com)", ""];
+    var n = 0;
+    LESSONS.forEach(function (lesson) {
+      lesson.ask.forEach(function (q) { lines.push(++n + ". " + q); });
+    });
+    return lines.join("\n");
+  }
+
+  // Copies text, with a fallback for browsers without the clipboard API.
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return copyByHand(text); });
+    }
+    return Promise.resolve(copyByHand(text));
+  }
+
+  function copyByHand(text) {
+    var area = el("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
+
   // The lessons, as the final act: each one looks back at the player's own
   // choices, then turns them into questions to take back to work. Saves from
   // before choices were recorded get the lessons without the look back.
@@ -538,12 +575,32 @@
     print.type = "button";
     print.addEventListener("click", function () { window.print(); });
     actions.appendChild(print);
+    // Email and Copy work everywhere, including the in-app browsers that
+    // can't print.
+    var email = el("a", "next-btn", "Email me the questions");
+    email.href = "mailto:?subject=" + encodeURIComponent("Breach Inc.: questions for my team") + "&body=" + encodeURIComponent(questionsText());
+    actions.appendChild(email);
+    var copy = el("button", "next-btn", "Copy the questions");
+    copy.type = "button";
+    var copied = el("p", "narrative copy-status");
+    copied.setAttribute("role", "status");
+    copy.addEventListener("click", function () {
+      copyText(questionsText()).then(function (ok) {
+        copied.textContent = ok ? "Copied. Paste them into a note, message or email." : "Couldn't copy here. Try Email instead.";
+      });
+    });
+    actions.appendChild(copy);
     var kofi = el("a", "next-btn", "Support Breach Inc. on Ko-fi");
     kofi.href = "https://ko-fi.com/dvrmmr";
     kofi.target = "_blank";
     kofi.rel = "noopener noreferrer";
     actions.appendChild(kofi);
     questions.appendChild(actions);
+    questions.appendChild(copied);
+    if (IN_APP_BROWSER) {
+      questions.appendChild(el("p", "narrative print-note",
+        "Printing isn't available in this app's built-in browser. To print, open breach-inc.com in Safari or Chrome, or use Email or Copy above."));
+    }
     card.appendChild(questions);
     var author = el("div", "author-note");
     author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
