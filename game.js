@@ -383,7 +383,7 @@
     card.appendChild(el("div", "act-tag", "Before you begin"));
     card.appendChild(el("h1", null, "Breach Inc."));
     [
-      "Breach Inc. is a text-based game for security leaders. You'll live through a major data breach from the inside: the weeks of secrecy before the announcement, the storm that follows it, and what it costs the people who respond.",
+      "Breach Inc. is a text-based game for security, tech and business leaders. You'll live through a major data breach from the inside: the weeks of secrecy before the announcement, the storm that follows it, and what it costs the people who respond.",
       "Breach Inc. is fiction, inspired by my experience of working through a major cyber breach. The company, people and events are invented or composites, and it isn't an account of any real organisation's response, or of what I or anyone else decided. What's real is what it felt like: the pressure, the silence and the impossible choices.",
       "Your choices shape the story, and many of its events and outcomes only happen on some paths. None of them should be read as a record of what really happened, or of what anyone really did.",
       "Every decision takes time and moves three things: your influence, your team's health and your own. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow.",

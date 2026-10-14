@@ -31,19 +31,19 @@ var GAME_NODES = {
     ],
     choices: [
       {
-        text: "Burn down technical cyber risk: prioritise asset discovery, CMDB reconciliation, and clearing ACME Inc.'s legacy patching debt.",
+        text: "Burn down technical cyber risk: find out exactly which systems ACME Inc. owns and who's responsible for each, and clear the backlog of overdue security updates.",
         nextNode: "i_inherit",
         days: 10,
         stats: { internalInfluence: 0, teamHealth: -5, playerHealth: -5 },
         set: "patching_first",
-        outcome: "Business units grumble about change freezes, but your inventory finally matches reality more often than not.",
+        outcome: "Business units grumble about change freezes, but your list of systems finally matches reality more often than not.",
       },
       {
-        text: "Fix the relationship with the business, and support growth: prioritise commercial alignment and developer velocity; avoid operational friction with business units.",
+        text: "Fix the relationship with the business, and support growth: prioritise helping product teams release faster, and avoid slowing the business down.",
         nextNode: "i_inherit",
         days: 5,
         stats: { internalInfluence: 10, teamHealth: 5, playerHealth: 5 },
-        outcome: "Product leaders welcome you warmly. The patching backlog stays where it was.",
+        outcome: "Product leaders welcome you warmly. The backlog of overdue security updates stays where it was.",
       },
     ],
   },
@@ -75,12 +75,12 @@ var GAME_NODES = {
         outcome: "Your team fly home cheerful. You stay behind with a secret you can't share.",
       },
       {
-        text: "Push for broader security leadership involvement to avoid single points of failure.",
+        text: "Push for more of your leaders to be told, so it doesn't all rest on you.",
         nextNode: "i_hotel",
         days: 0,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },
         set: "shared_load",
-        outcome: "Legal reluctantly read in two more of your leaders. The load is shared, but you've spent goodwill.",
+        outcome: "Legal reluctantly read in two more of your leaders, giving them the full secret. The load is shared, but you've spent goodwill.",
       },
     ],
   },
@@ -90,11 +90,11 @@ var GAME_NODES = {
     title: "Reconstructing the Window",
     text: function (flags) {
       return [
-        "You review the incident dossier. A national CERT bulletin flagged a critical remote code execution flaw in a widely used open-source web framework months ago. Automated network scans missed a legacy merchant portal, leaving the attackers a foothold for over two months.",
+        "You review the incident dossier. Months ago, the national cyber security agency warned that a flaw in widely used web software let attackers take control of any system running it. ACME Inc.'s scans for the flaw missed one old merchant portal, and the attackers got in through it and stayed for over two months.",
         flags.patching_first
-          ? "You recognise the portal's name. It was on your asset-discovery list, due for patching next quarter."
-          : "You recognise the portal's name. It was in the patching backlog you decided to leave alone.",
-        "The internal response team, Project Lantern, must stand up big-data clusters, ingest terabytes of logs, and replay the attackers' queries.",
+          ? "You recognise the portal's name. It was on your list of systems, due for its security update next quarter."
+          : "You recognise the portal's name. It was in the backlog of overdue security updates you decided to leave alone.",
+        "The internal response team, Project Lantern, must gather and search months of system records, and replay the attackers' queries.",
         "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
       ];
     },
@@ -153,7 +153,7 @@ var GAME_NODES = {
     title: "Overnight Changes",
     text: function (flags) {
       return [
-        "Just after midnight, your network lead puts the containment plan on your desk and sits down without being asked. Thousands of network and service account passwords must be changed, the network reshaped, and upgraded security controls deployed, all without alerting staff outside the read-in group that anything is wrong.",
+        "Just after midnight, your network lead puts the containment plan on your desk and sits down without being asked. Thousands of passwords, including the ones systems use to talk to each other, must be changed, the network reshaped, and upgraded security controls deployed, all without alerting staff outside the read-in group that anything is wrong.",
         flags.shielded
           ? "Because the war room is shielded, the people who would run the changes have had their days back. They're tired, but they're rested enough to try it in one night."
           : "The people who would run the changes have spent the week explaining the picture to visiting leaders. They're exhausted before they start, and one night of changes leaves no room for mistakes.",
@@ -162,7 +162,7 @@ var GAME_NODES = {
     },
     choices: [
       {
-        text: "Run one coordinated overnight cutover and accept the risk of outages.",
+        text: "Make all the changes in one night, and accept the risk that something breaks.",
         nextNode: "i_family",
         days: 1,
         stats: { internalInfluence: -5, teamHealth: -10, playerHealth: -5 },
@@ -633,13 +633,13 @@ var LESSONS = [
       var first = r.choices.act0_start, containment = r.choices.act1_containment;
       if (first == null) return null;
       var text = first === 0
-        ? "In your first week, you put asset discovery and the patching backlog first. The breached portal was on your list, but not yet patched. Because of your inventory, the war room knew which systems existed and where their logs were, and that saved days."
-        : "In your first week, you put commercial alignment first. The breached portal was in the backlog you left alone, and the war room lost days finding out which systems existed.";
-      if (containment === 0) text += " Later, you contained the attackers with one overnight cutover, and two business systems failed to start.";
+        ? "In your first week, you put finding every system and clearing overdue security updates first. The breached portal was on your list, but not yet updated. Because of your list of systems, the war room knew which systems existed and where their logs were, and that saved days."
+        : "In your first week, you put helping the business move faster first. The breached portal was in the backlog you left alone, and the war room lost days finding out which systems existed.";
+      if (containment === 0) text += " Later, you made all the containment changes in one night, and two business systems failed to start.";
       if (containment === 1) text += " Later, you staged the containment changes over a week, and lay awake wondering what the attackers could still reach.";
       return { verdict: first === 0 ? "paid" : "manage", text: text };
     },
-    lesson: "Asset inventory, patching and logging are what you'll depend on when it matters. They never feel as urgent as this quarter's release, until they are. Practise for the worst case too: every containment step you rehearse, automate or remove the need for now is one less impossible call in the middle of the night.",
+    lesson: "Knowing which systems you own, keeping them up to date, and keeping their records are what you'll depend on when it matters. They never feel as urgent as this quarter's release, until they are. Practise for the worst case too: every containment step you rehearse, automate or remove the need for now is one less impossible call in the middle of the night.",
     ask: [
       "If we were breached tonight, how long would it take to list every internet-facing system we own, and who owns each one?",
       "What actions would we need to take to contain a breach, and how many of them could we remove or automate now, such as regular credential rotation?",

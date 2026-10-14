@@ -65,7 +65,7 @@ var INTERLUDES = {
     // A beat before the last line, which turns red as it lands.
     pauses: { 5: 1.5 },
     text: [
-      "The last taxi pulls away. You turn back into the office, still smiling, and see the CISO across the empty lobby, gesturing for you to come over. You didn't know they were still in the building.",
+      "The last taxi pulls away. You turn back into the office, still smiling, and see the Chief Information Security Officer, the CISO, across the empty lobby, gesturing for you to come over. You didn't know they were still in the building.",
       "You head over with a grin, ready to fill them in on your plans and share the good news: the team is finally one team.",
       "Before you can start, they usher you into a small meeting room and close the door behind you.",
       "Someone from the Legal department is already sitting at the table. They don't look happy.",
@@ -109,7 +109,7 @@ var INTERLUDES = {
         "Under the strip lights, everyone's skin turns the same pasty grey. Someone has taped a sheet of paper over the glass panel in the door.",
         "You lose track of whether it's day or night. The query replays run on, line after line, each one a set of real people's records.",
       flags.patching_first
-        ? "One thing goes right. Your reconciled asset inventory means Lantern knows which systems exist, who owns them and where their logs live. It saves days of guesswork."
+        ? "One thing goes right. Your up-to-date list of systems means Lantern knows which systems exist, who owns them and where their logs live. It saves days of guesswork."
         : "Nobody is sure which systems exist, who owns them or where their logs live. Every answer starts with a hunt.",
       ];
     },
@@ -356,7 +356,7 @@ var INTERLUDES = {
         "A product manager presents a request: accept the risk of an unpatched system for one more quarter. It sits behind other controls, the fix needs a code freeze, and the release it would delay is worth millions. A year ago, you'd have signed it off with a couple of conditions.",
         "Everyone turns to you.",
         "You open your mouth, and the war room comes back: the strip lights, the query replays, and the merchant portal " +
-          (flags.patching_first ? "that was due for patching next quarter." : "that sat in the backlog nobody touched."),
+          (flags.patching_first ? "that was due for its security update next quarter." : "that sat in the backlog nobody touched."),
         "You can't say yes. You're not sure you'll ever be able to say yes again. But a security team that says no to everything is the source of paranoid friction and delay you promised you'd never be.",
         "'Let me come back to you,' you say. It's the first time you've ever said that in this meeting.",
       ];
