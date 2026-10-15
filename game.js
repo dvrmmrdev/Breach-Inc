@@ -489,6 +489,11 @@
     });
   }
 
+  // Unfold every lesson before printing, so the PDF has all of them.
+  window.addEventListener("beforeprint", function () {
+    [].forEach.call(document.querySelectorAll("details.lesson-more"), function (d) { d.open = true; });
+  });
+
   var VERDICTS = { paid: "Paid off", manage: "Impact to manage", tradeoff: "Trade-off" };
 
   // The browsers built into other apps (LinkedIn, Facebook, Instagram, the
@@ -550,12 +555,18 @@
         box.appendChild(el("div", "lesson-label", "In your game"));
         box.appendChild(el("p", review ? null : "lesson-missed", review ? review.text : "Your breach ended before this point."));
       }
-      box.appendChild(el("div", "lesson-label", "The lesson"));
-      box.appendChild(el("p", null, lesson.lesson));
-      box.appendChild(el("div", "lesson-label", "Ask your team"));
+      // The lesson and its questions stay folded away, so the screen opens
+      // as one line per lesson. Printing unfolds them all.
+      var more = el("details", "lesson-more");
+      more.appendChild(el("summary", null, "Click here to view the lesson and " + lesson.ask.length +
+        (lesson.ask.length === 1 ? " question" : " questions") + " for your team"));
+      more.appendChild(el("div", "lesson-label", "The lesson"));
+      more.appendChild(el("p", null, lesson.lesson));
+      more.appendChild(el("div", "lesson-label", "Ask your team"));
       var asks = el("ul");
       lesson.ask.forEach(function (q) { asks.appendChild(el("li", null, q)); });
-      box.appendChild(asks);
+      more.appendChild(asks);
+      box.appendChild(more);
       card.appendChild(box);
     });
     // Every question in one place, ready to print or save as a PDF.

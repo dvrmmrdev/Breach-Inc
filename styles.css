@@ -700,3 +700,25 @@ a.link-btn {
     transition: none;
   }
 }
+
+/* Each lesson's detail is folded away behind a toggle. */
+.lesson-more {
+  margin-top: 10px;
+  border-top: 1px solid #30363d;
+  padding-top: 8px;
+}
+.lesson-more > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--accent);
+  list-style: none;
+}
+.lesson-more > summary::-webkit-details-marker { display: none; }
+.lesson-more > summary::before { content: "▸ "; }
+.lesson-more[open] > summary::before { content: "▾ "; }
+.lesson-more[open] > summary { margin-bottom: 4px; }
+@media print {
+  .lesson-more > summary { display: none; }
+  .lesson-more { border-top: none; padding-top: 0; }
+}
