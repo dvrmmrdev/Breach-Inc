@@ -59,7 +59,7 @@ var GAME_NODES = {
     // From here on, the theme turns from blue to red.
     readIn: true,
     text: [
-      "'There has been a breach. Potentially one of the largest in corporate history.'",
+      "'There has been a breach. It could be one of the largest in corporate history.'",
       "Attackers have been inside ACME Inc.'s network for months, and the card and transaction data they took could belong to millions of people. Your team's flights will leave as planned, and they're to be told nothing.",
       "The Legal representative slides a confidentiality agreement across the table.",
       "'Confidentiality on this is paramount,' the CISO says. 'Anyone who leaks it will be leaving the company immediately.'",
