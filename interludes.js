@@ -218,7 +218,7 @@ var INTERLUDES = {
     silence: "end",
     // Slower than usual, so the clock can run down: it reaches 16:00 as the
     // release goes out, and the phones go off two paragraphs later.
-    pace: 1.2,
+    pace: 1.5,
     countdown: { to: "16:00", at: 3 },
     buzz: 5,
     // Legal's date has arrived, whether or not the work is done.
