@@ -87,7 +87,7 @@ var INTERLUDES = {
         "You can hear that they don't believe it's nothing. You don't believe it either.",
         flags.shared_load
           ? "Two of your leaders know now, so you aren't the only one, but they're in hotel rooms of their own, and you've been told not to discuss it over the phone."
-          : "Somewhere over the ocean, your team are flying home, still laughing about the closing dinner. Not one of them knows.",
+          : "Somewhere at thirty thousand feet, your team are flying home, still laughing about the closing dinner. Not one of them knows.",
         "You lie on top of the covers with the lights off and watch the smoke alarm's green light until it gets light outside.",
       ];
     },
@@ -330,7 +330,7 @@ var INTERLUDES = {
     set: "home",
     text: [
       "Weeks after you were meant to, you finally head home. The summit lanyard is still at the top of your suitcase.",
-      "You've been told not to name your employer to anyone while the story is running. At the hotel desk, as you finally check out after weeks, the receptionist sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At passport control, the officer asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
+      "You've been told not to name your employer to anyone while the story is running. At the hotel desk, as you finally check out after weeks, the receptionist sees the company name on the booking and asks if you're 'with that lot who lost everyone's data'. You say you just book the travel. At the airport check-in desk, the agent asks who you work for and why you've been away so long. You give the answer you were told to give. It isn't the truth, and your heart pounds until the stamp comes down.",
       "The dog reaches the door first. Your family stand behind it, unsure whether to be angry or relieved, and settle on both.",
       "That night, for the first time in weeks, you tell someone everything you're allowed to. It isn't everything. It's still more than you've said out loud since the briefing room.",
       "Halfway through, you stop talking and cry on your partner's shoulder. They hold on, and don't ask you to finish.",

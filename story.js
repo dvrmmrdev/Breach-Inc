@@ -337,7 +337,7 @@ var GAME_NODES = {
     text: function (flags) {
       return [
         flags.role_model
-          ? "The call comes at nine in the evening, while you're at home eating a meal at a table for the first time in weeks. You take it in the garden, where nobody can hear."
+          ? "The call comes at nine in the evening, while you're eating a proper meal at a table in the hotel restaurant for the first time in weeks. You take it outside in the car park, where nobody can hear."
           : "The compliance officer finds you in the war room at nine in the evening and asks for somewhere private. There isn't anywhere, so you talk in the stairwell.",
         "People on Project Harbour have been talking. Nothing explicit, just hints over lunch and in corridors, but enough for people outside the project to start putting the pieces together. One of them, a mid-level manager in HR, made an educated guess about what was coming and sold a large block of shares last week.",
         flags.blackout
