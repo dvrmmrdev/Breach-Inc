@@ -314,7 +314,7 @@ var GAME_NODES = {
         outcome: "Walking out while the floor is still busy feels like desertion, and someone senior notices you weren't there when they called. But two of your leads leave on time the next day, and their teams start to follow.",
       },
       {
-        text: "Send home anyone who has been in for more than two days straight, whatever they're in the middle of.",
+        text: "Send home anyone who has been in for more than two days straight, and take personal accountability for impacts and delays to whatever they're in the middle of.",
         nextNode: "act2_trading",
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 10, playerHealth: 5 },
@@ -784,7 +784,7 @@ var LESSONS = [
       var c = r.choices.act2_shifts, after = r.choices.act4_dutyofcare != null;
       if (c == null) return null;
       var text = [
-        "You went home where people could see you, and your leads followed." + (after ? " The habit didn't survive the announcement." : ""),
+        "You left the office where people could see you, and your leads followed." + (after ? " The habit didn't survive the announcement." : ""),
         "You sent home anyone who'd been in for two days straight, and fewer mistakes landed on your desk overnight." + (after ? " After the announcement, nobody had the authority to do it again." : ""),
         "You let everyone keep going while the adrenaline held, and mistakes crept into the overnight work.",
       ][c];
