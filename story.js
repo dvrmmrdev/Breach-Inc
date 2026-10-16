@@ -306,10 +306,10 @@ var GAME_NODES = {
     },
     choices: [
       {
-        text: "Go home at a sensible hour tonight, where people can see you leave, and tell your leads you expect them to do the same.",
+        text: "Leave the office at a sensible hour tonight, where people can see you leave, and tell your leads you expect them to do the same, at the risk of your 'early' exit being seen by executives as lacking commitment, and by your team as abandonment.",
         nextNode: "act2_trading",
         days: 1,
-        stats: { internalInfluence: -5, teamHealth: 5, playerHealth: 10 },
+        stats: { internalInfluence: -10, teamHealth: 5, playerHealth: 10 },
         set: "role_model",
         outcome: "Walking out while the floor is still busy feels like desertion, and someone senior notices you weren't there when they called. But two of your leads leave on time the next day, and their teams start to follow.",
       },
