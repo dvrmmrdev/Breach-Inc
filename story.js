@@ -9,7 +9,7 @@
 // places and dates are fictional or generic.
 
 var STATS = {
-  internalInfluence: { label: "Influence", start: 50 },
+  internalInfluence: { label: "Influence", start: 40 },
   teamHealth: { label: "Team health", start: 20 }, // the All Hands lifts it
   playerHealth: { label: "Your health", start: 100 },
 };
@@ -306,7 +306,7 @@ var GAME_NODES = {
     },
     choices: [
       {
-        text: "Leave the office at a sensible hour tonight, where people can see you leave, and tell your leads you expect them to do the same, at the risk of your 'early' exit being seen by executives as lacking commitment, and by your team as abandonment.",
+        text: "Leave the office at a sensible hour tonight, where people can see you leave, and tell your leads you expect them to do the same - at the risk of your 'early' exit being seen by executives as lacking commitment, and by your team as abandonment.",
         nextNode: "act2_trading",
         days: 1,
         stats: { internalInfluence: -10, teamHealth: 5, playerHealth: 10 },
@@ -325,7 +325,7 @@ var GAME_NODES = {
         text: "Let everyone keep going while the adrenaline holds.",
         nextNode: "act2_trading",
         days: 0,
-        stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
+        stats: { internalInfluence: 5, teamHealth: -15, playerHealth: -5 },
         outcome: "The pace holds, for now. Small mistakes start creeping into the overnight work, and nobody has the energy to catch them.",
       },
     ],
@@ -389,7 +389,7 @@ var GAME_NODES = {
         text: "Staff learn with the public, to minimise the risk of a leak.",
         nextNode: "i_morning",
         days: 0,
-        stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5 },
+        stats: { internalInfluence: 5, teamHealth: -15, playerHealth: -5 },
         outcome: "Your engineers find out from news alerts on their phones. Some of them never quite forgive it.",
       },
     ],
@@ -466,7 +466,7 @@ var GAME_NODES = {
         text: "Move overflow calls to your security team and internal volunteers.",
         nextNode: "i_home",
         days: 5,
-        stats: { internalInfluence: 10, teamHealth: -15, playerHealth: -5 },
+        stats: { internalInfluence: 10, teamHealth: -20, playerHealth: -5 },
         outcome: "Wait times come down. Your threat analysts spend a week reading out call scripts.",
       },
       {
@@ -602,7 +602,7 @@ var EARLY_ENDINGS = {
 var ENDINGS = [
   {
     title: "Through the Storm",
-    test: function (s) { return s.teamHealth >= 50 && s.playerHealth >= 30 && s.internalInfluence >= 40; },
+    test: function (s) { return s.teamHealth >= 45 && s.playerHealth >= 30 && s.internalInfluence >= 30; },
     text: "The crisis leaves scars, but your team stays together, you're still standing, and the business listens when security speaks. Few people manage that.",
   },
   {
