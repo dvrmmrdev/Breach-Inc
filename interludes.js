@@ -231,7 +231,7 @@ var INTERLUDES = {
             (flags.overrun === 1
               ? "the last day of it was squeezed in overnight."
               : "the last " + flags.overrun + " days of it were squeezed into nights.") +
-            " Half the room hasn't slept properly in a week."
+            " Half the room hasn't slept properly in a week. The CEO's thank-you email this morning named the teams who finished on time. Yours wasn't one of them."
           : "The work fit inside Legal's date, just. For the last few days, the team could sleep before it all began.",
         "You text home: 'Watch the news at four. That's what it's been.'",
         flags.staff_briefed

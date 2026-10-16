@@ -29,8 +29,8 @@
   }
 
   // Each day of work that doesn't fit before Legal's date is done at night,
-  // costing this much Team health and Your health.
-  var OVERRUN_COST = 2;
+  // costing this much Team health, Your health and Influence.
+  var OVERRUN_COST = 5;
 
   // Seconds between an interlude's paragraphs appearing, unless it sets its
   // own `pace`.
@@ -68,6 +68,17 @@
   function daysLeft() {
     var d = state.deadline;
     return d && !d.done ? d.day - state.days : null;
+  }
+
+  // How many days a choice would run past Legal's date, squeezed into nights,
+  // so its button can warn. Mirrors advance() and holdToDeadline().
+  function daysPast(choice) {
+    var d = state.deadline;
+    if (!d || d.done) return 0;
+    var next = GAME_NODES[choice.nextNode || choice.next];
+    if (next && next.deadlineCheck) return 0;
+    var day = choice.deadlineShift ? Math.max(state.days + 1, d.day + choice.deadlineShift) : d.day;
+    return Math.max(0, state.days + (choice.days || 0) - (day - 1));
   }
 
   // The day of the incident, counting the briefing night as Day 1. The
@@ -119,11 +130,11 @@
     // Shown on the next screen, so the deadline bites when it happens.
     state.squeezed = over;
     var changes = [];
-    applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over }, changes);
+    applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over, internalInfluence: -OVERRUN_COST * over }, changes);
     state.log.push({
       title: "Legal's deadline",
       choice: "",
-      outcome: "The date doesn't move. " + dayCount(over) + " of work squeezed into nights.",
+      outcome: "The date doesn't move. " + dayCount(over) + " of work squeezed into nights, and the board noticed it was late.",
       effects: changes.join(" · "),
     });
     state.days = deadline.day - 1;
@@ -312,7 +323,9 @@
       var btn = el("button", "choice-btn" + (node.stage ? " reveal" : ""), choice.text);
       if (node.stage) btn.style.animationDelay = choicesAt + i * 0.2 + "s";
       btn.type = "button";
-      btn.appendChild(el("span", "choice-cost", dayCount(choice.days)));
+      var past = daysPast(choice);
+      btn.appendChild(el("span", "choice-cost" + (past ? " past" : ""),
+        dayCount(choice.days) + (past ? " · " + dayCount(past) + " past Legal's date" : "")));
       btn.addEventListener("click", function () { advance(choice, choice.text); });
       card.appendChild(btn);
     });

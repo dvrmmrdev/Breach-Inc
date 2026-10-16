@@ -95,12 +95,12 @@ var GAME_NODES = {
           ? "You recognise the portal's name. It was on your list of systems, due for its security update next quarter."
           : "You recognise the portal's name. It was in the backlog of overdue security updates you decided to leave alone.",
         "The internal response team, Project Lantern, must gather and search months of system records, and replay the attackers' queries.",
-        "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 26 days from today.",
+        "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 27 days from today. Whatever isn't finished by then will be finished at night, and the board will remember who asked for more time.",
       ];
     },
     // Legal's announcement date, in days from now. Days spent before the
     // announcement count against it; it doesn't move for the security team.
-    deadline: 26,
+    deadline: 27,
     choices: [
       {
         text: "Mandate around-the-clock forensic reconstruction shifts to establish the full exposure.",
@@ -348,7 +348,7 @@ var GAME_NODES = {
     },
     choices: [
       {
-        text: "Escalate formally to Legal and the board immediately.",
+        text: "Escalate formally to Legal and the board immediately, knowing they may bring the announcement forward to limit the insider risk.",
         nextNode: "i_countdown",
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },

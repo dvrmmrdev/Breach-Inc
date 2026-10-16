@@ -153,6 +153,10 @@ h2 {
   margin-top: 4px;
   font-family: monospace;
 }
+/* The choice would run past Legal's date. */
+.choice-cost.past {
+  color: #f85149;
+}
 .log-heading {
   margin-bottom: 6px;
 }
