@@ -801,7 +801,7 @@ var LESSONS = [
       // that cost it (from the log, as the player saw them).
       if (r.flags.public && r.stats) {
         var trust = r.stats.publicTrust;
-        var shown = (trust > 0 ? "+" : "") + trust;
+        var shown = trust > 0 ? "+" + trust : trust < 0 ? "−" + -trust : "0";
         if (trust <= STATS.publicTrust.min) {
           verdict = "manage";
           text += " Public trust fell to " + shown + ", clients left, and the board handed the response to an outside firm.";
