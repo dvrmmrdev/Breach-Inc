@@ -80,7 +80,8 @@
   // How many days a choice would run past Legal's date, squeezed into nights,
   // so its button can warn. Mirrors advance() and holdToDeadline().
   // What a choice needs and the player lacks, as [stat, level], or null. A
-  // choice that takes extra spend `needs` Influence to get the budget.
+  // choice that takes extra spend `needs` Influence to get the budget, and
+  // one that goes against the room needs it to carry the room (`needsFor`).
   function shortOf(choice) {
     for (var id in choice.needs || {}) {
       if (state.stats[id] < choice.needs[id]) return [id, choice.needs[id]];
@@ -404,7 +405,7 @@
         // Out of reach: shown, so the player sees what influence would buy.
         btn.disabled = true;
         btn.appendChild(el("span", "choice-cost locked", "Needs " + STATS[short[0]].label + " " + short[1] +
-          " to get the budget · you have " + state.stats[short[0]]));
+          " " + (choice.needsFor || "to get the budget") + " · you have " + state.stats[short[0]]));
       } else {
         btn.appendChild(el("span", "choice-cost" + (past ? " past" : ""),
           dayCount(choice.days) + (past ? " · " + dayCount(past) + " past Legal's date" : "")));

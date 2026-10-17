@@ -72,18 +72,19 @@ After the ending, **What this breach taught you** opens the lessons screen. Each
 
 ## Budget
 
-Choices that need extra spending have `needs: { internalInfluence: BUDGET_INFLUENCE }` (35, in `story.js`). Below that, the button is disabled and says how much Influence it needs. Each of those scenes also has a free option that turns out worse. The scene is recorded in `flags.lockedOut`, so the lessons can say the budget was out of reach. There are three of them: in-depth agent training, emergency call centre capacity and funded recovery.
+Choices that need extra spending have `needs: { internalInfluence: BUDGET_INFLUENCE }` (35, in `story.js`). Below that, the button is disabled and says how much Influence it needs. Each of those scenes also has a free option that turns out worse. The scene is recorded in `flags.lockedOut`, so the lessons can say the budget was out of reach. There are three of them: in-depth agent training, emergency call centre capacity and funded recovery. In the boardroom scenes ("Who Do We Tell?" and "The CEO's Words"), you advise rather than decide: the recommendation that goes against Legal `needs` `BOARD_INFLUENCE` (40) "to carry the room" (`needsFor`), and below it you can only support Legal's position.
 
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about 30% of the time: Lost the Public 15.2%, Signed Off 8.5%, Sidelined 3.7%, The Team Walks 2.9%;
-- reaches the best ending, Through the Storm, about 8.5% of the time (it needs Public trust of at least `TRUST_KEPT`, -30);
+- ends early about 31% of the time: Lost the Public 17.7%, Signed Off 9.2%, The Team Walks 2.8%, Sidelined 1.7%;
+- reaches the best ending, Through the Storm, about 8% of the time (it needs Public trust of at least `TRUST_KEPT`, -30);
 - keeps the team and themselves going but loses the public (Strong Team, Bad Headlines) about 11% of the time;
 - most often ends with a Pyrrhic Victory (about 32%);
-- ends with Public trust between -40 and -20 most of the time, and never above +10;
-- runs past Legal's date about 25% of the time;
-- finds the budget out of reach for agent training 9% of the time, emergency capacity 33% and funded recovery 26%.
+- ends with Public trust between -40 and -20 most of the time, and never above +20;
+- runs past Legal's date about 27% of the time;
+- finds the budget out of reach for agent training 9% of the time, emergency capacity 28% and funded recovery 30%;
+- can't carry the room at the boardroom 32% of the time ("Who Do We Tell?") and 28% ("The CEO's Words").
 
 No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, making people rest, escalating the share sale, and funding recovery.
 

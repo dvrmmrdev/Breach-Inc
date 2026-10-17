@@ -208,7 +208,7 @@ var INTERLUDES = {
         "You haven't felt normal for weeks. You're starting to forget what it was like.",
       ];
     },
-    next: "act3_transparency",
+    next: "act2_agencies",
   },
 
   i_morning: {
@@ -382,6 +382,9 @@ var INTERLUDES = {
         flags.date_forward
           ? "Then the share sale. Investigators want to know what senior staff knew, and when. Your escalation is on the record, with the date and time, and the board know it."
           : "Then the share sale. Investigators want to know what senior staff knew, and when, and your name is on their list. You raised nothing at the time.",
+        flags.agencies
+          ? "The investigators' evidence says ACME Inc. came to them early, and the regulator confirms it."
+          : "A lawmaker asks why the regulator heard about the breach on the same day as the public.",
         flags.shielded
           ? "The lawmaker's timeline matches the updates the war room gave the board, line for line. Nobody can claim they weren't told."
           : null,
@@ -399,6 +402,9 @@ var INTERLUDES = {
       if (flags.date_forward) influence += 5;
       else { influence -= 5; you -= 5; }
       if (flags.shielded) influence += 5;
+      // Telling the regulator and law enforcement early is remembered.
+      if (flags.agencies) trust += 5;
+      else influence -= 5;
       return { internalInfluence: influence, playerHealth: you, publicTrust: trust };
     },
     next: "act4_dutyofcare",

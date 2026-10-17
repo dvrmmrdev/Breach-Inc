@@ -26,6 +26,10 @@ var START_NODE = "act0_start";
 // in a crisis, influence is what gets you the budget.
 var BUDGET_INFLUENCE = 35;
 
+// Recommending the board go against Legal needs this much Influence to carry
+// the room. Below it, Legal's position stands.
+var BOARD_INFLUENCE = 40;
+
 var GAME_NODES = {
   act0_start: {
     act: "Act 0: Things Are Looking Up",
@@ -385,6 +389,68 @@ var GAME_NODES = {
     ],
   },
 
+  act2_agencies: {
+    act: "Act 2: Under Pressure",
+    title: "Who Do We Tell?",
+    text: [
+      "The crisis committee meets on the top floor, in a room you've only ever walked past. Until your promotion, the board was something that happened to other people: you sent papers up, and decisions came back down. Now there's a card with your name on it, between the General Counsel and the Chief Financial Officer.",
+      "The first item is who outside the company hears before the announcement. Legal's position is clear: the regulator gets the formal notification the rules require, on the day they require it, and nobody else is told. Every extra party who knows is another chance of a leak.",
+      "You've worked with law enforcement and the national cyber security agency before, at a technical level. They may know who these attackers are, and they may have seen them elsewhere. But once they're involved, they may ask ACME Inc. to hold the announcement while they follow the trail.",
+      "The chair turns to you. 'Security view?' Every head turns with them. You've never spoken in this room before.",
+    ],
+    choices: [
+      {
+        text: "Recommend briefing the regulator in confidence now, and bringing in law enforcement and the national cyber security agency.",
+        nextNode: "act2_statement",
+        days: 1,
+        needs: { internalInfluence: BOARD_INFLUENCE },
+        needsFor: "to carry the room",
+        stats: { internalInfluence: -5 },
+        deadlineShift: 2,
+        set: "agencies",
+        outcome: "It takes a long argument, and the General Counsel's silence afterwards says more than the minutes will. The regulator thanks you for the early call. Two days later, the investigators ask for more time before the announcement, and Legal's date moves back.",
+      },
+      {
+        text: "Support Legal: notify the regulator formally on the day, and keep the circle closed.",
+        nextNode: "act2_statement",
+        days: 0,
+        stats: { internalInfluence: 5 },
+        outcome: "The committee moves on within a minute, and the chair thanks you for being pragmatic. On announcement day, the regulator will learn the details from the press release, an hour after the formal notice.",
+      },
+    ],
+  },
+
+  act2_statement: {
+    act: "Act 2: Under Pressure",
+    title: "The CEO's Words",
+    text: [
+      "Later that week, the committee meets again to sign off the CEO's statement. The CEO will read it to camera on announcement day.",
+      "Before your promotion, the closest you came to the CEO was an all-staff call. Now you're one of six people deciding what they'll say to millions of people. You notice you're gripping your pen.",
+      "Legal's draft is careful: 'ACME Inc. recently became aware of a cybersecurity incident... there is no evidence of misuse... out of an abundance of caution.' Every phrase has been tested against how it would sound in court.",
+      "You've read the war room's whiteboards. You know how that draft will sound to someone whose card details were taken months ago, and who is only now being told.",
+      "The CEO looks down the table. 'You've been closest to this. What would you change?'",
+    ],
+    choices: [
+      {
+        text: "Recommend a plain apology: what happened, what we know, what we don't know yet, and what people should do today.",
+        nextNode: "act3_transparency",
+        days: 1,
+        needs: { internalInfluence: BOARD_INFLUENCE },
+        needsFor: "to carry the room",
+        stats: { internalInfluence: -5, publicTrust: 5 },
+        set: "plain_apology",
+        outcome: "Legal record their objection in the minutes. The CEO reads it through twice, crosses out 'abundance of caution', and signs.",
+      },
+      {
+        text: "Accept Legal's draft. Every word of it has been tested for the court cases that are coming.",
+        nextNode: "act3_transparency",
+        days: 0,
+        stats: { internalInfluence: 5, publicTrust: -5 },
+        outcome: "The statement goes out as drafted. Within an hour, 'abundance of caution' is trending, next to clips of the CEO reading it.",
+      },
+    ],
+  },
+
   act3_transparency: {
     act: "Act 3: Going Public",
     title: "Who Hears First?",
@@ -417,11 +483,16 @@ var GAME_NODES = {
   act3_announce: {
     act: "Act 3: Going Public",
     title: "The Morning After",
-    text: [
-      "Traffic to the response site dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
-      "On LinkedIn, vendors who were flattering you for a meeting last week are now publicly shaming you and your team. What you thought of as a cyber community is in a feeding frenzy, and your team is the meat.",
-      "Journalists start messaging you and your team through your personal social media accounts. Former colleagues begin sharing their own theories about what went wrong.",
-    ],
+    text: function (flags) {
+      return [
+        "Traffic to the response site dwarfs every forecast, and the story leads every news bulletin. Commentators who have never run a security team explain what you should have done.",
+        flags.plain_apology
+          ? "The CEO's apology plays on every bulletin. Some call it weak. More call it honest."
+          : "Commentators play the CEO's statement on a loop, and ask what 'no evidence of misuse' is worth.",
+        "On LinkedIn, vendors who were flattering you for a meeting last week are now publicly shaming you and your team. What you thought of as a cyber community is in a feeding frenzy, and your team is the meat.",
+        "Journalists start messaging you and your team through your personal social media accounts. Former colleagues begin sharing their own theories about what went wrong.",
+      ];
+    },
     choices: [
       {
         text: "Press Legal to let you brief trusted industry peers privately on the technical story.",
@@ -783,6 +854,36 @@ var LESSONS = [
     lesson: "Secrets leak through people talking, not just through documents. Put trading restrictions in place early, cast them wider than the project, and escalate concerns formally, on the record.",
     ask: [
       "What triggers a trading blackout, who puts it in place, and how far does it reach? Is it all documented in our incident response playbook?",
+    ],
+  },
+  {
+    title: "Decisions only the board can make",
+    scenes: "Who Do We Tell? \u00b7 The CEO's Words",
+    review: function (r) {
+      var tell = r.choices.act2_agencies, words = r.choices.act2_statement;
+      if (tell == null) return null;
+      var locked = r.flags.lockedOut || {};
+      var text = tell === 0
+        ? "You recommended briefing the regulator early and bringing in law enforcement and the national cyber security agency, and carried the room. Legal's date moved back, and at the hearing the regulator confirmed ACME Inc. came to them early."
+        : locked.act2_agencies
+          ? "You'd have recommended telling the regulator and law enforcement early, but you didn't have the influence to carry the room, so Legal's position stood. The regulator learned the details with the public."
+          : "You supported Legal: the regulator was notified formally on the day, and nobody else was told. The regulator learned the details with the public.";
+      if (words != null) {
+        text += words === 0
+          ? " You argued for a plain apology from the CEO, and won. Some called it weak; more called it honest."
+          : locked.act2_statement
+            ? " On the CEO's statement, you didn't have the influence to change Legal's draft, and 'abundance of caution' became the headline."
+            : " You accepted Legal's draft of the CEO's statement, and 'abundance of caution' became the headline.";
+      }
+      var both = tell === 0 && words === 0, neither = tell !== 0 && words !== 0;
+      return { verdict: both ? "paid" : neither ? "manage" : "tradeoff", text: text };
+    },
+    lesson: "The biggest decisions in a breach might be made by people who don't know the full details, and who are risk averse about sharing the information which will influence the response of the public or external stakeholders. Agree the decision making process in advance, and share examples of breach announcements which have been well received.",
+    ask: [
+      "Who contacts our regulator, law enforcement and the national cyber security agency in a breach, and when? Is that agreed with Legal in advance?",
+      "Have we drafted, and agreed with Legal, the first statement our CEO would make?",
+      "Which breach announcements have been well received, and what did they do differently? Have our board and Legal seen them?",
+      "Which of our leaders would have to advise the board in a crisis, and have they done it before?",
     ],
   },
   {
