@@ -122,6 +122,11 @@ h2 {
   color: #f0f6fc;
   margin: 24px 0 8px 0;
 }
+h3 {
+  font-size: 14px;
+  color: #c9d1d9;
+  margin: 18px 0 6px 0;
+}
 .narrative {
   font-size: 15px;
   line-height: 1.6;
