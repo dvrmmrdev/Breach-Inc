@@ -699,8 +699,8 @@
     card.appendChild(questions);
     var author = el("div", "author-note");
     author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
-      "Get in touch by email", "mailto:dave.rimmer@gmail.com?subject=Breach%20Inc.%3A%20getting%20in%20touch"));
-    author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:dave.rimmer@gmail.com?subject=Breach%20Inc.%20feedback"));
+      "Get in touch by email", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%3A%20getting%20in%20touch"));
+    author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback"));
     card.appendChild(author);
     var again = el("button", "next-btn primary-btn", "Play again with different choices");
     again.type = "button";
