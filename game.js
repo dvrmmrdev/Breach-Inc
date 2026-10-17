@@ -682,9 +682,9 @@
     var support = paragraph([
       "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. If your organisation is using it, an ",
       ["organisation licence", "licence.html#organisation"],
-      " lets you adapt it for your own staff and pay by invoice, and comes with a ",
+      " lets you adapt it for your own staff and pay by invoice, and includes a briefing on running it as a workshop with the free ",
       ["facilitator guide", "facilitator.html"],
-      " for running it as a workshop.",
+      ".",
     ]);
     support.className += " support";
     questions.appendChild(support);
