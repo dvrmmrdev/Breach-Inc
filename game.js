@@ -405,7 +405,7 @@
     card.appendChild(paragraph([
       "You're welcome to use Breach Inc. in your organisation's security awareness programmes, as long as you use it as it is and include a link to ",
       ["breach-inc.com", "https://breach-inc.com/"],
-      ". To include it in a paid course, please get in touch first. ",
+      ". An organisation licence lets you adapt it for your own staff and pay by invoice, and including it in a paid course needs a licence too. ",
       ["Read the licence", "licence.html"],
       " for the details.",
     ]));
@@ -593,7 +593,17 @@
     // The one place the game asks for support: straight after it has given
     // the player something to take away. A plain link, not Ko-fi's widget,
     // so nothing loads from another site.
-    questions.appendChild(el("p", "narrative support", "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. If you're using it in your organisation's awareness programme, a contribution from your training budget goes a long way."));
+    // Organisations are pointed to the licence, which they can pay by
+    // invoice, rather than asked to tip from a training budget.
+    var support = paragraph([
+      "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. If your organisation is using it, an ",
+      ["organisation licence", "licence.html#organisation"],
+      " lets you adapt it for your own staff and pay by invoice, and comes with a ",
+      ["facilitator guide", "facilitator.html"],
+      " for running it as a workshop.",
+    ]);
+    support.className += " support";
+    questions.appendChild(support);
     var actions = el("div", "actions");
     var print = el("button", "next-btn", "Print or save as PDF");
     print.type = "button";
