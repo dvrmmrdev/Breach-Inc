@@ -12,10 +12,12 @@ var STATS = {
   internalInfluence: { label: "Influence", start: 40 },
   teamHealth: { label: "Team health", start: 20 }, // the All Hands lifts it
   playerHealth: { label: "Your health", start: 100 },
-  // How far customers, clients and regulators trust ACME Inc.'s response.
+  // How far customers, clients and regulators trust ACME Inc.'s response,
+  // from -50 to 50. It starts at 0: most of them have never heard of ACME.
   // `public`: changes are held until the announcement, which itself costs
-  // `announcement`.
-  publicTrust: { label: "Public trust", start: 60, public: true, announcement: -20 },
+  // `announcement`. Good preparation mostly limits the damage rather than
+  // earning trust, so even a near-perfect response only gets back to 0.
+  publicTrust: { label: "Public trust", start: 0, min: -50, max: 50, public: true, announcement: -20 },
 };
 
 var START_NODE = "act0_start";
@@ -110,7 +112,7 @@ var GAME_NODES = {
         text: "Mandate around-the-clock forensic reconstruction shifts to establish the full exposure.",
         nextNode: "i_warroom",
         days: 5,
-        stats: { internalInfluence: 5, teamHealth: -15, playerHealth: -10, publicTrust: 5 },
+        stats: { internalInfluence: 5, teamHealth: -15, playerHealth: -10 },
         outcome: "Lantern works in shifts through every night. The picture sharpens quickly, and so do tempers.",
       },
       {
@@ -199,7 +201,7 @@ var GAME_NODES = {
         text: "Commit to a cautious upper estimate for the announcement, accepting it may later be revised down.",
         nextNode: "i_number",
         days: 1,
-        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5, publicTrust: 5 },
+        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
         outcome: "Legal are unhappy with a number that could be too high, but you won't have to announce a bigger one later.",
       },
       {
@@ -233,7 +235,7 @@ var GAME_NODES = {
         text: "Read the team leads in under NDA and push for a blanket trading blackout.",
         nextNode: "i_coffee",
         days: 2,
-        stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5, publicTrust: 5 },
+        stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5 },
         set: "blackout",
         outcome: "Legal give in on the blackout after a hard argument. The leads are relieved to know the truth.",
       },
@@ -253,7 +255,7 @@ var GAME_NODES = {
         text: "Keep the standard white-label site on a new domain.",
         nextNode: "act2_callcentres",
         days: 4,
-        stats: { internalInfluence: 5, teamHealth: -5, playerHealth: 0, publicTrust: -10 },
+        stats: { internalInfluence: 5, teamHealth: -5, playerHealth: 0, publicTrust: -5 },
         set: "separate_domain",
         outcome: "The cover holds, and load tests pass easily. A few people point out that the new domain looks nothing like anything ACME Inc. has used before.",
       },
@@ -261,7 +263,7 @@ var GAME_NODES = {
         text: "Insist on ACME Inc.'s own domain, built by the read-in group behind Harbour's back.",
         nextNode: "act2_callcentres",
         days: 5,
-        stats: { internalInfluence: 0, teamHealth: -5, playerHealth: 0, publicTrust: 10 },
+        stats: { internalInfluence: 0, teamHealth: -5, playerHealth: 0, publicTrust: 5 },
         outcome: "Customers will recognise the address. Scaling legacy infrastructure in under a fortnight, in secret, takes the read-in group every evening they have.",
       },
     ],
@@ -291,7 +293,7 @@ var GAME_NODES = {
         text: "Train agents in depth, accepting the long hours and overtime it takes to hit Legal's date.",
         nextNode: "i_3am",
         days: 5,
-        stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5, publicTrust: 10 },
+        stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5, publicTrust: 5 },
         outcome: "The agents can answer most questions themselves, but the trainers and your team work late every night to get them there.",
       },
     ],
@@ -355,7 +357,7 @@ var GAME_NODES = {
         text: "Escalate formally to Legal and the board immediately, knowing they may bring the announcement forward to limit the insider risk.",
         nextNode: "i_countdown",
         days: 1,
-        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5, publicTrust: 5 },
+        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
         deadlineShift: -3,
         set: "date_forward",
         outcome: "It becomes a matter for the regulators. To limit the insider risk, Legal bring the announcement forward. Your concern is on record.",
@@ -364,7 +366,7 @@ var GAME_NODES = {
         text: "Leave it with Compliance, who own insider dealing, and keep your own attention on the launch.",
         nextNode: "i_countdown",
         days: 0,
-        stats: { internalInfluence: 5, teamHealth: 0, playerHealth: -10, publicTrust: -10 },
+        stats: { internalInfluence: 5, teamHealth: 0, playerHealth: -10, publicTrust: -5 },
         outcome: "Months later the trades become a criminal case, and investigators ask what you knew and when.",
       },
     ],
@@ -385,7 +387,7 @@ var GAME_NODES = {
         text: "Brief all staff an hour before the press release, with FAQs and support lines ready.",
         nextNode: "i_morning",
         days: 0,
-        stats: { internalInfluence: -5, teamHealth: 10, playerHealth: -5, publicTrust: 5 },
+        stats: { internalInfluence: -5, teamHealth: 10, playerHealth: -5 },
         set: "staff_briefed",
         outcome: "There's shock but no leak. Your team hear it from you, not the news.",
       },
@@ -443,14 +445,14 @@ var GAME_NODES = {
         text: "Remove the posts, apologise publicly, and register the most likely lookalike domains.",
         nextNode: "i_exposed",
         days: 1,
-        stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5, publicTrust: 5 },
+        stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
         outcome: "It's an embarrassing day, but it's over in one news cycle.",
       },
       {
         text: "Correct the posts and put the right address on every official channel, without a public apology that would give the story a second day.",
         nextNode: "i_exposed",
         days: 1,
-        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5, publicTrust: -10 },
+        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5, publicTrust: -5 },
         outcome: "The fix is quick, and most people never see the wrong link. Then the researcher posts screenshots of the deleted posts, and the story becomes why ACME Inc. didn't say sorry.",
       },
     ],
@@ -477,7 +479,7 @@ var GAME_NODES = {
         text: "Pay a premium for emergency capacity elsewhere and publish honest wait times.",
         nextNode: "i_home",
         days: 3,
-        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5, publicTrust: 5 },
+        stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
         outcome: "Finance wince, and the published wait times make headlines, but your team keep working on security.",
       },
     ],
@@ -613,7 +615,7 @@ var EARLY_ENDINGS = {
 };
 
 // The Public trust the best ending needs: enough that clients stayed.
-var TRUST_KEPT = 35;
+var TRUST_KEPT = -30;
 
 var ENDINGS = [
   {

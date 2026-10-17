@@ -108,6 +108,11 @@
     if (node.deadline && state.deadline == null) state.deadline = { day: state.days + node.deadline, done: false };
   }
 
+  // Each stat runs from 0 to 100 unless it says otherwise. Reaching the
+  // bottom ends the game early.
+  function statMin(id) { return STATS[id].min != null ? STATS[id].min : 0; }
+  function statMax(id) { return STATS[id].max != null ? STATS[id].max : 100; }
+
   // Whether the breach is public yet: set once the player has lived through
   // the announcement itself.
   function announced() {
@@ -126,7 +131,7 @@
         changes.push(STATS[id].label + " " + signed(delta) + " when it's public");
         continue;
       }
-      state.stats[id] = Math.max(0, Math.min(100, state.stats[id] + delta));
+      state.stats[id] = Math.max(statMin(id), Math.min(statMax(id), state.stats[id] + delta));
       changes.push(STATS[id].label + " " + signed(delta));
     }
   }
@@ -215,7 +220,7 @@
     holdToDeadline(!!(GAME_NODES[next] && GAME_NODES[next].deadlineCheck));
 
     for (var stat in EARLY_ENDINGS) {
-      if (state.stats[stat] <= 0) { state.ended = { early: stat }; break; }
+      if (state.stats[stat] <= statMin(stat)) { state.ended = { early: stat }; break; }
     }
     if (!state.ended) {
       if (GAME_NODES[next]) enter(next);
@@ -255,7 +260,10 @@
         box(STATS[id].label, "Not public", null, "pending");
         continue;
       }
-      box(STATS[id].label, String(state.stats[id]), state.stats[id]);
+      // A stat that can go below zero shows its sign, and its meter runs
+      // from the bottom of its range to the top.
+      var v = state.stats[id], lo = statMin(id), hi = statMax(id);
+      box(STATS[id].label, lo < 0 && v ? signed(v) : String(v), Math.round((v - lo) / (hi - lo) * 100));
     }
     if (state.silence && state.silence.to == null && !state.ended) {
       box("Days in silence", String(silenceDays()), null, "silence days-silent");

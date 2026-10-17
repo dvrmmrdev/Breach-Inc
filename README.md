@@ -12,7 +12,7 @@ Between the decisions, short interludes with a single **Continue** button show w
 
 The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it up to three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 5 Team health, 5 Your health and 5 Influence for each day over (`OVERRUN_COST` in `game.js`).
 
-Every decision takes days and moves four stats: **Influence**, **Team health**, **Your health** and **Public trust**. Public trust is how far customers, clients and regulators trust ACME Inc.'s response. The public can't judge what they don't know about yet, so changes to it are held until the announcement. They land when the player continues from "Eight Minutes", together with the shock of the news itself (`announcement` in `STATS`). Until then the HUD shows it as "Not public". If any stat reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons learned.
+Every decision takes days and moves four stats: **Influence**, **Team health**, **Your health** and **Public trust**. Public trust is how far customers, clients and regulators trust ACME Inc.'s response. It runs from -50 to 50 (`min` and `max` in `STATS`) and starts at 0, because most people have never heard of ACME Inc. Good preparation mostly limits the damage rather than earning trust, so even a near-perfect response ends at only +10. The public can't judge what they don't know about yet, so changes to it are held until the announcement. They land when the player continues from "Eight Minutes", together with the shock of the news itself (`announcement` in `STATS`). Until then the HUD shows it as "Not public". If any stat reaches its minimum (zero, or -50 for Public trust), the game ends early. Otherwise the epilogue judges how you came through and closes with lessons learned.
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
 
@@ -73,10 +73,11 @@ After the ending, **What this breach taught you** opens the lessons screen. Each
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about 25% of the time: Signed Off 10.6%, Sidelined 5.5%, The Team Walks 5.1%, Lost the Public 3.3%;
-- reaches the best ending, Through the Storm, about 11% of the time (it needs Public trust of at least `TRUST_KEPT`, 35);
-- keeps the team and themselves going but loses the public (Strong Team, Bad Headlines) about 9% of the time;
-- most often ends with a Pyrrhic Victory (about 33%);
+- ends early about 30% of the time: Signed Off 10.3%, Lost the Public 9.4%, Sidelined 5.4%, The Team Walks 5.1%;
+- reaches the best ending, Through the Storm, about 8% of the time (it needs Public trust of at least `TRUST_KEPT`, -30);
+- keeps the team and themselves going but loses the public (Strong Team, Bad Headlines) about 12% of the time;
+- most often ends with a Pyrrhic Victory (about 31%);
+- ends with Public trust between -40 and -20 most of the time, and never above +10;
 - runs past Legal's date about 31% of the time.
 
 No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, making people rest, escalating the share sale, and funding recovery.
