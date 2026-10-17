@@ -392,13 +392,14 @@ var INTERLUDES = {
     // Choices that looked cheap at the time cost you here, and some that
     // cost you at the time pay off.
     stats: function (flags) {
-      var influence = 0, you = 0;
-      if (flags.narrow_scope) { influence -= 5; you -= 5; }
-      if (flags.revised_up) influence -= 5;
+      var influence = 0, you = 0, trust = 0;
+      // A number that goes up live on air costs the public's trust too.
+      if (flags.narrow_scope) { influence -= 5; you -= 5; trust -= 5; }
+      if (flags.revised_up) { influence -= 5; trust -= 10; }
       if (flags.date_forward) influence += 5;
       else { influence -= 5; you -= 5; }
       if (flags.shielded) influence += 5;
-      return { internalInfluence: influence, playerHealth: you };
+      return { internalInfluence: influence, playerHealth: you, publicTrust: trust };
     },
     next: "act4_dutyofcare",
   },

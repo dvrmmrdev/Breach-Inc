@@ -13,7 +13,9 @@
     // from before there was one don't have it, and carry on where they were.
     // `choices` records the option picked in each scene, by index, for the
     // lessons at the end.
-    return { node: START_NODE, days: 0, stats: stats, flags: {}, choices: {}, log: [], silence: null, deadline: null, ended: null, started: false };
+    // `held` keeps Public trust changes made before the announcement, which
+    // only land once the public know.
+    return { node: START_NODE, days: 0, stats: stats, held: {}, flags: {}, choices: {}, log: [], silence: null, deadline: null, ended: null, started: false };
   }
 
   function save() {
@@ -23,7 +25,12 @@
   function load() {
     try {
       var saved = JSON.parse(localStorage.getItem(SAVE_KEY));
-      if (saved && (saved.ended || GAME_NODES[saved.node])) return saved;
+      if (saved && (saved.ended || GAME_NODES[saved.node])) {
+        // Saves from before Public trust existed start it fresh.
+        for (var id in STATS) if (saved.stats[id] == null) saved.stats[id] = STATS[id].start;
+        saved.held = saved.held || {};
+        return saved;
+      }
     } catch (e) { /* storage unavailable or corrupt */ }
     return null;
   }
@@ -101,12 +108,51 @@
     if (node.deadline && state.deadline == null) state.deadline = { day: state.days + node.deadline, done: false };
   }
 
+  // Whether the breach is public yet: set once the player has lived through
+  // the announcement itself.
+  function announced() {
+    return !!state.flags.public;
+  }
+
   function applyStats(stats, changes) {
     if (typeof stats === "function") stats = stats(state.flags, state.stats);
     for (var id in stats || {}) {
       var delta = stats[id];
+      if (!delta) continue;
+      // The public can't judge what they don't know about yet: hold the
+      // change until the announcement.
+      if (STATS[id].public && !announced()) {
+        state.held[id] = (state.held[id] || 0) + delta;
+        changes.push(STATS[id].label + " " + signed(delta) + " when it's public");
+        continue;
+      }
       state.stats[id] = Math.max(0, Math.min(100, state.stats[id] + delta));
-      if (delta) changes.push(STATS[id].label + " " + signed(delta));
+      changes.push(STATS[id].label + " " + signed(delta));
+    }
+  }
+
+  // Announcement day: the shock of the news itself, plus everything held
+  // back until the public knew.
+  function goPublic() {
+    var changes = [];
+    var stats = {};
+    var shock = 0, prepared = 0;
+    for (var id in STATS) {
+      if (!STATS[id].public) continue;
+      shock += STATS[id].announcement || 0;
+      prepared += state.held[id] || 0;
+      stats[id] = (STATS[id].announcement || 0) + (state.held[id] || 0);
+    }
+    state.held = {};
+    state.flags.public = true;
+    applyStats(stats, changes);
+    if (changes.length) {
+      state.log.push({
+        title: "Announcement day",
+        choice: "",
+        outcome: "The public hear the news (" + signed(shock) + "), and judge everything you prepared for them (" + signed(prepared) + ").",
+        effects: changes.join(" · "),
+      });
     }
   }
 
@@ -149,6 +195,7 @@
     var changes = [];
     applyStats(step.stats, changes);
     if (step.set) state.flags[step.set] = true;
+    if (node.deadlineCheck) goPublic();
     if (logChoice && state.choices) state.choices[state.node] = node.choices.indexOf(step);
     // Legal can bring the date forward, but never to before tomorrow.
     if (step.deadlineShift && state.deadline) {
@@ -203,7 +250,13 @@
       }
       hud.appendChild(b);
     }
-    for (var id in STATS) box(STATS[id].label, String(state.stats[id]), state.stats[id]);
+    for (var id in STATS) {
+      if (STATS[id].public && !announced() && !state.ended) {
+        box(STATS[id].label, "Not public", null, "pending");
+        continue;
+      }
+      box(STATS[id].label, String(state.stats[id]), state.stats[id]);
+    }
     if (state.silence && state.silence.to == null && !state.ended) {
       box("Days in silence", String(silenceDays()), null, "silence days-silent");
     }
@@ -399,7 +452,7 @@
       "Breach Inc. is a text-based game for security, tech and business leaders. You'll live through a major data breach from the inside: the weeks of secrecy before the announcement, the storm that follows it, and what it costs the people who respond.",
       "Breach Inc. is fiction, inspired by my experience of working through a major cyber breach. The company, people and events are invented or composites, and it isn't an account of any real organisation's response, or of what I or anyone else decided. What's real is what it felt like - the pressure, the silence and the impossible choices.",
       "Your choices shape the story, and many of its events and outcomes only happen on some paths. None of them should be read as a record of what really happened, or of what anyone really did.",
-      "Every decision takes time and moves three things - your influence, your team's health and your own. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices affected the scenario and provides some questions to take back to your team.",
+      "Every decision takes time and moves four things - your influence, your team's health, your own health, and, once the breach is public, how far the public trust ACME Inc.'s response. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices affected the scenario and provides some questions to take back to your team.",
     ].forEach(function (text) { card.appendChild(el("p", "narrative", text)); });
     card.appendChild(el("h2", null, "Using Breach Inc."));
     card.appendChild(paragraph([

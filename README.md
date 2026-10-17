@@ -10,9 +10,9 @@ A text adventure for security, tech and business leaders: a work of fiction, ins
 
 Between the decisions, short interludes with a single **Continue** button show what it was like to live through it. They include hotel rooms, a war room with no windows, calls home where you can't say anything, and lying to your own team. A **Days in silence** counter runs from the night you're told until the announcement, and the edges of the screen close in as your health falls.
 
-The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it up to three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 2 Team health and 2 Your health for each day over (`OVERRUN_COST` in `game.js`).
+The security team doesn't control the timeline. In Act 1, Legal and Compliance set the announcement date by working back from notification rules and client contracts. A **Legal's date** countdown then runs, and the date doesn't move for the security team. Some events can bring it forward: escalating the share sale brings it up to three days closer. Every choice takes days. Any days of work that don't fit before the date are squeezed into nights, costing 5 Team health, 5 Your health and 5 Influence for each day over (`OVERRUN_COST` in `game.js`).
 
-Every decision takes days and moves three stats: **Influence**, **Team health** and **Your health**. If any of them reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons learned.
+Every decision takes days and moves four stats: **Influence**, **Team health**, **Your health** and **Public trust**. Public trust is how far customers, clients and regulators trust ACME Inc.'s response. The public can't judge what they don't know about yet, so changes to it are held until the announcement. They land when the player continues from "Eight Minutes", together with the shock of the news itself (`announcement` in `STATS`). Until then the HUD shows it as "Not public". If any stat reaches zero, the game ends early. Otherwise the epilogue judges how you came through and closes with lessons learned.
 
 Everything is anonymised. Companies, people, projects and details are fictional or generic, and new content must stay that way.
 
@@ -43,7 +43,7 @@ Each choice can have:
 - `nextNode`: the scene it leads to. Any id that isn't a scene leads to the epilogue.
 - `deadlineShift`: moves Legal's date by this many days.
 - `days`
-- `stats`: changes to the three stats.
+- `stats`: changes to the four stats.
 - `outcome`: shown in the log.
 - `set`: a flag that later scenes can test.
 
@@ -73,9 +73,11 @@ After the ending, **What this breach taught you** opens the lessons screen. Each
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about 11% of the time, usually from burnout;
-- reaches the best ending about 21% of the time;
-- most often ends with a Pyrrhic Victory (about 40%).
+- ends early about 25% of the time: Signed Off 10.6%, Sidelined 5.5%, The Team Walks 5.1%, Lost the Public 3.3%;
+- reaches the best ending, Through the Storm, about 11% of the time (it needs Public trust of at least `TRUST_KEPT`, 35);
+- keeps the team and themselves going but loses the public (Strong Team, Bad Headlines) about 9% of the time;
+- most often ends with a Pyrrhic Victory (about 33%);
+- runs past Legal's date about 31% of the time.
 
 No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, making people rest, escalating the share sale, and funding recovery.
 

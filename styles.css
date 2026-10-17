@@ -74,6 +74,11 @@ body {
   font-weight: bold;
   color: #f0f6fc;
 }
+/* Public trust, before the public know: nothing to judge yet. */
+.stat-box.pending .stat-val {
+  color: #8b949e;
+  font-weight: normal;
+}
 .meter {
   height: 4px;
   background: #30363d;
