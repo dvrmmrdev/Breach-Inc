@@ -39,11 +39,11 @@ var GAME_NODES = {
         outcome: "Business units grumble about change freezes, but your list of systems finally matches reality more often than not.",
       },
       {
-        text: "Fix the relationship with the business, and support growth: prioritise helping product teams release faster, and avoid slowing the business down.",
+        text: "Earn the business's trust first: help product teams release faster, and build the relationships you'll need to get the security backlog funded next quarter.",
         nextNode: "i_inherit",
         days: 5,
         stats: { internalInfluence: 10, teamHealth: 5, playerHealth: 5 },
-        outcome: "Product leaders welcome you warmly. The backlog of overdue security updates stays where it was.",
+        outcome: "Product leaders welcome you warmly, and two of them offer to back your budget case next quarter. Until then, the backlog of overdue security updates stays where it was.",
       },
     ],
   },
@@ -139,11 +139,11 @@ var GAME_NODES = {
         outcome: "Some leaders are put out at being kept at the door. The analysts get their days back, and the board hears one version of the truth.",
       },
       {
-        text: "Answer every leader yourself, whenever they ask.",
+        text: "Keep the door open: the leaders who'll answer for this need to see the evidence for themselves, so walk each of them through it personally.",
         nextNode: "act1_containment",
         days: 0,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
-        outcome: "The leaders feel informed. You spend your days repeating yourself, and the team still get pulled in when you're not there.",
+        outcome: "The leaders trust what they've seen with their own eyes, and they back you in rooms you're not in. You spend your days repeating yourself, and the team still get pulled in when you're not there.",
       },
     ],
   },
@@ -322,7 +322,7 @@ var GAME_NODES = {
         outcome: "There's grumbling, and a couple of handovers go badly, but the people who most needed sleep finally get some. Fewer mistakes land on your desk overnight.",
       },
       {
-        text: "Let everyone keep going while the adrenaline holds.",
+        text: "Let people keep going while the adrenaline holds: Legal's date won't move, and this is the stretch that decides the announcement.",
         nextNode: "act2_trading",
         days: 0,
         stats: { internalInfluence: 5, teamHealth: -15, playerHealth: -5 },
@@ -357,7 +357,7 @@ var GAME_NODES = {
         outcome: "It becomes a matter for the regulators. To limit the insider risk, Legal bring the announcement forward. Your concern is on record.",
       },
       {
-        text: "Leave it to Compliance and focus on the launch.",
+        text: "Leave it with Compliance, who own insider dealing, and keep your own attention on the launch.",
         nextNode: "i_countdown",
         days: 0,
         stats: { internalInfluence: 5, teamHealth: 0, playerHealth: -10 },
@@ -386,11 +386,11 @@ var GAME_NODES = {
         outcome: "There's shock but no leak. Your team hear it from you, not the news.",
       },
       {
-        text: "Staff learn with the public, to minimise the risk of a leak.",
+        text: "Tell staff at the moment of release, not before: until it's public, this is price-sensitive inside information, and every extra person told is a leak and trading risk.",
         nextNode: "i_morning",
         days: 0,
         stats: { internalInfluence: 5, teamHealth: -15, playerHealth: -5 },
-        outcome: "Your engineers find out from news alerts on their phones. Some of them never quite forgive it.",
+        outcome: "Nothing leaks, and nobody can trade on it. But your engineers find out from news alerts on their phones, minutes before the first call from a friend. Some of them never quite forgive it.",
       },
     ],
   },
@@ -443,11 +443,11 @@ var GAME_NODES = {
         outcome: "It's an embarrassing day, but it's over in one news cycle.",
       },
       {
-        text: "Correct the posts quietly and say nothing.",
+        text: "Correct the posts and put the right address on every official channel, without a public apology that would give the story a second day.",
         nextNode: "i_exposed",
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
-        outcome: "Journalists had already taken screenshots. The cover-up becomes the story.",
+        outcome: "The fix is quick, and most people never see the wrong link. Then the researcher posts screenshots of the deleted posts, and the story becomes why ACME Inc. didn't say sorry.",
       },
     ],
   },
@@ -558,7 +558,7 @@ var GAME_NODES = {
         outcome: "The remediation plan slips a month. Most of your team are still there a year later.",
       },
       {
-        text: "Push through to finish the remediation programme first.",
+        text: "Push through to finish the remediation programme first: the board, regulators and clients want proof it's fixed, and an open programme is the company's biggest exposure.",
         nextNode: "i_normal",
         days: 10,
         stats: { internalInfluence: 10, teamHealth: -5, playerHealth: -5 },
@@ -697,7 +697,7 @@ var LESSONS = [
       if (visitors == null) return null;
       var text = visitors === 0
         ? "You shielded the war room with one point of contact and one update a day. Some leaders were put out, but the analysts got their days back."
-        : "You answered every leader whenever they asked, and analysts kept being pulled away from the work.";
+        : "You walked every leader through it personally. They trusted what they saw, but analysts kept being pulled away from the work.";
       if (later != null) {
         text += " Later, while leaders prepared for hearings, the response stalled waiting for decisions. " +
           (later === 0
@@ -809,7 +809,7 @@ var LESSONS = [
       if (c == null) return null;
       return c === 0
         ? { verdict: "paid", text: "You briefed all staff an hour before the release. There was shock, but your team heard it from you." }
-        : { verdict: "manage", text: "Your staff learned with the public, from news alerts on their phones. Some never quite forgave it." };
+        : { verdict: "manage", text: "You told staff at the moment of release to protect the announcement. Nothing leaked, but they learned from news alerts on their phones, and some never quite forgave it." };
     },
     lesson: "Your own staff are your first audience, not your last. Plan when and how they'll be told, what they can say when friends ask, and how you'll support them when journalists come looking.",
     ask: [
