@@ -79,6 +79,15 @@
 
   // How many days a choice would run past Legal's date, squeezed into nights,
   // so its button can warn. Mirrors advance() and holdToDeadline().
+  // What a choice needs and the player lacks, as [stat, level], or null. A
+  // choice that takes extra spend `needs` Influence to get the budget.
+  function shortOf(choice) {
+    for (var id in choice.needs || {}) {
+      if (state.stats[id] < choice.needs[id]) return [id, choice.needs[id]];
+    }
+    return null;
+  }
+
   function daysPast(choice) {
     var d = state.deadline;
     if (!d || d.done) return 0;
@@ -202,6 +211,11 @@
     if (step.set) state.flags[step.set] = true;
     if (node.deadlineCheck) goPublic();
     if (logChoice && state.choices) state.choices[state.node] = node.choices.indexOf(step);
+    // Remember any option that was out of reach, for the lessons.
+    if (logChoice && node.choices.some(shortOf)) {
+      state.flags.lockedOut = state.flags.lockedOut || {};
+      state.flags.lockedOut[state.node] = true;
+    }
     // Legal can bring the date forward, but never to before tomorrow.
     if (step.deadlineShift && state.deadline) {
       state.deadline.day = Math.max(startDay + 1, state.deadline.day + step.deadlineShift);
@@ -385,8 +399,16 @@
       if (node.stage) btn.style.animationDelay = choicesAt + i * 0.2 + "s";
       btn.type = "button";
       var past = daysPast(choice);
-      btn.appendChild(el("span", "choice-cost" + (past ? " past" : ""),
-        dayCount(choice.days) + (past ? " · " + dayCount(past) + " past Legal's date" : "")));
+      var short = shortOf(choice);
+      if (short) {
+        // Out of reach: shown, so the player sees what influence would buy.
+        btn.disabled = true;
+        btn.appendChild(el("span", "choice-cost locked", "Needs " + STATS[short[0]].label + " " + short[1] +
+          " to get the budget · you have " + state.stats[short[0]]));
+      } else {
+        btn.appendChild(el("span", "choice-cost" + (past ? " past" : ""),
+          dayCount(choice.days) + (past ? " · " + dayCount(past) + " past Legal's date" : "")));
+      }
       btn.addEventListener("click", function () { advance(choice, choice.text); });
       card.appendChild(btn);
     });
@@ -460,7 +482,7 @@
       "Breach Inc. is a text-based game for security, tech and business leaders. You'll live through a major data breach from the inside: the weeks of secrecy before the announcement, the storm that follows it, and what it costs the people who respond.",
       "Breach Inc. is fiction, inspired by my experience of working through a major cyber breach. The company, people and events are invented or composites, and it isn't an account of any real organisation's response, or of what I or anyone else decided. What's real is what it felt like - the pressure, the silence and the impossible choices.",
       "Your choices shape the story, and many of its events and outcomes only happen on some paths. None of them should be read as a record of what really happened, or of what anyone really did.",
-      "Every decision takes time and moves four things - your influence, your team's health, your own health, and, once the breach is public, how far the public trust ACME Inc.'s response. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices affected the scenario and provides some questions to take back to your team.",
+      "Every decision takes time and moves four things - your influence, your team's health, your own health, and, once the breach is public, how far the public trust ACME Inc.'s response. Some choices need extra spending, and you'll only get the budget if you have enough influence. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices affected the scenario and provides some questions to take back to your team.",
     ].forEach(function (text) { card.appendChild(el("p", "narrative", text)); });
     card.appendChild(el("h2", null, "Using Breach Inc."));
     card.appendChild(paragraph([
@@ -615,7 +637,7 @@
     card.appendChild(el("div", "act-tag", "Lessons learned"));
     card.appendChild(el("h1", null, "Your breach in review"));
     card.appendChild(el("p", "narrative", LESSONS_INTRO));
-    var record = state.choices && { choices: state.choices, flags: state.flags, finished: !state.ended.early };
+    var record = state.choices && { choices: state.choices, flags: state.flags, stats: state.stats, log: state.log, finished: !state.ended.early };
     LESSONS.forEach(function (lesson, i) {
       var box = el("section", "lesson reveal");
       box.style.animationDelay = i * 0.3 + "s";

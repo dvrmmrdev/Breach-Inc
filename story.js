@@ -22,6 +22,10 @@ var STATS = {
 
 var START_NODE = "act0_start";
 
+// Choices that need extra spend can only be picked with this much Influence:
+// in a crisis, influence is what gets you the budget.
+var BUDGET_INFLUENCE = 35;
+
 var GAME_NODES = {
   act0_start: {
     act: "Act 0: Things Are Looking Up",
@@ -290,11 +294,20 @@ var GAME_NODES = {
         outcome: "The agents are ready on time. Your team's inbox is about to become every caller's escalation route.",
       },
       {
-        text: "Train agents in depth, accepting the long hours and overtime it takes to hit Legal's date.",
+        text: "Pay for in-depth training for every agent, and the overtime it takes to finish before Legal's date.",
         nextNode: "i_3am",
         days: 5,
+        needs: { internalInfluence: BUDGET_INFLUENCE },
         stats: { internalInfluence: -5, teamHealth: -5, playerHealth: -5, publicTrust: 5 },
         outcome: "The agents can answer most questions themselves, but the trainers and your team work late every night to get them there.",
+      },
+      {
+        text: "Use the contact centre partners' standard breach script as it is, with no extra training and no escalation route.",
+        nextNode: "i_3am",
+        days: 2,
+        stats: { playerHealth: -5, publicTrust: -5 },
+        set: "standard_script",
+        outcome: "The agents are ready on time, and nobody has to work late. On the day, they read the same paragraph to every caller, and screenshots of the script are online within hours.",
       },
     ],
   },
@@ -479,8 +492,16 @@ var GAME_NODES = {
         text: "Pay a premium for emergency capacity elsewhere and publish honest wait times.",
         nextNode: "i_home",
         days: 3,
+        needs: { internalInfluence: BUDGET_INFLUENCE },
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5 },
         outcome: "Finance wince, and the published wait times make headlines, but your team keep working on security.",
+      },
+      {
+        text: "Let the queues run, and point callers to the response site instead.",
+        nextNode: "i_home",
+        days: 3,
+        stats: { internalInfluence: -5, playerHealth: -5, publicTrust: -5 },
+        outcome: "Nothing extra is spent, and your team keep working on security. Hold times pass three hours, the journalist's live count runs for a week, and the regulator asks for a daily report on wait times.",
       },
     ],
   },
@@ -560,6 +581,7 @@ var GAME_NODES = {
         text: "Fund recovery: time off, counselling and retention bonuses, and take leave yourself.",
         nextNode: "i_normal",
         days: 10,
+        needs: { internalInfluence: BUDGET_INFLUENCE },
         stats: { internalInfluence: -5, teamHealth: 15, playerHealth: 15, publicTrust: -5 },
         outcome: "The remediation plan slips a month. Most of your team are still there a year later.",
       },
@@ -569,6 +591,13 @@ var GAME_NODES = {
         days: 10,
         stats: { internalInfluence: 10, teamHealth: -5, playerHealth: -5, publicTrust: 5 },
         outcome: "The programme closes on schedule. The resignation letters arrive soon after.",
+      },
+      {
+        text: "Give everyone a long weekend off, in turns, within the budget you already have.",
+        nextNode: "i_normal",
+        days: 10,
+        stats: { teamHealth: 5, playerHealth: 5 },
+        outcome: "It helps, a little. Three days off doesn't undo two months, and the recruiters keep calling. Some of your team are still there a year later.",
       },
     ],
   },
@@ -762,20 +791,39 @@ var LESSONS = [
     review: function (r) {
       var site = r.choices.act2_scale, lookalike = r.choices.act3_lookalike != null;
       if (site == null) return null;
-      return site === 0
-        ? {
-          verdict: "manage",
-          text: "You kept the white-label site on a new domain. It protected the cover story, but it looked exactly like phishing" +
-            (lookalike ? ", and ACME Inc.'s own social media posts ended up sending people to a lookalike." : "."),
+      var verdict = site === 0 ? "manage" : "paid";
+      var text = site === 0
+        ? "You kept the white-label site on a new domain. It protected the cover story, but it looked exactly like phishing" +
+          (lookalike ? ", and ACME Inc.'s own social media posts ended up sending people to a lookalike." : ".")
+        : "You insisted on ACME Inc.'s own domain, built in secret by the read-in group. People recognised the address" +
+          (lookalike ? ", although a single mistyped link still sent some of them to a lookalike." : ".");
+      // Where Public trust ended up, once the public knew, and the scenes
+      // that cost it (from the log, as the player saw them).
+      if (r.flags.public && r.stats) {
+        var trust = r.stats.publicTrust;
+        var shown = (trust > 0 ? "+" : "") + trust;
+        if (trust <= STATS.publicTrust.min) {
+          verdict = "manage";
+          text += " Public trust fell to " + shown + ", clients left, and the board handed the response to an outside firm.";
+        } else if (trust >= -10) {
+          text += " Public trust ended at " + shown + ", as good as anyone could hope for after a breach this size. Most clients stayed.";
+        } else if (trust >= TRUST_KEPT) {
+          text += " Public trust ended at " + shown + ". The public didn't forgive ACME Inc., but most clients stayed.";
+        } else {
+          verdict = "manage";
+          text += " Public trust ended at " + shown + ", and clients were leaving. However well the response worked inside, the public never believed in it.";
         }
-        : {
-          verdict: "paid",
-          text: "You insisted on ACME Inc.'s own domain, built in secret by the read-in group. People recognised the address" +
-            (lookalike ? ", although a single mistyped link still sent some of them to a lookalike." : "."),
-        };
+        var costly = [];
+        (r.log || []).forEach(function (e) {
+          if (e.choice && /Public trust −/.test(e.effects) && costly.indexOf(e.title) < 0) costly.push(e.title);
+        });
+        if (costly.length) text += " Your choices that cost it: " + costly.join(", ") + ".";
+      }
+      return { verdict: verdict, text: text };
     },
-    lesson: "Send people somewhere they already trust. Prepare your public response, from the website to the call scripts, and register likely lookalike domains, before you need them.",
+    lesson: "Send people somewhere they already trust. Prepare your public response, from the website to the call scripts, and register likely lookalike domains, before you need them. The public's trust is mostly won or lost before they know anything: in the site, the scripts and the number you prepare in secret.",
     ask: [
+      "If we were breached, what would our clients and regulators need to see from us in the first week to keep trusting us?",
       "Where would we send millions of worried people, and would they believe it was really us?",
       "Could we stand up the public-facing communications and services we'd need after a breach? How long would it take, and how would we do it within the confidentiality of an incident response?",
     ],
@@ -786,17 +834,26 @@ var LESSONS = [
     review: function (r) {
       var agents = r.choices.act2_callcentres, storm = r.choices.act3_storm;
       if (agents == null) return null;
-      var text = agents === 0
-        ? "You gave the contact centre agents a tight script and routed every unusual question to your team."
-        : "You trained the contact centre agents in depth, and the trainers and your team worked late every night to get them there.";
-      if (storm == null) return { verdict: "tradeoff", text: text };
-      return storm === 0
-        ? { verdict: "manage", text: text + " When the storm hit, you moved overflow calls to your security team, and your analysts spent a week reading out call scripts." }
-        : { verdict: "tradeoff", text: text + " When the storm hit, you paid a premium for emergency capacity and published honest wait times. It cost money and headlines, but your team kept working on security." };
+      var locked = r.flags.lockedOut || {};
+      var text = [
+        "You gave the contact centre agents a tight script and routed every unusual question to your team.",
+        "You paid to train the contact centre agents in depth, and the trainers and your team worked late every night to get them there.",
+        "You used the contact centre partners' standard script, with no extra training, and callers heard the same paragraph every time.",
+      ][agents];
+      if (locked.act2_callcentres) text += " You didn't have the influence to get budget for in-depth training.";
+      if (storm == null) return { verdict: agents === 2 ? "manage" : "tradeoff", text: text };
+      text += [
+        " When the storm hit, you moved overflow calls to your security team, and your analysts spent a week reading out call scripts.",
+        " When the storm hit, you paid a premium for emergency capacity and published honest wait times. It cost money and headlines, but your team kept working on security.",
+        " When the storm hit, you let the queues run, and hold times passed three hours.",
+      ][storm];
+      if (locked.act3_storm) text += " You didn't have the influence to get budget for emergency capacity.";
+      return { verdict: storm === 1 ? "tradeoff" : "manage", text: text };
     },
-    lesson: "Have contracts and processes in place to bring in outside help quickly: contact centres, forensic analysts, legal and communications. Capacity bought in the middle of a crisis costs more and arrives later.",
+    lesson: "Have contracts and processes in place to bring in outside help quickly: contact centres, forensic analysts, legal and communications. Capacity bought in the middle of a crisis costs more and arrives later, and it needs someone with the influence to approve the spend. Agree crisis spending authority in advance, so it doesn't depend on who has goodwill left.",
     ask: [
       "If we needed a thousand extra people answering calls next week, whose number would we ring?",
+      "Who can approve unbudgeted spending in a crisis, up to what amount, and how fast?",
       "If we needed dozens of extra cyber analysts to comb through logs, how would we give them access? Would we need to build and deliver laptops, or provide an internet-facing virtual desktop? Is all of that documented and practised?",
     ],
   },
@@ -847,11 +904,14 @@ var LESSONS = [
     review: function (r) {
       var c = r.choices.act4_dutyofcare;
       if (c == null) return null;
-      var text = c === 0
-        ? "You funded recovery and took leave yourself. Remediation slipped a month, and most of your team were still there a year later."
-        : "You pushed through to finish remediation first. It closed on schedule, and then the resignations arrived.";
+      var text = [
+        "You funded recovery and took leave yourself. Remediation slipped a month, and most of your team were still there a year later.",
+        "You pushed through to finish remediation first. It closed on schedule, and then the resignations arrived.",
+        "You gave everyone a long weekend off, within the budget you already had. It helped a little, and some of your team stayed.",
+      ][c];
+      if (r.flags.lockedOut && r.flags.lockedOut.act4_dutyofcare) text += " You didn't have the influence to get budget for a proper recovery.";
       if (r.finished) text += " Months later, you couldn't bring yourself to sign off a routine risk.";
-      return { verdict: c === 0 ? "paid" : "manage", text: text };
+      return { verdict: c === 0 ? "paid" : c === 2 ? "tradeoff" : "manage", text: text };
     },
     lesson: "Plan for recovery as seriously as for the response, including how you'll make risk decisions again after living through the worst.",
     ask: [

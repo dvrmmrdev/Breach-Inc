@@ -70,15 +70,20 @@ Choices show only how many days they take. The effect on people is revealed in t
 
 After the ending, **What this breach taught you** opens the lessons screen. Each lesson in `LESSONS` (in `story.js`) looks back at the player's own choices through its `review` function, which gets the option picked in each scene (`choices`, by scene id), the `flags`, and whether the game was `finished`. It returns a verdict (`paid`, `manage` or `tradeoff`) and what happened, or null if the player never got that far. Each lesson also has `ask`: questions to take back to your own team, which are gathered into one printable list. If you change or reorder a scene's choices, update the lessons that read them.
 
+## Budget
+
+Choices that need extra spending have `needs: { internalInfluence: BUDGET_INFLUENCE }` (35, in `story.js`). Below that, the button is disabled and says how much Influence it needs. Each of those scenes also has a free option that turns out worse. The scene is recorded in `flags.lockedOut`, so the lessons can say the budget was out of reach. There are three of them: in-depth agent training, emergency call centre capacity and funded recovery.
+
 ## Balance
 
 With the current numbers, a player choosing at random:
-- ends early about 30% of the time: Signed Off 10.3%, Lost the Public 9.4%, Sidelined 5.4%, The Team Walks 5.1%;
-- reaches the best ending, Through the Storm, about 8% of the time (it needs Public trust of at least `TRUST_KEPT`, -30);
-- keeps the team and themselves going but loses the public (Strong Team, Bad Headlines) about 12% of the time;
-- most often ends with a Pyrrhic Victory (about 31%);
+- ends early about 30% of the time: Lost the Public 15.2%, Signed Off 8.5%, Sidelined 3.7%, The Team Walks 2.9%;
+- reaches the best ending, Through the Storm, about 8.5% of the time (it needs Public trust of at least `TRUST_KEPT`, -30);
+- keeps the team and themselves going but loses the public (Strong Team, Bad Headlines) about 11% of the time;
+- most often ends with a Pyrrhic Victory (about 32%);
 - ends with Public trust between -40 and -20 most of the time, and never above +10;
-- runs past Legal's date about 31% of the time.
+- runs past Legal's date about 25% of the time;
+- finds the budget out of reach for agent training 9% of the time, emergency capacity 33% and funded recovery 26%.
 
 No single decision should give one option an overwhelming advantage, except the ones that teach the lessons: shielding the war room, making people rest, escalating the share sale, and funding recovery.
 

@@ -167,6 +167,19 @@ h3 {
 .choice-cost.past {
   color: #f85149;
 }
+/* A choice that needs budget, which the player hasn't the influence to get. */
+.choice-btn:disabled {
+  cursor: not-allowed;
+  color: #8b949e;
+  background: transparent;
+  border-style: dashed;
+}
+.choice-btn:disabled:hover {
+  border-color: #30363d;
+}
+.choice-cost.locked {
+  color: #d29922;
+}
 .log-heading {
   margin-bottom: 6px;
 }
