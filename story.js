@@ -109,7 +109,7 @@ var GAME_NODES = {
           ? "You recognise the portal's name. It was on your list of systems, due for its security update next quarter."
           : "You recognise the portal's name. It was in the backlog of overdue security updates you decided to leave alone.",
         "The internal response team, Project Lantern, must gather and search months of system records, and replay the attackers' queries.",
-        "The deadline isn't yours to set. Legal and Compliance, working back from regulators' notification rules and the breach clauses in client contracts, have already fixed the announcement date: 27 days from today. Whatever isn't finished by then will be finished at night, and the board will remember who asked for more time.",
+        "The deadline isn't yours to set. Within days of discovery, Legal sent the regulator the bare formal notice the rules require: a breach is under investigation, details to follow. The card schemes have quietly been given the affected card numbers, so banks can watch for fraud. Telling the public is different. The rules allow time to find out who is affected and make the systems safe, but not to wait, and client contracts promise banks and retailers notice before the press. Working back from all of that, Legal and Compliance have fixed the announcement date: 27 days from today. Whatever isn't finished by then will be finished at night, and the board will remember who asked for more time.",
       ];
     },
     // Legal's announcement date, in days from now. Days spent before the
@@ -167,11 +167,11 @@ var GAME_NODES = {
     title: "Overnight Changes",
     text: function (flags) {
       return [
-        "Just after midnight, your network lead puts the containment plan on your desk and sits down without being asked. Thousands of passwords, including the ones systems use to talk to each other, must be changed, the network reshaped, and upgraded security controls deployed, all without alerting staff outside the read-in group that anything is wrong.",
+        "Just after midnight, your network lead puts the hardening plan on your desk and sits down without being asked. The way in was closed weeks ago, and Lantern has found no sign the attackers are still inside. But the day the breach is announced, every attacker in the world will know where ACME Inc. is weakest. Thousands of passwords, including the ones systems use to talk to each other, must be changed, the network reshaped, and upgraded security controls deployed before that day, all without alerting staff outside the read-in group that anything is wrong.",
         flags.shielded
           ? "Because the war room is shielded, the people who would run the changes have had their days back. They're tired, but they're rested enough to try it in one night."
           : "The people who would run the changes have spent the week explaining the picture to visiting leaders. They're exhausted before they start, and one night of changes leaves no room for mistakes.",
-        "'One night, and something will break. A week, and that's a week the attackers might still have a way in. Either way, the service desk takes the calls, and nobody can tell them why.'",
+        "'One night, and something will break. A week, and it's a week off Legal's date, and a week in which anything they took could still be used. Either way, the service desk takes the calls, and nobody can tell them why.'",
       ];
     },
     choices: [
@@ -187,7 +187,7 @@ var GAME_NODES = {
         nextNode: "i_family",
         days: 5,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
-        outcome: "The cover holds and nothing breaks, but you lie awake wondering what the attackers could still reach in the meantime.",
+        outcome: "The cover holds and nothing breaks, but you lie awake counting the days to the announcement, and wondering whether it'll be finished in time.",
       },
     ],
   },
@@ -394,13 +394,13 @@ var GAME_NODES = {
     title: "Who Do We Tell?",
     text: [
       "The crisis committee meets on the top floor, in a room you've only ever walked past. Until your promotion, the board was something that happened to other people: you sent papers up, and decisions came back down. Now there's a card with your name on it, between the General Counsel and the Chief Financial Officer.",
-      "The first item is who outside the company hears before the announcement. Legal's position is clear: the regulator gets the formal notification the rules require, on the day they require it, and nobody else is told. Every extra party who knows is another chance of a leak.",
+      "The first item is who outside the company hears before the announcement. Legal's position is clear: the regulator has had the bare formal notice the rules require, it gets the full details on announcement day, and nobody else is told. Every extra party who knows is another chance of a leak.",
       "You've worked with law enforcement and the national cyber security agency before, at a technical level. They may know who these attackers are, and they may have seen them elsewhere. But once they're involved, they may ask ACME Inc. to hold the announcement while they follow the trail.",
       "The chair turns to you. 'Security view?' Every head turns with them. You've never spoken in this room before.",
     ],
     choices: [
       {
-        text: "Recommend briefing the regulator in confidence now, and bringing in law enforcement and the national cyber security agency.",
+        text: "Recommend briefing the regulator fully, in confidence, now, and bringing in law enforcement and the national cyber security agency.",
         nextNode: "act2_statement",
         days: 1,
         needs: { internalInfluence: BOARD_INFLUENCE },
@@ -411,11 +411,11 @@ var GAME_NODES = {
         outcome: "It takes a long argument, and the General Counsel's silence afterwards says more than the minutes will. The regulator thanks you for the early call. Two days later, the investigators ask for more time before the announcement, and Legal's date moves back.",
       },
       {
-        text: "Support Legal: notify the regulator formally on the day, and keep the circle closed.",
+        text: "Support Legal: give the regulator the full details on the day, and keep the circle closed.",
         nextNode: "act2_statement",
         days: 0,
         stats: { internalInfluence: 5 },
-        outcome: "The committee moves on within a minute, and the chair thanks you for being pragmatic. On announcement day, the regulator will learn the details from the press release, an hour after the formal notice.",
+        outcome: "The committee moves on within a minute, and the chair thanks you for being pragmatic. On announcement day, the regulator will get the full details an hour before the press release.",
       },
     ],
   },
@@ -753,19 +753,19 @@ var LESSONS = [
     title: "Foundations, automation and rehearsal",
     scenes: "Promotion & Inherited Architecture \u00b7 Overnight Changes",
     review: function (r) {
-      var first = r.choices.act0_start, containment = r.choices.act1_containment;
+      var first = r.choices.act0_start, hardening = r.choices.act1_containment;
       if (first == null) return null;
       var text = first === 0
         ? "In your first week, you put finding every system and clearing overdue security updates first. The breached portal was on your list, but not yet updated. Because of your list of systems, the war room knew which systems existed and where their logs were, and that saved days."
         : "In your first week, you put helping the business move faster first. The breached portal was in the backlog you left alone, and the war room lost days finding out which systems existed.";
-      if (containment === 0) text += " Later, you made all the containment changes in one night, and two business systems failed to start.";
-      if (containment === 1) text += " Later, you staged the containment changes over a week, and lay awake wondering what the attackers could still reach.";
+      if (hardening === 0) text += " Later, you made all the hardening changes in one night, and two business systems failed to start.";
+      if (hardening === 1) text += " Later, you staged the hardening changes over a week, and lay awake wondering whether they'd be finished before the announcement.";
       return { verdict: first === 0 ? "paid" : "manage", text: text };
     },
-    lesson: "Knowing which systems you own, keeping them up to date, and keeping their records are what you'll depend on when it matters. They never feel as urgent as this quarter's release, until they are. Practise for the worst case too: every containment step you rehearse, automate or remove the need for now is one less impossible call in the middle of the night.",
+    lesson: "Knowing which systems you own, keeping them up to date, and keeping their records are what you'll depend on when it matters. They never feel as urgent as this quarter's release, until they are. Practise for the worst case too: every hardening step you rehearse, automate or remove the need for now is one less impossible call in the middle of the night, and one less thing to finish before the world knows.",
     ask: [
       "If we were breached tonight, how long would it take to list every internet-facing system we own, and who owns each one?",
-      "What actions would we need to take to contain a breach, and how many of them could we remove or automate now, such as regular credential rotation?",
+      "What would we need to change to make ourselves a harder target before announcing a breach, and how many of those changes could we remove or automate now, such as regular credential rotation?",
       "When did we last rehearse a breach we couldn't tell most of our own staff about?",
     ],
   },
@@ -867,7 +867,7 @@ var LESSONS = [
         ? "You recommended briefing the regulator early and bringing in law enforcement and the national cyber security agency, and carried the room. Legal's date moved back, and at the hearing the regulator confirmed ACME Inc. came to them early."
         : locked.act2_agencies
           ? "You'd have recommended telling the regulator and law enforcement early, but you didn't have the influence to carry the room, so Legal's position stood. The regulator learned the details with the public."
-          : "You supported Legal: the regulator was notified formally on the day, and nobody else was told. The regulator learned the details with the public.";
+          : "You supported Legal: the regulator had only the formal notice until the day, and nobody else was told. The regulator learned the details with the public.";
       if (words != null) {
         text += words === 0
           ? " You argued for a plain apology from the CEO, and won. Some called it weak; more called it honest."

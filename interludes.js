@@ -384,7 +384,7 @@ var INTERLUDES = {
           : "Then the share sale. Investigators want to know what senior staff knew, and when, and your name is on their list. You raised nothing at the time.",
         flags.agencies
           ? "The investigators' evidence says ACME Inc. came to them early, and the regulator confirms it."
-          : "A lawmaker asks why the regulator heard about the breach on the same day as the public.",
+          : "A lawmaker asks why the regulator learned the details of the breach on the same day as the public.",
         flags.shielded
           ? "The lawmaker's timeline matches the updates the war room gave the board, line for line. Nobody can claim they weren't told."
           : null,
