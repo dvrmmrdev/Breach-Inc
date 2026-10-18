@@ -494,7 +494,7 @@
       card.appendChild(el("h2", null, "About this copy"));
       card.appendChild(paragraph([
         "This copy of Breach Inc. is licensed for internal use" + (EDITION.licensee ? " by " + EDITION.licensee : "") +
-          " under an organisation licence. Breach Inc. is © 2026 Dave Rimmer, ",
+          " under an organisation licence. Breach Inc. is © 2026 DVRMMR GAMING LTD, ",
         ["breach-inc.com", "https://breach-inc.com/", true],
         ".",
       ]));
