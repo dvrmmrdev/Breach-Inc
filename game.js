@@ -5,6 +5,11 @@
 (function () {
   var SAVE_KEY = "breach-inc-save";
   var state;
+  // Settings for licensed copies, such as the learning platform package:
+  // `licensed` drops the Ko-fi and licence prompts, `licensee` names the
+  // organisation, `feedbackEmail` is where player feedback goes, and
+  // `onRender` hears how far the player has got. The public game has none.
+  var EDITION = window.BREACH_EDITION || {};
 
   function freshState() {
     var stats = {};
@@ -485,19 +490,29 @@
       "Your choices shape the story, and many of its events and outcomes only happen on some paths. None of them should be read as a record of what really happened, or of what anyone really did.",
       "Every decision takes time and moves four things - your influence, your team's health, your own health, and, once the breach is public, how far the public trust ACME Inc.'s response. Some choices need extra spending, and you'll only get the budget if you have enough influence. There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices affected the scenario and provides some questions to take back to your team.",
     ].forEach(function (text) { card.appendChild(el("p", "narrative", text)); });
-    card.appendChild(el("h2", null, "Using Breach Inc."));
-    card.appendChild(paragraph([
-      "You're welcome to use Breach Inc. in your organisation's security awareness programmes, as long as you use it as it is and include a link to ",
-      ["breach-inc.com", "https://breach-inc.com/"],
-      ". An organisation licence lets you adapt it for your own staff and pay by invoice, and including it in a paid course needs a licence too. ",
-      ["Read the licence", "licence.html"],
-      " for the details.",
-    ]));
-    card.appendChild(paragraph([
-      "If it's useful to your organisation, please consider ",
-      ["supporting it on Ko-fi", "https://ko-fi.com/dvrmmr", true],
-      ".",
-    ]));
+    if (EDITION.licensed) {
+      card.appendChild(el("h2", null, "About this copy"));
+      card.appendChild(paragraph([
+        "This copy of Breach Inc. is licensed for internal use" + (EDITION.licensee ? " by " + EDITION.licensee : "") +
+          " under an organisation licence. Breach Inc. is © 2026 Dave Rimmer, ",
+        ["breach-inc.com", "https://breach-inc.com/", true],
+        ".",
+      ]));
+    } else {
+      card.appendChild(el("h2", null, "Using Breach Inc."));
+      card.appendChild(paragraph([
+        "You're welcome to use Breach Inc. in your organisation's security awareness programmes, as long as you use it as it is and include a link to ",
+        ["breach-inc.com", "https://breach-inc.com/"],
+        ". An organisation licence lets you adapt it for your own staff and comes with an invoice for your training budget, and including it in a paid course needs a licence too. ",
+        ["Read the licence", "licence.html"],
+        " for the details.",
+      ]));
+      card.appendChild(paragraph([
+        "If it's useful to your organisation, please consider ",
+        ["supporting it on Ko-fi", "https://ko-fi.com/dvrmmr", true],
+        ".",
+      ]));
+    }
     var btn = el("button", "next-btn primary-btn", "Begin");
     btn.type = "button";
     btn.addEventListener("click", function () {
@@ -682,12 +697,12 @@
     var support = paragraph([
       "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. If your organisation is using it, an ",
       ["organisation licence", "licence.html#organisation"],
-      " records completions in your learning platform, lets you adapt it for your own staff and pay by invoice, and includes a session deck for running it as a workshop with the free ",
+      " records completions in your learning platform, lets you adapt it for your own staff, comes with an invoice for your training budget, and includes a session deck for running it as a workshop with the free ",
       ["facilitator guide", "facilitator.html"],
       ".",
     ]);
     support.className += " support";
-    questions.appendChild(support);
+    if (!EDITION.licensed) questions.appendChild(support);
     var actions = el("div", "actions");
     var print = el("button", "next-btn", "Print or save as PDF");
     print.type = "button";
@@ -712,7 +727,7 @@
     kofi.href = "https://ko-fi.com/dvrmmr";
     kofi.target = "_blank";
     kofi.rel = "noopener noreferrer";
-    actions.appendChild(kofi);
+    if (!EDITION.licensed) actions.appendChild(kofi);
     questions.appendChild(actions);
     questions.appendChild(copied);
     if (IN_APP_BROWSER) {
@@ -721,10 +736,15 @@
     }
     card.appendChild(questions);
     var author = el("div", "author-note");
-    author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
-      "Get in touch by email", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%3A%20getting%20in%20touch"));
-    author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback"));
-    card.appendChild(author);
+    if (!EDITION.licensed) {
+      author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
+        "Get in touch by email", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%3A%20getting%20in%20touch"));
+      author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback"));
+    } else if (EDITION.feedbackEmail) {
+      author.appendChild(link("Feedback on this exercise is very welcome: ", "email us",
+        "mailto:" + EDITION.feedbackEmail + "?subject=Breach%20Inc.%20feedback"));
+    }
+    if (author.firstChild) card.appendChild(author);
     var again = el("button", "next-btn primary-btn", "Play again with different choices");
     again.type = "button";
     again.addEventListener("click", restart);
@@ -751,6 +771,7 @@
     else if (GAME_NODES[state.node].type === "interlude") renderInterlude(card);
     else renderScene(card);
     renderLog();
+    if (EDITION.onRender) EDITION.onRender({ started: state.started !== false, ended: !!state.ended });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
