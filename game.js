@@ -7,8 +7,10 @@
   var state;
   // Settings for licensed copies, such as the learning platform package:
   // `licensed` drops the Ko-fi and licence prompts, `licensee` names the
-  // organisation, `feedbackEmail` is where player feedback goes, and
-  // `onRender` hears how far the player has got. The public game has none.
+  // organisation, `feedbackEmail` is where player feedback goes,
+  // `onRender` hears how far the player has got, and `exitCourse`, set only
+  // inside a learning platform, records completion and ends the session.
+  // The public game has none.
   var EDITION = window.BREACH_EDITION || {};
 
   function freshState() {
@@ -735,6 +737,25 @@
         "Printing isn't available in this app's built-in browser. To print, open breach-inc.com in Safari or Chrome, or use Email or Copy above."));
     }
     card.appendChild(questions);
+    // In a learning platform, a clear finish: the player sees their
+    // completion recorded rather than wondering whether to close the tab.
+    if (EDITION.exitCourse) {
+      var exit = el("div", "actions course-exit");
+      var exitBtn = el("button", "next-btn primary-btn", "Course completed – exit course");
+      exitBtn.type = "button";
+      var exitStatus = el("p", "narrative copy-status");
+      exitStatus.setAttribute("role", "status");
+      exitBtn.addEventListener("click", function () {
+        var recorded = EDITION.exitCourse();
+        exitBtn.disabled = true;
+        exitStatus.textContent = recorded
+          ? "Your completion has been recorded. You can now close this window, or return to your learning platform."
+          : "Your learning platform didn't confirm the completion. Please close this window and check your record there.";
+      });
+      exit.appendChild(exitBtn);
+      card.appendChild(exit);
+      card.appendChild(exitStatus);
+    }
     var author = el("div", "author-note");
     if (!EDITION.licensed) {
       author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
