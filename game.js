@@ -503,11 +503,11 @@
     } else {
       card.appendChild(el("h2", null, "Using Breach Inc."));
       card.appendChild(paragraph([
-        "You're welcome to use Breach Inc. in your organisation's security awareness programmes, as long as you use it as it is and include a link to ",
+        "You're welcome to use Breach Inc. free in your organisation's own security awareness and training, as long as you use it as it is and include a link to ",
         ["breach-inc.com", "https://breach-inc.com/"],
-        ". An organisation licence lets you adapt it for your own staff and comes with an invoice for your training budget, and including it in a paid course needs a licence too. ",
-        ["Read the licence", "licence.html"],
-        " for the details.",
+        ". To run it as a facilitated session with your leadership team, record completions or adapt it, an organisation licence starts at \u00a3195, and training providers can license it for their clients. See ",
+        ["licences and pricing", "licence.html"],
+        ".",
       ]));
       card.appendChild(paragraph([
         "If it's useful to your organisation, please consider ",
@@ -615,6 +615,9 @@
   // nothing there. They say who they are in the user agent.
   var IN_APP_BROWSER = /LinkedInApp|FBAN|FBAV|Instagram|GSA\/|MicroMessenger|Line\/|Snapchat|Twitter/i.test(navigator.userAgent || "");
 
+  // The way back to the licences, on the questions people pass around.
+  var RUN_IT = "To run Breach Inc. as a facilitated session with your team: https://breach-inc.com/licence.html";
+
   // Every question as plain text, for email or the clipboard.
   function questionsText() {
     var lines = ["Questions to take to your leadership team, from Breach Inc. (https://breach-inc.com)", ""];
@@ -622,6 +625,7 @@
     LESSONS.forEach(function (lesson) {
       lesson.ask.forEach(function (q) { lines.push(++n + ". " + q); });
     });
+    if (!EDITION.licensed) lines.push("", RUN_IT);
     return lines.join("\n");
   }
 
@@ -691,17 +695,16 @@
       lesson.ask.forEach(function (q) { list.appendChild(el("li", null, q)); });
     });
     questions.appendChild(list);
+    if (!EDITION.licensed) questions.appendChild(el("p", "print-only", RUN_IT));
     // The one place the game asks for support: straight after it has given
     // the player something to take away. A plain link, not Ko-fi's widget,
     // so nothing loads from another site.
-    // Organisations are pointed to the licence, which they can pay by
-    // invoice, rather than asked to tip from a training budget.
+    // Organisations are pointed to the licence, the way to run it with a
+    // team, rather than asked to tip from a training budget.
     var support = paragraph([
-      "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. If your organisation is using it, an ",
+      "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. Want to run it with your leadership team? An ",
       ["organisation licence", "licence.html#organisation"],
-      " records completions in your learning platform, lets you adapt it for your own staff, comes with an invoice for your training budget, and includes a session deck for running it as a workshop with the free ",
-      ["facilitator guide", "facilitator.html"],
-      ".",
+      ", from \u00a3195, includes a ready-to-run session deck with facilitator notes, a learning platform package that records completions, and the right to adapt it for your own staff.",
     ]);
     support.className += " support";
     if (!EDITION.licensed) questions.appendChild(support);
@@ -725,6 +728,9 @@
       });
     });
     actions.appendChild(copy);
+    var team = el("a", "next-btn", "Run this with your team");
+    team.href = "licence.html#organisation";
+    if (!EDITION.licensed) actions.appendChild(team);
     var kofi = el("a", "next-btn", "Support Breach Inc. on Ko-fi");
     kofi.href = "https://ko-fi.com/dvrmmr";
     kofi.target = "_blank";

@@ -461,6 +461,17 @@ a.next-btn {
   display: inline-block;
   text-decoration: none;
 }
+/* Shown only on paper: the printed questions' way back to the licences. */
+.print-only {
+  display: none;
+}
+@media print {
+  .print-only {
+    display: block;
+    margin-top: 16px;
+    font-size: 12px;
+  }
+}
 
 /* Printing the lessons: black on white, without the game around them. */
 @media print {
