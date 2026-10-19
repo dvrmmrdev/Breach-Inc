@@ -505,7 +505,7 @@
       card.appendChild(paragraph([
         "You're welcome to use Breach Inc. free in your organisation's own security awareness and training, as long as you use it as it is and include a link to ",
         ["breach-inc.com", "https://breach-inc.com/"],
-        ". To run it as a facilitated session with your leadership team, record completions or adapt it, an organisation licence starts at \u00a3195, and training providers can license it for their clients. See ",
+        ". To run it as a facilitated session with your leadership team, record completions or adapt it, an organisation licence starts at \u00a3195 (\u00a395 for charities and the NHS), and training providers can license it for their clients. See ",
         ["licences and pricing", "licence.html"],
         ".",
       ]));
@@ -704,7 +704,7 @@
     var support = paragraph([
       "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. Want to run it with your leadership team? An ",
       ["organisation licence", "licence.html#organisation"],
-      ", from \u00a3195, includes a ready-to-run session deck with facilitator notes, a learning platform package that records completions, and the right to adapt it for your own staff.",
+      ", from \u00a3195 (\u00a395 for charities and the NHS), includes a ready-to-run session deck with facilitator notes, a learning platform package that records completions, and the right to adapt it for your own staff.",
     ]);
     support.className += " support";
     if (!EDITION.licensed) questions.appendChild(support);
