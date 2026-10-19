@@ -35,6 +35,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+a.brand {
+  text-decoration: none;
+}
+a.brand:hover,
+a.brand:focus-visible {
+  color: #c9d1d9;
+}
 .link-btn {
   font-family: inherit;
   background: none;
