@@ -461,6 +461,24 @@ a.next-btn {
   display: inline-block;
   text-decoration: none;
 }
+/* Slide previews on the licence page: two across, one on a phone. */
+.deck-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 8px 0 20px;
+}
+.deck-preview img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+}
+@media (max-width: 600px) {
+  .deck-preview {
+    grid-template-columns: 1fr;
+  }
+}
 /* Shown only on paper: the printed questions' way back to the licences. */
 .print-only {
   display: none;
