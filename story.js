@@ -766,7 +766,8 @@ var LESSONS = [
     ask: [
       "If we were breached tonight, how long would it take to list every internet-facing system we own, and who owns each one?",
       "What would we need to change to make ourselves a harder target before announcing a breach, and how many of those changes could we remove or automate now, such as regular credential rotation?",
-      "When did we last rehearse a breach we couldn't tell most of our own staff about?",
+      "When did we last rehearse a breach we couldn't tell most of our own staff about, and did it include our key suppliers?",
+      "Which measures would show us those foundations are working?",
     ],
   },
   {
@@ -880,7 +881,7 @@ var LESSONS = [
     },
     lesson: "The biggest decisions in a breach might be made by people who don't know the full details, and who are risk averse about sharing the information which will influence the response of the public or external stakeholders. Agree the decision making process in advance, and share examples of breach announcements which have been well received.",
     ask: [
-      "Who contacts our regulator, law enforcement and the national cyber security agency in a breach, and when? Is that agreed with Legal in advance?",
+      "Who contacts our regulator, law enforcement, the national cyber security agency and our cyber insurer in a breach, and when? Is that agreed with Legal in advance?",
       "Have we drafted, and agreed with Legal, the first statement our CEO would make?",
       "Which breach announcements have been well received, and what did they do differently? Have our board and Legal seen them?",
       "Which of our leaders would have to advise the board in a crisis, and have they done it before?",
@@ -956,6 +957,7 @@ var LESSONS = [
       "If we needed a thousand extra people answering calls next week, whose number would we ring?",
       "Who can approve unbudgeted spending in a crisis, up to what amount, and how fast?",
       "If we needed dozens of extra cyber analysts to comb through logs, how would we give them access? Would we need to build and deliver laptops, or provide an internet-facing virtual desktop? Is all of that documented and practised?",
+      "Could we cope if a breach landed in our busiest week, or alongside another crisis? Which disruptions has the board agreed it could accept?",
     ],
   },
   {
