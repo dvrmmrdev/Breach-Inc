@@ -479,6 +479,48 @@ a.next-btn {
     grid-template-columns: 1fr;
   }
 }
+/* Tables on the standards page. A wide table scrolls inside its own box on
+   phones, so the page itself never scrolls sideways. */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0 0 16px 0;
+}
+.page table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.page th,
+.page td {
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 10px;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+.page th {
+  background: #21262d;
+  color: #f0f6fc;
+}
+@media (max-width: 600px) {
+  .page table {
+    min-width: 560px;
+  }
+}
+@media print {
+  .page th,
+  .page td {
+    color: #000;
+    border-color: #999;
+  }
+  .page th {
+    background: none;
+  }
+  .table-wrap {
+    overflow: visible;
+  }
+}
 /* Shown only on paper: the printed questions' way back to the licences. */
 .print-only {
   display: none;
