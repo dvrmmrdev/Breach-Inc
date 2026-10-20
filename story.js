@@ -1018,6 +1018,7 @@ var LESSONS = [
     ask: [
       "After a major breach, how would we rebuild the team, and how would we accept risk again without saying no to everything?",
       "How many of our best people would stay with us rather than leave? What would our culture and workforce look like afterwards?",
+      "Afterwards, how would we review what went wrong without looking for someone to blame, and make sure the lessons changed our plans and our next exercise?",
     ],
   },
 ];
