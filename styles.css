@@ -52,6 +52,17 @@ a.brand:focus-visible {
   font-size: 12px;
   cursor: pointer;
 }
+/* Back to the choice of challenges, beside Restart. */
+.top .home-link {
+  margin-left: auto;
+  margin-right: 8px;
+  text-decoration: none;
+}
+/* On a phone, the header buttons stay on one line; the title wraps instead. */
+.top .link-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .link-btn:hover {
   color: #f0f6fc;
   border-color: var(--accent);
