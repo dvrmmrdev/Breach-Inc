@@ -22,11 +22,11 @@ Breach Inc. is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/lice
 
 ## Updating the live site
 
-breach-inc.com is updated by uploading files by hand. On every upload, increase the `?v=` number on the file links in `index.html`, so browsers fetch the new files instead of using cached copies, and upload `index.html` too.
+breach-inc.com is updated by uploading files by hand. On every upload, increase the `?v=` number on the file links in `long-silence/index.html`, so browsers fetch the new files instead of using cached copies, and upload that page too.
 
 ## Playing
 
-Open `index.html` in a browser. There is no build step. Progress is saved in the browser, and **Restart** starts again.
+`index.html` is the home page, where players choose a challenge. The Long Silence is `long-silence/index.html`: its `<base href="../">` loads the game's files from the top level, which the site's other pages share, so the game files stay where they are. Open it in a browser to play. There is no build step. Progress is saved in the browser, and **Restart** starts again.
 
 ## Files
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- The game's files are shared with the rest of the site, one level up. -->
+  <base href="../">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Long Silence | Breach Inc.</title>
+  <meta name="description" content="An interactive data breach simulation and security awareness exercise for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
+  <!-- Link previews (LinkedIn, Teams, Slack, WhatsApp, X) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Breach Inc.">
+  <meta property="og:url" content="https://breach-inc.com/long-silence/">
+  <meta property="og:title" content="Breach Inc.: a data breach simulation for leaders">
+  <meta property="og:description" content="An interactive data breach simulation and security awareness exercise for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
+  <meta property="og:image" content="https://breach-inc.com/art/preview.jpg?v=4">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A dim hotel corridor at night, with light spilling from under the door of room 1412.">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Bump ?v= on every upload so browsers fetch the new files. -->
+  <link rel="icon" type="image/svg+xml" href="art/favicon-03-lit-door.svg?v=3">
+  <link rel="stylesheet" href="styles.css?v=16">
+  <script src="story.js?v=27"></script>
+  <script src="interludes.js?v=20"></script>
+  <script src="game.js?v=25"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="top">
+      <div class="brand">ACME Inc. &middot; Incident Simulation</div>
+      <button type="button" id="restart" class="link-btn">Restart</button>
+    </header>
+    <div id="hud" class="hud" aria-label="Status"></div>
+    <!-- What crawlers, and anyone without JavaScript, see. The game replaces
+         it as soon as it starts, so players never see it. -->
+    <main id="main" class="card" tabindex="-1" aria-live="polite">
+      <h1>Breach Inc.</h1>
+      <p class="narrative">An interactive data breach simulation and security awareness exercise for security, tech and business leaders. You make the decisions through a fictional company's response to a major data breach: the weeks of secrecy before the announcement, the public fallout, and what it costs the people who respond. At the end, it shows how your choices played out, with lessons and questions to take back to your own organisation.</p>
+      <p class="narrative">It runs in your browser, with no download, account, adverts or tracking. JavaScript needs to be switched on to play.</p>
+    </main>
+    <section aria-label="Decision log">
+      <div class="stat-label log-heading">Decision log</div>
+      <div id="log" class="log-panel"></div>
+    </section>
+    <footer class="disclaimer">
+      A work of fiction, inspired by the creator's experience of a major cyber breach. All companies, people, projects and events are invented or composites.
+      <br>Feedback on the game is very welcome: <a href="mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback">email me</a>.
+      <br><a href="./">Choose a challenge</a> &middot; <a href="facilitator.html">Facilitator guide</a> &middot; <a href="licence.html">Licences and pricing</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://ko-fi.com/dvrmmr" target="_blank" rel="noopener noreferrer">Support on Ko-fi</a>
+      <br>Breach Inc. is published by DVRMMR GAMING LTD, registered in England and Wales, company number 17527015.
+    </footer>
+  </div>
+</body>
+</html>

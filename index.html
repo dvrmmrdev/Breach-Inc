@@ -3,50 +3,317 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Breach Inc. | A data breach simulation for leaders</title>
-  <meta name="description" content="An interactive data breach simulation and security awareness exercise for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
+  <title>Breach Inc. | Cyber incident simulations for leaders</title>
+  <meta name="description" content="Interactive cyber incident simulations for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
   <!-- Link previews (LinkedIn, Teams, Slack, WhatsApp, X) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Breach Inc.">
   <meta property="og:url" content="https://breach-inc.com/">
-  <meta property="og:title" content="Breach Inc.: a data breach simulation for leaders">
-  <meta property="og:description" content="An interactive data breach simulation and security awareness exercise for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
+  <meta property="og:title" content="Breach Inc.: cyber incident simulations for leaders">
+  <meta property="og:description" content="Interactive cyber incident simulations for security, tech and business leaders. Make the calls through a major breach response, then take the lessons back to your own team. Written by someone who&#39;s been there.">
   <meta property="og:image" content="https://breach-inc.com/art/preview.jpg?v=4">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="A dim hotel corridor at night, with light spilling from under the door of room 1412.">
   <meta name="twitter:card" content="summary_large_image">
-  <!-- Bump ?v= on every upload so browsers fetch the new files. -->
   <link rel="icon" type="image/svg+xml" href="art/favicon-03-lit-door.svg?v=3">
-  <link rel="stylesheet" href="styles.css?v=16">
-  <script src="story.js?v=27"></script>
-  <script src="interludes.js?v=20"></script>
-  <script src="game.js?v=25"></script>
+  <style>
+    /* The game's own palette: night blue, lamp gold, one red. */
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --line: #30363d;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --bright: #f0f6fc;
+      --gold: #f2cc60;
+      --red: #f85149;
+      --blue: #58a6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 24px 16px 40px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    .brand {
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .top a:not(.brand) {
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 12px;
+    }
+    .top a:not(.brand):hover { color: var(--bright); border-color: var(--blue); }
+
+    .intro { text-align: center; margin-bottom: 40px; }
+    .kicker {
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .intro h1 {
+      font-size: 40px;
+      color: var(--bright);
+      margin: 10px 0 14px;
+      letter-spacing: -0.01em;
+    }
+    .intro p {
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .files {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .file {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+      color: inherit;
+      text-decoration: none;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    a.file:hover,
+    a.file:focus-visible {
+      border-color: var(--gold);
+      transform: translateY(-3px);
+      outline: none;
+    }
+    /* The art sits in the dark, and the lights come up when you choose it. */
+    .art {
+      background: #0b0f14;
+      border-bottom: 1px solid var(--line);
+      aspect-ratio: 800 / 360;
+      overflow: hidden;
+    }
+    .art img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.9);
+      transform: scale(1.04);
+      transition: filter 0.6s, transform 0.8s;
+    }
+    a.file:hover .art img,
+    a.file:focus-visible .art img {
+      filter: brightness(1.15);
+      transform: scale(1);
+    }
+    .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 22px 24px 24px;
+    }
+    .case {
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 20px;
+    }
+    /* Pinned to the corner of the art. */
+    .stamp {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 1;
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      background: rgba(13, 17, 23, 0.85);
+      font-weight: bold;
+      color: var(--red);
+      border: 1.5px solid var(--red);
+      border-radius: 3px;
+      padding: 1px 6px;
+      transform: rotate(-4deg);
+      letter-spacing: 0.15em;
+    }
+    .file h2 {
+      font-size: 28px;
+      color: var(--bright);
+      margin: 0 0 4px;
+    }
+    .setting {
+      font-size: 14px;
+      color: var(--gold);
+      margin: 0 0 14px;
+    }
+    .hook {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 0 0 18px;
+    }
+    .facts {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .facts li {
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+    .open {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-weight: bold;
+      color: var(--bright);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .open span[aria-hidden] { transition: transform 0.3s; }
+    a.file:hover .open,
+    a.file:focus-visible .open {
+      border-color: var(--gold);
+      background: rgba(242, 204, 96, 0.08);
+    }
+    a.file:hover .open span[aria-hidden] { transform: translateX(4px); }
+
+    /* Not open yet: the card stays still, and its button is greyed out. */
+    .file.soon .open {
+      color: var(--muted);
+      border-style: dashed;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .file.soon .stamp {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 36px auto 0;
+      max-width: 600px;
+    }
+    footer {
+      text-align: center;
+      color: #6e7681;
+      font-size: 12px;
+      line-height: 1.7;
+      margin-top: 40px;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+    footer a { color: var(--muted); }
+
+    @media (max-width: 720px) {
+      .files { grid-template-columns: 1fr; }
+      .intro h1 { font-size: 30px; }
+      .top { margin-bottom: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .file, .art img, .open, .open span { transition: none; }
+      a.file:hover, a.file:focus-visible { transform: none; }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <header class="top">
-      <div class="brand">ACME Inc. &middot; Incident Simulation</div>
-      <button type="button" id="restart" class="link-btn">Restart</button>
+      <a class="brand" href="./">Breach Inc.</a>
+      <a href="facilitator.html">Facilitator guide</a>
     </header>
-    <div id="hud" class="hud" aria-label="Status"></div>
-    <!-- What crawlers, and anyone without JavaScript, see. The game replaces
-         it as soon as it starts, so players never see it. -->
-    <main id="main" class="card" tabindex="-1" aria-live="polite">
-      <h1>Breach Inc.</h1>
-      <p class="narrative">An interactive data breach simulation and security awareness exercise for security, tech and business leaders. You make the decisions through a fictional company's response to a major data breach: the weeks of secrecy before the announcement, the public fallout, and what it costs the people who respond. At the end, it shows how your choices played out, with lessons and questions to take back to your own organisation.</p>
-      <p class="narrative">It runs in your browser, with no download, account, adverts or tracking. JavaScript needs to be switched on to play.</p>
-    </main>
-    <section aria-label="Decision log">
-      <div class="stat-label log-heading">Decision log</div>
-      <div id="log" class="log-panel"></div>
+
+    <section class="intro">
+      <h1>Choose your challenge</h1>
+      <p>Two companies. Two very bad weeks. Each is a story you play by making the decisions, with lessons and questions at the end to take back to your own organisation.</p>
     </section>
-    <footer class="disclaimer">
-      A work of fiction, inspired by the creator's experience of a major cyber breach. All companies, people, projects and events are invented or composites.
-      <br>Feedback on the game is very welcome: <a href="mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback">email me</a>.
+
+    <section class="files" aria-label="Scenarios">
+      <a class="file" href="long-silence/">
+        <div class="art"><img src="art/act1.svg" alt="A dim hotel corridor at night, with light spilling from under the door of room 1412."></div>
+        <div class="body">
+          <h2>The Long Silence</h2>
+          <p class="setting">A data breach at a payments processor</p>
+          <p class="hook">Someone has been inside the network for months, and now you know. The lawyers say nobody else can, not yet. You have until their date to work out what was taken, and who has to hear first.</p>
+          <ul class="facts">
+            <li>Data breach</li>
+            <li>Secrecy and disclosure</li>
+            <li>About 40 minutes</li>
+          </ul>
+          <div class="open"><span id="long-silence-go">Start</span> <span aria-hidden="true">&rarr;</span></div>
+        </div>
+      </a>
+
+      <div class="file soon" aria-disabled="true">
+        <span class="stamp">Coming soon</span>
+        <div class="art"><img src="art/night_desk.svg" alt="A dark IT floor at night: every screen dead, and one person at a desk under a lamp, on the phone."></div>
+        <div class="body">
+          <h2>The Night Desk</h2>
+          <p class="setting">A ransomware attack at a medicines and food distributor</p>
+          <p class="hook">Peak week, a Friday afternoon, and the screens go black one by one. Four hundred lorries, six hundred care homes, and the backups you built were the first thing they took. Every system has to come back before the money runs out.</p>
+          <ul class="facts">
+            <li>Ransomware</li>
+            <li>Outage and recovery</li>
+            <li>About 40 minutes</li>
+          </ul>
+          <div class="open">Start</div>
+        </div>
+      </div>
+    </section>
+
+    <p class="note">Both run in your browser, with no download, account, adverts or tracking. Your progress in each is saved separately, so you can play one and come back for the other.</p>
+
+    <footer>
+      Works of fiction. The Long Silence is inspired by the creator's experience of a major cyber breach. All companies, people, projects and events are invented or composites.
+      <br>Feedback is very welcome: <a href="mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback">email me</a>.
       <br><a href="facilitator.html">Facilitator guide</a> &middot; <a href="licence.html">Licences and pricing</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://ko-fi.com/dvrmmr" target="_blank" rel="noopener noreferrer">Support on Ko-fi</a>
       <br>Breach Inc. is published by DVRMMR GAMING LTD, registered in England and Wales, company number 17527015.
     </footer>
   </div>
+  <script>
+    // A game in progress: offer to carry on rather than start. The save is
+    // The Long Silence's own, and storage may be unavailable.
+    try {
+      var save = JSON.parse(localStorage.getItem("breach-inc-save"));
+      if (save && save.started && !save.ended) document.getElementById("long-silence-go").textContent = "Continue where you left off";
+    } catch (e) { /* no save to read */ }
+  </script>
 </body>
 </html>
