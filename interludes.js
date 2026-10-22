@@ -306,6 +306,14 @@ var INTERLUDES = {
         flags.separate_domain
           ? "Researchers line up to show that your response site looks exactly like a phishing site: a newly registered domain nobody has heard of, asking for personal details. Some company web filters block it outright. The one place you've told people to go is the one place they don't trust."
           : null,
+        flags.tight_script
+          ? "Your team's inbox has become every caller's escalation route: four thousand unusual questions in three days, each one needing a real answer from someone who should be working on security."
+          : flags.standard_script
+            ? "Screenshots of the contact centres' script, the same paragraph read to every caller, have been shared a hundred thousand times."
+            : null,
+        flags.business_first
+          ? "One call is different. A product leader who welcomed you in your first week rings, unprompted: 'Whatever you need to spend, I'll back it at the board.' Two of them do."
+          : null,
         "Corporate security sends every senior leader formal advice: if a stranger asks where you work, name a different employer, and report anything suspicious in or around the building. Private security for the executives is quietly increased.",
         "One of your team is served with a lawsuit naming them personally.",
         "Another is told to change the domain registration for their personal website, because it gives their home address to anyone who looks.",
@@ -314,7 +322,10 @@ var INTERLUDES = {
     },
     // A white-label response site on an unfamiliar domain costs trust as well.
     stats: function (flags) {
-      return flags.separate_domain ? { teamHealth: -5, internalInfluence: -10 } : { teamHealth: -5 };
+      var stats = flags.separate_domain ? { teamHealth: -5, internalInfluence: -10 } : { teamHealth: -5 };
+      // The goodwill you built in your first week, called in.
+      if (flags.business_first) stats.internalInfluence = (stats.internalInfluence || 0) + 5;
+      return stats;
     },
     next: "act3_storm",
   },

@@ -62,6 +62,14 @@
     return (n || 0) + (n === 1 ? " day" : " days");
   }
 
+  // Every new screen starts at the top, with the stats in view. Focus moves
+  // to the story for keyboard and screen-reader users, without scrolling
+  // the stats away.
+  function showTop() {
+    document.getElementById("main").focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+
   function signed(n) {
     return (n > 0 ? "+" : n < 0 ? "−" : "±") + Math.abs(n);
   }
@@ -260,8 +268,7 @@
     }
     save();
     render();
-    window.scrollTo(0, 0);
-    document.getElementById("main").focus();
+    showTop();
   }
 
   function restart() {
@@ -538,7 +545,7 @@
       state.started = true;
       save();
       render();
-      document.getElementById("main").focus();
+      showTop();
     });
     card.appendChild(btn);
   }
@@ -561,7 +568,7 @@
       state.actShown = act;
       save();
       render();
-      document.getElementById("main").focus();
+      showTop();
     });
     card.appendChild(btn);
   }
@@ -615,8 +622,7 @@
       state.ended.reviewed = true;
       save();
       render();
-      window.scrollTo(0, 0);
-      document.getElementById("main").focus();
+      showTop();
     });
   }
 

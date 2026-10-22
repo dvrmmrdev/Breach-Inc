@@ -57,6 +57,7 @@ var GAME_NODES = {
         nextNode: "i_inherit",
         days: 5,
         stats: { internalInfluence: 10, teamHealth: 5, playerHealth: 5 },
+        set: "business_first",
         outcome: "Product leaders welcome you warmly, and two of them offer to back your budget case next quarter. Until then, the backlog of overdue security updates stays where it was.",
       },
     ],
@@ -295,6 +296,7 @@ var GAME_NODES = {
         nextNode: "i_3am",
         days: 3,
         stats: { internalInfluence: 5, teamHealth: -10, playerHealth: -5, publicTrust: -5 },
+        set: "tight_script",
         outcome: "The agents are ready on time. Your team's inbox is about to become every caller's escalation route.",
       },
       {
@@ -499,6 +501,7 @@ var GAME_NODES = {
         nextNode: "act3_lookalike",
         days: 2,
         stats: { internalInfluence: -5, teamHealth: 5, playerHealth: -5, publicTrust: 5 },
+        set: "briefed_peers",
         outcome: "Peers start correcting the worst speculation. Legal will remember that you pushed.",
       },
       {
@@ -585,7 +588,11 @@ var GAME_NODES = {
         "The story hasn't gone away, as the communications team thought it would. " +
           (flags.revised_up ? "Each upward revision of the numbers has restarted it. " : "") +
           "Within weeks, ACME Inc. announces that several senior leaders, the CISO among them, are leaving, which prompts more media criticism, not less. Soon afterwards, the CEO steps down too. You are asked to hold the security function together until an interim leader is found.",
-        "Leaders you've worked alongside for years are gone within days. There are no leaving drinks. By Monday, their names have gone from the doors."
+        "Leaders you've worked alongside for years are gone within days. There are no leaving drinks. By Monday, their names have gone from the doors.",
+        // The leader who let themselves into the war room, back in Act 1.
+        flags.shielded
+          ? "Your boss's boss is staying: the one who peeled the paper off the war room's window and let themselves in. They haven't forgotten being kept at the door. When the board asks who should hold security together, they suggest someone from outside."
+          : "Your boss's boss is staying: the one who stood behind an analyst's chair and asked for it from the top. They saw the work with their own eyes, and they tell the board you're the person to hold it together.",
       ];
     },
     choices: [
@@ -644,8 +651,11 @@ var GAME_NODES = {
           : flags.forced_rest
             ? "You sent people home once, before the announcement. Since then, nobody has had the authority, or the nerve, to do it again."
             : "Nobody has gone home at a sensible hour since the night you were briefed, you included.",
+        flags.briefed_peers
+          ? "Legal haven't forgotten the peers you briefed after the announcement. Every spending request from your team now goes through them first."
+          : null,
         "The remediation programme is three months from done, and the board want it closed.",
-      ];
+      ].filter(Boolean);
     },
     choices: [
       {
@@ -721,22 +731,22 @@ var ENDINGS = [
   {
     title: "Through the Storm",
     test: function (s) { return s.teamHealth >= 45 && s.playerHealth >= 30 && s.internalInfluence >= 30 && s.publicTrust >= TRUST_KEPT; },
-    text: "The crisis leaves scars, but your team stays together, you're still standing, the business listens when security speaks, and ACME Inc.'s clients stayed. Few people manage that.",
+    text: "The crisis leaves scars, but your team stays together, you're still standing, the business listens when security speaks, and ACME Inc.'s clients stayed. Few people manage that. When the next recruiter rings, you don't let them finish.",
   },
   {
     title: "Strong Team, Bad Headlines",
     test: function (s) { return s.teamHealth >= 45 && s.playerHealth >= 30 && s.publicTrust < TRUST_KEPT; },
-    text: "Inside, it went better than anyone expected: your team stayed together, and you're still standing. Outside, ACME Inc. became the textbook example of how not to handle a breach, and the clients who left aren't coming back. Looking after your people mattered, but the response was for the public.",
+    text: "Inside, it went better than anyone expected: your team stayed together, and you're still standing. Outside, ACME Inc. became the textbook example of how not to handle a breach, and the clients who left aren't coming back. Looking after your people mattered, but the response was for the public. When a recruiter rings about a role at a bank, you hear them out.",
   },
   {
     title: "Standing, Just",
     test: function (s) { return s.teamHealth >= 25 && s.playerHealth >= 25; },
-    text: "You made it through. You'll keep your team and your health, though both are worn thin, and rebuilding will take longer than the breach did.",
+    text: "You made it through. You'll keep your team and your health, though both are worn thin, and rebuilding will take longer than the breach did. The recruiters still ring. You haven't said yes yet.",
   },
   {
     title: "Pyrrhic Victory",
     test: function () { return true; },
-    text: "The response is complete and the controls are better than ever, but the people who delivered it, including you, have little left to give.",
+    text: "The response is complete and the controls are better than ever, but the people who delivered it, including you, have little left to give. The next time a recruiter rings, you let them finish the pitch, and you say yes.",
   },
 ];
 
