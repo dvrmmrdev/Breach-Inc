@@ -50,8 +50,8 @@
 <circle cx="686" cy="183.8" r="1.6" fill="#6e7681"/>
 <circle cx="224" cy="127.2" r="26" fill="url(#sconce1)"/>
 <polygon points="220.8,133.5 227.2,134.5 227.2,121.2 220.8,119.7" fill="#f2cc60" opacity="0.85"/>
-<circle cx="512" cy="137" r="26" fill="url(#sconce1)"/>
-<polygon points="515.2,140.8 508.8,141.8 508.8,133.5 515.2,131.9" fill="#f2cc60" opacity="0.85"/>
+<circle cx="552" cy="131.5" r="22.5" fill="url(#sconce1)"/>
+<polygon points="554.8,136.9 549.2,137.8 549.2,126.3 554.8,125" fill="#f2cc60" opacity="0.85"/>
 <ellipse cx="400" cy="58.5" rx="28" ry="3.2" fill="url(#ceil1)"/>
 <ellipse cx="400" cy="106" rx="15" ry="3.2" fill="url(#ceil1)"/>
 <polygon points="8,298.3 8,281.3 272,199.6 272,205.2" fill="url(#stripe1)"/>

@@ -123,6 +123,18 @@
       transform: scale(1.04);
       transition: filter 0.6s, transform 0.8s;
     }
+    /* Room 1412's light comes on when you choose it. */
+    .art { position: relative; }
+    .art img.lit {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.5s 0.15s, filter 0.6s, transform 0.8s;
+    }
+    a.file:hover .art img.lit,
+    a.file:focus-visible .art img.lit {
+      opacity: 1;
+    }
     a.file:hover .art img,
     a.file:focus-visible .art img {
       filter: brightness(1.15);
@@ -267,7 +279,7 @@
 
     <section class="files" aria-label="Scenarios">
       <a class="file" href="long-silence/">
-        <div class="art"><img src="art/act1.svg" alt="A dim hotel corridor at night, with light spilling from under the door of room 1412."></div>
+        <div class="art"><img src="art/corridor_dark.svg" alt="A dim hotel corridor at night, with the door of room 1412 closed."><img class="lit" src="art/act1.svg" alt="" aria-hidden="true"></div>
         <div class="body">
           <h2>The Long Silence</h2>
           <p class="setting">A data breach at a payments processor</p>
