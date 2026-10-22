@@ -556,7 +556,8 @@
     card.className = "card divider";
     // Each act's art is art/act<N>.svg; a missing file is simply hidden.
     var art = el("img", "divider-art");
-    art.src = "art/" + parts[0].toLowerCase().replace(/\s+/g, "") + ".svg";
+    // Bump ?v= when the act art changes, so browsers fetch the new pictures.
+    art.src = "art/" + parts[0].toLowerCase().replace(/\s+/g, "") + ".svg?v=2";
     art.alt = "";
     art.onerror = function () { art.remove(); };
     card.appendChild(art);
