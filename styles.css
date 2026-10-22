@@ -358,6 +358,20 @@ body::before {
   margin-top: 4px;
 }
 
+/* Legal's date has just moved back: the box glows gold once, and says by
+   how much. (Moving closer uses the bite above.) */
+.stat-box.shifted {
+  animation: shifted 1.6s ease-out;
+}
+.stat-box.shifted .stat-note {
+  color: #f2cc60;
+}
+@keyframes shifted {
+  0% { box-shadow: 0 0 0 0 rgba(242, 204, 96, 0); }
+  25% { box-shadow: 0 0 0 3px rgba(242, 204, 96, 0.6); }
+  100% { box-shadow: 0 0 0 0 rgba(242, 204, 96, 0); }
+}
+
 /* An early ending: the edges of the screen close almost to black. */
 :root.collapsing body::before {
   background: radial-gradient(ellipse at center, transparent 30%, #000 95%);
@@ -782,6 +796,7 @@ a.link-btn {
   .divider,
   .intro,
   .stat-box.bite,
+  .stat-box.shifted,
   .buzz,
   .flashback,
   .flashback h1,

@@ -84,6 +84,11 @@
     return d && !d.done ? d.day - state.days : null;
   }
 
+  // How far Legal's date moved, in words: "3 days earlier", "2 days later".
+  function shiftWords(days) {
+    return dayCount(Math.abs(days)) + (days < 0 ? " earlier" : " later");
+  }
+
   // How many days a choice would run past Legal's date, squeezed into nights,
   // so its button can warn. Mirrors advance() and holdToDeadline().
   // What a choice needs and the player lacks, as [stat, level], or null. A
@@ -213,6 +218,7 @@
     var node = GAME_NODES[state.node];
     var startDay = state.days;
     state.squeezed = 0;
+    state.shifted = 0;
     state.days += step.days || 0;
     var changes = [];
     applyStats(step.stats, changes);
@@ -226,7 +232,11 @@
     }
     // Legal can bring the date forward, but never to before tomorrow.
     if (step.deadlineShift && state.deadline) {
+      var before = state.deadline.day;
       state.deadline.day = Math.max(startDay + 1, state.deadline.day + step.deadlineShift);
+      // Shown on the countdown for the next screen, and in the log.
+      state.shifted = state.deadline.day - before;
+      if (state.shifted) changes.push("Legal's date " + shiftWords(state.shifted));
     }
     // The silence ends once you've read the interlude that ends it.
     if (node.silence === "end" && state.silence && state.silence.to == null) state.silence.to = state.days;
@@ -297,6 +307,11 @@
         (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""));
       if (state.squeezed) {
         hud.lastChild.appendChild(el("span", "stat-note", dayCount(state.squeezed) + " squeezed into nights"));
+      }
+      // The date has just moved: closer shakes, further away glows.
+      if (state.shifted) {
+        hud.lastChild.classList.add(state.shifted < 0 ? "bite" : "shifted");
+        hud.lastChild.appendChild(el("span", "stat-note", shiftWords(state.shifted)));
       }
     }
   }
@@ -415,7 +430,9 @@
           " " + (choice.needsFor || "to get the budget") + " · you have " + state.stats[short[0]]));
       } else {
         btn.appendChild(el("span", "choice-cost" + (past ? " past" : ""),
-          dayCount(choice.days) + (past ? " · " + dayCount(past) + " past Legal's date" : "")));
+          dayCount(choice.days) +
+          (choice.deadlineShift && state.deadline && !state.deadline.done ? " · Legal's date " + shiftWords(choice.deadlineShift) : "") +
+          (past ? " · " + dayCount(past) + " past Legal's date" : "")));
       }
       btn.addEventListener("click", function () { advance(choice, choice.text); });
       card.appendChild(btn);
