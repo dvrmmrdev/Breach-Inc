@@ -251,6 +251,44 @@
       margin: 36px auto 0;
       max-width: 600px;
     }
+    .signup {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      margin: 36px auto 0;
+      max-width: 600px;
+      padding: 24px;
+      text-align: center;
+    }
+    .signup h2 { color: var(--bright); font-size: 18px; margin: 0 0 8px; }
+    .signup p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+    .signup form { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .signup input[type="email"] {
+      flex: 1 1 240px;
+      max-width: 340px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      padding: 9px 12px;
+    }
+    .signup input[type="email"]:focus { outline: none; border-color: var(--blue); }
+    .signup button {
+      background: transparent;
+      border: 1px solid var(--blue);
+      border-radius: 6px;
+      color: var(--blue);
+      cursor: pointer;
+      font: inherit;
+      font-size: 14px;
+      padding: 9px 18px;
+    }
+    .signup button:hover, .signup button:focus-visible { background: var(--blue); color: var(--bg); }
+    .signup .small { font-size: 12px; margin: 12px 0 0; }
+    .signup .small a { color: var(--muted); }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     footer {
       text-align: center;
       color: #6e7681;
@@ -320,6 +358,19 @@
     </section>
 
     <p class="note">Both run in your browser, with no download, account, adverts or tracking. Your progress in each is saved separately, so you can play one and come back for the other.</p>
+
+    <section class="signup" aria-labelledby="signup-title">
+      <h2 id="signup-title">Hear about future challenges</h2>
+      <p>Get an email when a new challenge is ready. Only a few a year, and nothing else.</p>
+      <!-- Buttondown's sign-up form: a plain form, so nothing loads from Buttondown until someone signs up. -->
+      <form action="https://buttondown.com/api/emails/embed-subscribe/breach-inc" method="post" target="_blank">
+        <label for="signup-email" class="visually-hidden">Email address</label>
+        <input type="email" id="signup-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        <input type="hidden" name="embed" value="1">
+        <button type="submit">Sign up</button>
+      </form>
+      <p class="small">We'll email you to confirm first. Unsubscribe at any time from any email. See our <a href="privacy.html#updates">privacy page</a>.</p>
+    </section>
 
     <footer>
       Works of fiction. The Long Silence is inspired by the creator's experience of a major cyber breach. All companies, people, projects and events are invented or composites.
