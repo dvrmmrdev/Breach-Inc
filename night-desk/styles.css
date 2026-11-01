@@ -1,0 +1,1135 @@
+/* The accent is blue until you're read in to the breach, then red. */
+:root {
+  --accent: #58a6ff;
+}
+:root.breached {
+  --accent: #f85149;
+}
+/* After a few days at home, the red comes back, but not quite as bright. */
+:root.breached.aftermath {
+  --accent: #d0756d;
+}
+body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+.container {
+  width: 100%;
+  max-width: 800px;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.brand {
+  font-size: 13px;
+  font-weight: bold;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+a.brand {
+  text-decoration: none;
+}
+a.brand:hover,
+a.brand:focus-visible {
+  color: #c9d1d9;
+}
+.link-btn {
+  font-family: inherit;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+/* Back to the choice of challenges, beside Restart. */
+.top .home-link {
+  margin-left: auto;
+  margin-right: 8px;
+  text-decoration: none;
+}
+/* On a phone, the header buttons stay on one line; the title wraps instead. */
+.top .link-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.link-btn:hover {
+  color: #f0f6fc;
+  border-color: var(--accent);
+}
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.stat-box {
+  flex: 1 1 110px;
+}
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: #8b949e;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.stat-val {
+  font-size: 18px;
+  font-weight: bold;
+  color: #f0f6fc;
+}
+/* Public trust, before the public know: nothing to judge yet. */
+.stat-box.pending .stat-val {
+  color: #8b949e;
+  font-weight: normal;
+}
+.meter {
+  height: 4px;
+  background: #30363d;
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  background: #3fb950;
+  transition: width 0.4s ease;
+}
+.meter-fill.mid {
+  background: #d29922;
+}
+.meter-fill.low {
+  background: #f85149;
+}
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 24px;
+  margin-bottom: 20px;
+  outline: none;
+}
+.act-tag {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+h1 {
+  font-size: 22px;
+  color: var(--accent);
+  margin: 0 0 16px 0;
+}
+h2 {
+  font-size: 15px;
+  color: #f0f6fc;
+  margin: 24px 0 8px 0;
+}
+h3 {
+  font-size: 14px;
+  color: #c9d1d9;
+  margin: 18px 0 6px 0;
+}
+.narrative {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e6edf3;
+  margin: 0 0 24px 0;
+}
+.summary {
+  color: #8b949e;
+}
+.choice-btn {
+  font-family: inherit;
+  display: block;
+  width: 100%;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #f0f6fc;
+  padding: 14px;
+  margin-bottom: 12px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.choice-btn:hover,
+.choice-btn:focus-visible {
+  background: #30363d;
+  border-color: var(--accent);
+}
+.choice-cost {
+  display: block;
+  font-size: 12px;
+  color: #8b949e;
+  margin-top: 4px;
+  font-family: monospace;
+}
+/* The choice would run past Legal's date. */
+.choice-cost.past {
+  color: #f85149;
+}
+/* A choice that needs budget, which the player hasn't the influence to get. */
+.choice-btn:disabled {
+  cursor: not-allowed;
+  color: #8b949e;
+  background: transparent;
+  border-style: dashed;
+}
+.choice-btn:disabled:hover {
+  border-color: #30363d;
+}
+.choice-cost.locked {
+  color: #d29922;
+}
+.log-heading {
+  margin-bottom: 6px;
+}
+.log-panel {
+  background: #090d13;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #8b949e;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.log-entry + .log-entry {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #21262d;
+}
+.log-title {
+  color: #c9d1d9;
+}
+.log-outcome {
+  color: #8b949e;
+  margin-top: 2px;
+}
+.log-effects {
+  color: var(--accent);
+  margin-top: 2px;
+}
+.disclaimer a {
+  color: #8b949e;
+}
+.disclaimer {
+  font-size: 11px;
+  color: #6e7681;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Interludes: quieter, closer, one paragraph at a time. */
+.interlude {
+  background: #0f1319;
+  border-color: #21262d;
+}
+.interlude .narrative {
+  color: #c9d1d9;
+  font-size: 16px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.clock {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.reveal {
+  opacity: 0;
+  animation: reveal 0.8s ease forwards;
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.next-btn {
+  font-family: inherit;
+  margin-top: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  padding: 10px 28px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.next-btn:hover,
+.next-btn:focus-visible {
+  border-color: var(--accent);
+  color: #f0f6fc;
+}
+.stat-box.silence .stat-val {
+  color: #f85149;
+}
+
+/* The edges of the screen close in as the pressure builds (set by game.js). */
+:root {
+  --pressure: 0;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: radial-gradient(ellipse at center, transparent 45%, #000 100%);
+  opacity: calc(var(--pressure) * 0.85);
+  transition: opacity 1.5s ease;
+}
+
+/* An interlude where the mood turns: blue drains to red, and the last
+   line lands in red. */
+.turning h1,
+.turning .clock {
+  animation: turn 1.6s ease forwards;
+  animation-delay: var(--turn-delay, 0s);
+}
+.turning .narrative:last-of-type {
+  color: #f85149;
+  font-weight: bold;
+}
+@keyframes turn {
+  to { color: #f85149; }
+}
+
+/* The author's note on the final screen. */
+.author-note {
+  border-top: 1px solid #30363d;
+  padding-top: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #c9d1d9;
+}
+.author-note p {
+  margin: 0 0 8px 0;
+}
+.author-note a {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* The key buttons (Begin, the lessons, Play again) are filled, so they
+   stand out from Continue without shouting. */
+.primary-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d1117;
+  font-weight: bold;
+}
+.primary-btn:hover,
+.primary-btn:focus-visible {
+  background: #f0f6fc;
+  border-color: #f0f6fc;
+  color: #0d1117;
+}
+#restart {
+  color: #c9d1d9;
+  border-color: #484f58;
+}
+
+/* Legal's date bites: work that didn't fit has just been squeezed into
+   nights. */
+.stat-box.bite {
+  animation: bite 0.9s ease-out;
+}
+@keyframes bite {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-4px); }
+  30% { transform: translateX(4px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(0); }
+}
+.stat-note {
+  display: block;
+  font-size: 11px;
+  color: #f85149;
+  margin-top: 4px;
+}
+
+/* Their timer has just been stretched: the box glows gold once, and says
+   by how much. */
+.stat-box.shifted {
+  animation: shifted 1.6s ease-out;
+}
+.stat-box.shifted .stat-note {
+  color: #f2cc60;
+}
+/* The cash on the overdraft, once the insurer is paying: still there,
+   no longer an alarm. */
+.stat-note.quiet {
+  color: #8b949e;
+}
+@keyframes shifted {
+  0% { box-shadow: 0 0 0 0 rgba(242, 204, 96, 0); }
+  25% { box-shadow: 0 0 0 3px rgba(242, 204, 96, 0.6); }
+  100% { box-shadow: 0 0 0 0 rgba(242, 204, 96, 0); }
+}
+
+/* An early ending: the edges of the screen close almost to black. */
+:root.collapsing body::before {
+  background: radial-gradient(ellipse at center, transparent 30%, #000 95%);
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+/* The lessons step out of the story: the title drains from red back to
+   the blue of before the breach. */
+.lessons-screen > .act-tag,
+.lessons-screen > h1 {
+  animation: unturn 2s ease forwards;
+}
+
+/* The lessons: one card per lesson, then every question in one list. */
+.lesson {
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  background: #0f1319;
+}
+.lesson-scenes {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin-bottom: 6px;
+}
+.lesson-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.lesson-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.verdict {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.verdict.paid { color: #3fb950; }
+.verdict.manage { color: #d29922; }
+.verdict.tradeoff { color: #8b949e; }
+.lesson-label {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 12px 0 4px 0;
+}
+.lesson p,
+.lesson li,
+.questions li {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e6edf3;
+}
+.lesson p {
+  margin: 0;
+}
+.lesson .lesson-missed {
+  color: #8b949e;
+  font-style: italic;
+}
+.lesson ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.questions {
+  margin: 32px 0 24px 0;
+}
+.questions ol {
+  padding-left: 22px;
+  margin: 0 0 16px 0;
+}
+.questions li + li {
+  margin-top: 6px;
+}
+.questions .support {
+  color: #c9d1d9;
+  margin-bottom: 4px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+a.next-btn {
+  display: inline-block;
+  text-decoration: none;
+}
+/* Slide previews on the licence page: two across, one on a phone. */
+.deck-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 8px 0 20px;
+}
+.deck-preview img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+}
+@media (max-width: 600px) {
+  .deck-preview {
+    grid-template-columns: 1fr;
+  }
+}
+/* Tables on the standards page. A wide table scrolls inside its own box on
+   phones, so the page itself never scrolls sideways. */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0 0 16px 0;
+}
+.page table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.page th,
+.page td {
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 10px;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+.page th {
+  background: #21262d;
+  color: #f0f6fc;
+}
+@media (max-width: 600px) {
+  .page table {
+    min-width: 560px;
+  }
+}
+@media print {
+  .page th,
+  .page td {
+    color: #000;
+    border-color: #999;
+  }
+  .page th {
+    background: none;
+  }
+  .table-wrap {
+    overflow: visible;
+  }
+}
+/* Shown only on paper: the printed questions' way back to the licences. */
+.print-only {
+  display: none;
+}
+@media print {
+  .print-only {
+    display: block;
+    margin-top: 16px;
+    font-size: 12px;
+  }
+}
+
+/* Printing the lessons: black on white, without the game around them. */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+    padding: 0;
+  }
+  body::before,
+  .top,
+  .hud,
+  section[aria-label="Decision log"],
+  .disclaimer,
+  button,
+  .actions,
+  .copy-status,
+  .print-note,
+  .support,
+  .author-note {
+    display: none !important;
+  }
+  .card,
+  .lesson {
+    background: #fff;
+    border-color: #999;
+  }
+  .lesson {
+    break-inside: avoid;
+  }
+  .reveal {
+    animation: none;
+    opacity: 1;
+  }
+  h1,
+  h2,
+  .act-tag,
+  .lesson-label,
+  .narrative,
+  .lesson p,
+  .lesson li,
+  .questions li {
+    color: #000;
+  }
+}
+
+/* The opening screen. */
+.intro {
+  animation: reveal 1.2s ease;
+}
+.intro a {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* The licence and privacy pages. */
+.page p,
+.page li {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e6edf3;
+}
+.page p {
+  margin: 0 0 14px 0;
+}
+.page ul {
+  padding-left: 20px;
+  margin: 0 0 14px 0;
+}
+.page a {
+  color: var(--accent);
+}
+.page .page-date {
+  font-size: 13px;
+  color: #8b949e;
+}
+a.link-btn {
+  text-decoration: none;
+}
+
+/* Act dividers: the number and title alone, centred. */
+.divider-art {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 0 auto 28px auto;
+}
+.scene-art {
+  margin: 8px auto 20px auto;
+}
+.divider {
+  text-align: center;
+  padding: 40px 24px;
+  animation: reveal 1.2s ease;
+}
+.divider-act {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin-bottom: 12px;
+}
+.divider-title {
+  font-size: 30px;
+  margin-bottom: 40px;
+}
+
+/* A scene that cuts in hard: a red flash and a shudder. */
+.jolt {
+  animation: jolt 0.9s ease-out;
+}
+@keyframes jolt {
+  0% { background: #5a1414; border-color: #f85149; transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  20% { transform: translateX(6px); }
+  30% { transform: translateX(-4px); }
+  40% { transform: translateX(3px); }
+  50% { transform: translateX(0); }
+  100% { background: #161b22; border-color: #30363d; }
+}
+
+/* Eight Minutes: the clock reaches four, the phones go off, and the silence
+   counter is struck through. */
+.clock.zero {
+  color: #f0f6fc;
+  font-weight: bold;
+  animation: zero 1.2s ease-out;
+}
+@keyframes zero {
+  0% { text-shadow: 0 0 12px #f85149; }
+  100% { text-shadow: none; }
+}
+.buzz {
+  animation: buzz 0.6s linear;
+}
+@keyframes buzz {
+  0%, 20%, 40%, 60%, 80% { transform: translateX(-2px); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(2px); }
+  100% { transform: none; }
+}
+.days-silent .stat-val,
+.days-silent .stat-label {
+  transition: color 1.2s ease;
+}
+.days-silent.ended .stat-val {
+  text-decoration: line-through;
+  color: #6e7681;
+}
+.days-silent.ended .stat-label {
+  color: #6e7681;
+}
+
+/* Is This You?: messages pile in faster than they can be read, then sink
+   back behind the text. */
+.noise {
+  margin-bottom: 20px;
+  transition: opacity 1s ease;
+}
+.noise.settled {
+  opacity: 0.4;
+}
+.noise-badge {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: bold;
+  color: #f0f6fc;
+  background: #f85149;
+  border-radius: 10px;
+  padding: 2px 10px;
+  margin-bottom: 10px;
+}
+.noise-stack {
+  max-height: 168px;
+  overflow: hidden;
+}
+.noise-msg {
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #c9d1d9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: pop 0.2s ease-out;
+}
+@keyframes pop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Home: the red drains back to blue while the edges of the screen lift,
+   then the card fades out like falling asleep. */
+.homecoming h1,
+.homecoming .clock {
+  animation: unturn calc(var(--reveal-time, 4s) * 1.5) ease forwards;
+}
+@keyframes unturn {
+  from { color: #f85149; }
+  to { color: #58a6ff; }
+}
+:root.unwinding body::before {
+  transition: opacity 6s ease;
+}
+.asleep {
+  opacity: 0;
+  transition: opacity 1.8s ease;
+}
+
+/* Back to Normal?: the war room comes back, grey under the strip lights,
+   in full red, and then it's gone. */
+.flashback {
+  animation: flicker 2.2s linear;
+}
+.flashback h1 {
+  animation: flash-red 2.2s linear;
+}
+@keyframes flicker {
+  0% { filter: grayscale(1) brightness(1.5); }
+  6% { filter: grayscale(1) brightness(0.6); }
+  10% { filter: grayscale(1) brightness(1.4); }
+  16% { filter: grayscale(1) brightness(0.8); }
+  22% { filter: grayscale(1) brightness(1.2); }
+  75% { filter: grayscale(1) brightness(1.1); }
+  100% { filter: none; }
+}
+@keyframes flash-red {
+  0%, 75% { color: #f85149; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turning h1,
+  .turning .clock {
+    animation: none;
+    color: #f85149;
+  }
+  .homecoming h1,
+  .homecoming .clock {
+    animation: none;
+    color: #58a6ff;
+  }
+  .lessons-screen > .act-tag,
+  .lessons-screen > h1 {
+    animation: none;
+  }
+  .jolt,
+  .divider,
+  .intro,
+  .stat-box.bite,
+  .buzz,
+  .flashback,
+  .flashback h1,
+  .clock.zero,
+  .noise-msg {
+    animation: none;
+  }
+  .noise,
+  .asleep,
+  :root.collapsing body::before,
+  .days-silent .stat-val,
+  .days-silent .stat-label,
+  :root.unwinding body::before {
+    transition: none;
+  }
+  .reveal {
+    animation: none;
+    opacity: 1;
+  }
+  body::before {
+    transition: none;
+  }
+}
+
+/* Each lesson's detail is folded away behind a toggle. */
+.lesson-more {
+  margin-top: 10px;
+  border-top: 1px solid #30363d;
+  padding-top: 8px;
+}
+.lesson-more > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--accent);
+  list-style: none;
+}
+.lesson-more > summary::-webkit-details-marker { display: none; }
+.lesson-more > summary::before { content: "▸ "; }
+.lesson-more[open] > summary::before { content: "▾ "; }
+.lesson-more[open] > summary { margin-bottom: 4px; }
+@media print {
+  .lesson-more > summary { display: none; }
+  .lesson-more { border-top: none; padding-top: 0; }
+}
+
+/* The Atrium: the office behind the card goes dark in a wave, then the
+   card itself goes black and shows the ransom note. */
+.container {
+  position: relative;
+  z-index: 1;
+}
+.office {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 3vw 2vw;
+  padding: 4vh 3vw;
+}
+.monitor {
+  background: #58a6ff;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+/* Lit all together; dark one at a time (each monitor has its own delay). */
+.office.lit:not(.dark) .monitor {
+  opacity: 0.09;
+  transition-duration: 1.5s;
+  transition-delay: 0s !important;
+}
+.office.dark .monitor {
+  opacity: 0;
+  transition-duration: 0.15s;
+}
+.stat-box.frozen .stat-val {
+  color: #f85149;
+}
+.card {
+  position: relative;
+}
+/* A screen cutting out: no fade. */
+.card.screen-off {
+  background: #000;
+  border-color: #000;
+}
+/* Visibility, not opacity: the paragraphs' reveal animation holds their
+   opacity. */
+.card.screen-off > :not(.ransom) {
+  visibility: hidden;
+}
+.ransom {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 32px;
+  font-family: monospace;
+  font-size: 17px;
+  color: #f0f6fc;
+  opacity: 0;
+  pointer-events: none;
+}
+.screen-off .ransom {
+  opacity: 1;
+}
+.ransom p {
+  margin: 0 0 12px 0;
+}
+.ransom .ransom-timer {
+  margin-top: 12px;
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  color: #f85149;
+}
+@media (prefers-reduced-motion: reduce) {
+  .monitor {
+    transition: none;
+  }
+}
+
+/* Fourteen Years: the staff badge, and the roles stacked beside it. */
+.career {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.career-badge {
+  flex: 0 0 260px;
+  max-width: 100%;
+  background: #e6edf3;
+  color: #0d1117;
+  border-radius: 10px;
+  overflow: hidden;
+  padding-bottom: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+.career-org {
+  background: var(--accent);
+  color: #0d1117;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+}
+.career-title {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 14px 14px 6px;
+  min-height: 2.8em;
+}
+.career-note {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #444c56;
+  padding: 0 14px;
+  min-height: 3em;
+}
+.career-badge.step .career-title,
+.career-badge.step .career-note {
+  animation: pop 0.3s ease-out;
+}
+.career-history {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-height: 230px;
+  overflow: hidden;
+  transition: opacity 1s ease;
+}
+.career-past {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #8b949e;
+  border-bottom: 1px solid #21262d;
+  padding: 6px 0;
+  animation: pop 0.2s ease-out;
+}
+.career-past:nth-child(n + 4) {
+  opacity: 0.75;
+}
+.career-past:nth-child(n + 6) {
+  opacity: 0.55;
+}
+.career-when {
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.career.settled .career-history {
+  opacity: 0.8;
+}
+@media (prefers-reduced-motion: reduce) {
+  .career-badge.step .career-title,
+  .career-badge.step .career-note,
+  .career-past {
+    animation: none;
+  }
+  .career-history {
+    transition: none;
+  }
+}
+
+/* The Operations Floor: Service crashes to nothing as the map freezes. */
+.stat-box.crash {
+  border-radius: 4px;
+  animation: crash 2.4s ease-out;
+}
+.stat-box.crash .stat-val {
+  display: inline-block;
+  transform-origin: left center;
+  animation: crash-val 2.4s ease-out;
+}
+@keyframes crash {
+  0% { background: rgba(248, 81, 73, 0); box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+  6% { background: rgba(248, 81, 73, 0.45); box-shadow: 0 0 0 8px rgba(248, 81, 73, 0.45); transform: translateX(-5px); }
+  14% { transform: translateX(5px); }
+  22% { transform: translateX(-4px); }
+  30% { transform: translateX(3px); }
+  40% { transform: none; background: rgba(248, 81, 73, 0.3); box-shadow: 0 0 0 8px rgba(248, 81, 73, 0.3); }
+  100% { background: rgba(248, 81, 73, 0); box-shadow: 0 0 0 8px rgba(248, 81, 73, 0); }
+}
+@keyframes crash-val {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-box.crash,
+  .stat-box.crash .stat-val {
+    animation: none;
+  }
+}
+
+/* A recommendation the room just overruled: the same amber as the warning
+   on the choice, at the top of the next screen. */
+.overruled-note {
+  border-left: 3px solid #d29922;
+  background: rgba(210, 153, 34, 0.08);
+  border-radius: 0 4px 4px 0;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+}
+.overruled-label {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #d29922;
+  margin-bottom: 4px;
+}
+.overruled-note p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Their timer, on the screen after it ends: struck through, then gone. */
+.stat-box.timer-ended .stat-val {
+  color: #8b949e;
+  text-decoration: line-through;
+}
+.stat-box.timer-ended .stat-note {
+  color: #8b949e;
+}
+
+/* The cash arrives as a new clock: its box pulses gold three times. */
+.stat-box.arrived {
+  border-radius: 4px;
+  animation: arrived 1.4s ease-out 3;
+}
+@keyframes arrived {
+  0% { box-shadow: 0 0 0 0 rgba(242, 204, 96, 0); }
+  30% { box-shadow: 0 0 0 4px rgba(242, 204, 96, 0.7); }
+  100% { box-shadow: 0 0 0 0 rgba(242, 204, 96, 0); }
+}
+.stat-note.new {
+  color: #f2cc60;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.overruled-note.new-clock {
+  border-left-color: #f2cc60;
+  background: rgba(242, 204, 96, 0.08);
+}
+.overruled-note.new-clock .overruled-label {
+  color: #f2cc60;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-box.arrived { animation: none; box-shadow: 0 0 0 2px rgba(242, 204, 96, 0.6); }
+}
+
+/* The questions' two groups: Tech/Cyber and Business Leaders. */
+.ask-group {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin: 12px 0 2px;
+}
+.ask-group-heading {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin: 18px 0 6px;
+}

@@ -1,0 +1,1198 @@
+// The game engine: shows the current scene or interlude, applies choices,
+// keeps the log and decides the ending. The story lives in story.js and
+// interludes.js.
+
+(function () {
+  var SAVE_KEY = "breach-inc-outage-save";
+  // DEVELOPMENT ONLY: a Back button that steps back one screen. Set DEV to
+  // false, or remove it and everything marked "DEV", before uploading.
+  var DEV = true;
+  var HISTORY_KEY = SAVE_KEY + "-devHistory";
+  var devHistory = [];
+  function snapshot() {
+    if (!DEV) return;
+    devHistory.push(JSON.stringify(state));
+    if (devHistory.length > 100) devHistory.shift();
+    try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(devHistory)); } catch (e) { /* storage unavailable */ }
+  }
+  function back() {
+    if (!devHistory.length) return;
+    state = JSON.parse(devHistory.pop());
+    try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(devHistory)); } catch (e) { /* storage unavailable */ }
+    save();
+    render();
+    showTop();
+  }
+  var state;
+  // Settings for licensed copies, such as the learning platform package:
+  // `licensed` drops the Ko-fi and licence prompts, `licensee` names the
+  // organisation, `feedbackEmail` is where player feedback goes,
+  // `onRender` hears how far the player has got, and `exitCourse`, set only
+  // inside a learning platform, records completion and ends the session.
+  // The public game has none.
+  var EDITION = window.BREACH_EDITION || {};
+
+  function freshState() {
+    var stats = {};
+    for (var id in STATS) stats[id] = STATS[id].start;
+    // `started` is false until the player leaves the opening screen. Saves
+    // from before there was one don't have it, and carry on where they were.
+    // `choices` records the option picked in each scene, by index, for the
+    // lessons at the end.
+    // `held` keeps Public trust changes made before the announcement, which
+    // only land once the public know.
+    return { node: START_NODE, days: 0, stats: stats, held: {}, flags: {}, choices: {}, log: [], silence: null, deadline: null, ended: null, started: false };
+  }
+
+  function save() {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  }
+
+  function load() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+      if (saved && (saved.ended || GAME_NODES[saved.node])) {
+        // Saves from before Public trust existed start it fresh.
+        for (var id in STATS) if (saved.stats[id] == null) saved.stats[id] = STATS[id].start;
+        saved.held = saved.held || {};
+        return saved;
+      }
+    } catch (e) { /* storage unavailable or corrupt */ }
+    return null;
+  }
+
+  // Each day of work that doesn't fit before Legal's date is done at night,
+  // costing this much Team health, Your health and Influence.
+  var OVERRUN_COST = 5;
+
+  // Seconds between an interlude's paragraphs appearing, unless it sets its
+  // own `pace`.
+  var PACE = 0.6;
+
+  // Timed effects within a screen, cancelled whenever it's redrawn. With
+  // reduced motion, they jump straight to how they end.
+  var REDUCED = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var timers = [];
+  function later(seconds, fn) {
+    timers.push(setTimeout(fn, REDUCED ? 0 : seconds * 1000));
+  }
+
+  function dayCount(n) {
+    return (n || 0) + (n === 1 ? " day" : " days");
+  }
+
+  // Every new screen starts at the top, with the stats in view. Focus moves
+  // to the story for keyboard and screen-reader users, without scrolling
+  // the stats away.
+  function showTop() {
+    document.getElementById("main").focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+
+  function signed(n) {
+    return (n > 0 ? "+" : n < 0 ? "−" : "±") + Math.abs(n);
+  }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function nodeText(node) {
+    var text = typeof node.text === "function" ? node.text(state.flags, state.stats, daysLeft()) : node.text;
+    return [].concat(text);
+  }
+
+  // Days until Legal's announcement date, or null outside the countdown.
+  function daysLeft() {
+    var d = state.deadline;
+    return d && !d.done ? d.day - state.days : null;
+  }
+
+  // How many days a choice would run past Legal's date, squeezed into nights,
+  // so its button can warn. Mirrors advance() and holdToDeadline().
+  // What a choice needs and the player lacks, as [stat, level], or null. A
+  // choice that takes extra spend `needs` Influence to get the budget, and
+  // one that goes against the room needs it to carry the room (`needsFor`).
+  function shortOf(choice) {
+    for (var id in choice.needs || {}) {
+      if (state.stats[id] < choice.needs[id]) return [id, choice.needs[id]];
+    }
+    return null;
+  }
+
+  function daysPast(choice) {
+    var d = state.deadline;
+    // A choice that settles the timer can't run past it.
+    if (!d || d.done || choice.stopDeadline) return 0;
+    var next = GAME_NODES[choice.nextNode || choice.next];
+    if (next && next.deadlineCheck) return 0;
+    var day = choice.deadlineShift ? Math.max(state.days + 1, d.day + choice.deadlineShift) : d.day;
+    return Math.max(0, state.days + (choice.days || 0) - (day - 1));
+  }
+
+  // The day of the incident, counting the briefing night as Day 1. The
+  // silence starts that night, so it marks the day. Null before then.
+  function incidentDay() {
+    return state.silence ? state.days - state.silence.from + 1 : null;
+  }
+
+  // Days spent unable to tell anyone, so far or in total.
+  function silenceDays() {
+    if (!state.silence) return null;
+    return (state.silence.to != null ? state.silence.to : state.days) - state.silence.from;
+  }
+
+  function enter(nodeId) {
+    state.node = nodeId;
+    var node = GAME_NODES[nodeId];
+    if (node.readIn) state.flags.readIn = true;
+    if (node.silence === "start" && !state.silence) state.silence = { from: state.days, to: null };
+    if (node.deadline && state.deadline == null) state.deadline = { day: state.days + node.deadline, done: false };
+    // The cash arrives as a new clock: announced on this screen only.
+    if (typeof CASH !== "undefined" && nodeId === CASH.from && !state.flags.cashKnown) {
+      state.flags.cashKnown = true;
+      state.cashArrived = true;
+    }
+    var date = nodeDate(node);
+    if (date && state.silence) {
+      state.days = state.silence.from + daysFromBlackout(date);
+    }
+  }
+
+  // Days of cash left (below zero: days on the overdraft), once the board
+  // have heard the number, or null.
+  function cashLeft() {
+    if (typeof CASH === "undefined" || !state.flags.cashKnown || !state.silence) return null;
+    return CASH.out(state.flags) - (state.days - state.silence.from);
+  }
+
+  // How many days a choice would move the day the cash runs out, by the
+  // flag it sets.
+  function cashShift(choice) {
+    if (cashLeft() == null || !choice.set) return 0;
+    var flags = {};
+    for (var f in state.flags) flags[f] = state.flags[f];
+    flags[choice.set] = true;
+    return CASH.out(flags) - CASH.out(state.flags);
+  }
+
+  // A recommendation the room can overrule: below `carries` Influence, what
+  // happens is the choice's `overruled` instead (its own flag, stats and
+  // outcome).
+  function decided(choice) {
+    if (!choice.overruled || state.stats.internalInfluence >= choice.carries) return choice;
+    var step = { origin: choice, wasOverruled: true };
+    for (var k in choice) if (k !== "overruled") step[k] = choice[k];
+    for (k in choice.overruled) step[k] = choice.overruled[k];
+    return step;
+  }
+
+  // A node's pinned date, if it has one: a date, or a function of the flags.
+  function nodeDate(node) {
+    return typeof node.date === "function" ? node.date(state.flags) : node.date;
+  }
+
+  // The story's calendar. Days count from BLACKOUT_DATE, which is Day 1.
+  function daysFromBlackout(date) {
+    return Math.round((Date.parse(date) - Date.parse(BLACKOUT_DATE)) / 86400000);
+  }
+  function formatDate(ms) {
+    return new Date(ms).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  }
+
+  // The date line on every screen: a pinned date, or the incident day's
+  // date and number, or the node's own label (such as "14 years ago").
+  function dateLine(node) {
+    if (node.date) return formatDate(Date.parse(nodeDate(node)));
+    var day = incidentDay();
+    if (day) return formatDate(Date.parse(BLACKOUT_DATE) + (day - 1) * 86400000) + " · Day " + day;
+    return node.when || "";
+  }
+
+  // Each stat runs from 0 to 100 unless it says otherwise. Reaching the
+  // bottom ends the game early.
+  function statMin(id) { return STATS[id].min != null ? STATS[id].min : 0; }
+  function statMax(id) { return STATS[id].max != null ? STATS[id].max : 100; }
+
+  // Whether the breach is public yet: set once the player has lived through
+  // the announcement itself.
+  function announced() {
+    return !!state.flags.public;
+  }
+
+  function applyStats(stats, changes) {
+    if (typeof stats === "function") stats = stats(state.flags, state.stats);
+    for (var id in stats || {}) {
+      var delta = stats[id];
+      if (!delta) continue;
+      // The public can't judge what they don't know about yet: hold the
+      // change until the announcement.
+      if (STATS[id].public && !announced()) {
+        state.held[id] = (state.held[id] || 0) + delta;
+        changes.push(STATS[id].label + " " + signed(delta) + " when it's public");
+        continue;
+      }
+      state.stats[id] = Math.max(statMin(id), Math.min(statMax(id), state.stats[id] + delta));
+      changes.push(STATS[id].label + " " + signed(delta));
+    }
+  }
+
+  // Announcement day: the shock of the news itself, plus everything held
+  // back until the public knew.
+  function goPublic() {
+    var changes = [];
+    var stats = {};
+    var shock = 0, prepared = 0;
+    for (var id in STATS) {
+      if (!STATS[id].public) continue;
+      shock += STATS[id].announcement || 0;
+      prepared += state.held[id] || 0;
+      stats[id] = (STATS[id].announcement || 0) + (state.held[id] || 0);
+    }
+    state.held = {};
+    state.flags.public = true;
+    applyStats(stats, changes);
+    if (changes.length) {
+      state.log.push({
+        title: "Announcement day",
+        choice: "",
+        outcome: "The public hear the news (" + signed(shock) + "), and judge everything you prepared for them (" + signed(prepared) + ").",
+        effects: changes.join(" · "),
+      });
+    }
+  }
+
+  // Legal's date doesn't move. Until the announcement, the clock can't pass
+  // the day before it: work that doesn't fit is squeezed into nights, at a
+  // cost, as soon as it happens. The announcement itself is on the date.
+  function holdToDeadline(announcing) {
+    var deadline = state.deadline;
+    if (!deadline || deadline.done) return;
+    if (DEADLINE.passes) {
+      if (state.days < deadline.day) return;
+      deadline.done = true;
+      state.flags[DEADLINE.set] = true;
+      // Lasts for the next screen only, so it can break the news once.
+      state.flags[DEADLINE.set + "_new"] = true;
+      var hit = [];
+      applyStats(DEADLINE.stats, hit);
+      state.log.push({ title: DEADLINE.log.title, choice: "", outcome: DEADLINE.log.outcome, effects: hit.join(" · ") });
+      return;
+    }
+    if (announcing) {
+      state.days = deadline.day;
+      deadline.done = true;
+      return;
+    }
+    var over = state.days - (deadline.day - 1);
+    if (over <= 0) return;
+    state.flags.overrun = (state.flags.overrun || 0) + over;
+    // Escalating the share sale brings the date forward: overrunning after
+    // that isn't the player's failure, and the epilogue says so.
+    if (state.flags.date_forward) state.flags.forward_overrun = true;
+    // Shown on the next screen, so the deadline bites when it happens.
+    state.squeezed = over;
+    var changes = [];
+    applyStats({ teamHealth: -OVERRUN_COST * over, playerHealth: -OVERRUN_COST * over, internalInfluence: -OVERRUN_COST * over }, changes);
+    state.log.push({
+      title: "Legal's deadline",
+      choice: "",
+      outcome: "The date doesn't move. " + dayCount(over) + " of work squeezed into nights, and the board noticed it was late.",
+      effects: changes.join(" · "),
+    });
+    state.days = deadline.day - 1;
+  }
+
+  // Applies a choice, or an interlude's Continue, then moves on.
+  function advance(step, logChoice) {
+    snapshot(); // DEV
+    var node = GAME_NODES[state.node];
+    var startDay = state.days;
+    state.squeezed = 0;
+    state.shifted = 0;
+    state.cashShifted = cashShift(step);
+    state.overruled = null;
+    state.cashArrived = false;
+    state.timerEnded = null;
+    var timerRunning = !!(state.deadline && !state.deadline.done);
+    delete state.flags[DEADLINE.set + "_new"];
+    state.days += step.days || 0;
+    var changes = [];
+    applyStats(step.stats, changes);
+    if (step.set) state.flags[step.set] = true;
+    if (state.cashShifted) changes.push(CASH.label + " " + signed(state.cashShifted) + (Math.abs(state.cashShifted) === 1 ? " day" : " days"));
+    if (node.deadlineCheck) goPublic();
+    if (logChoice && state.choices) state.choices[state.node] = node.choices.indexOf(step.origin || step);
+    if (step.wasOverruled) {
+      changes.push("Overruled");
+      // Shown at the top of the next screen, so being overruled is felt
+      // when it happens, not only in the log.
+      state.overruled = {
+        title: node.title,
+        text: (typeof step.outcome === "function" ? step.outcome(state.flags) : step.outcome) || "",
+      };
+    }
+    // Remember any option that was out of reach, for the lessons.
+    if (logChoice && node.choices.some(shortOf)) {
+      state.flags.lockedOut = state.flags.lockedOut || {};
+      state.flags.lockedOut[state.node] = true;
+    }
+    // Legal can bring the date forward, but never to before tomorrow.
+    if (step.deadlineShift && state.deadline) {
+      var before = state.deadline.day;
+      state.deadline.day = Math.max(startDay + 1, state.deadline.day + step.deadlineShift);
+      // Shown on the timer for the next screen, and in the log.
+      state.shifted = state.deadline.day - before;
+      if (DEADLINE.passes && state.shifted) changes.push(DEADLINE.label + " " + signed(state.shifted) + (Math.abs(state.shifted) === 1 ? " day" : " days"));
+    }
+    // The silence ends once you've read the interlude that ends it.
+    if (node.silence === "end" && state.silence && state.silence.to == null) state.silence.to = state.days;
+    if (logChoice || changes.length) {
+      state.log.push({
+        title: node.title,
+        choice: logChoice || "",
+        outcome: (typeof step.outcome === "function" ? step.outcome(state.flags) : step.outcome) || "",
+        effects: (logChoice ? [dayCount(step.days)] : []).concat(changes).join(" · "),
+      });
+    }
+    if (step.stopDeadline && state.deadline) state.deadline.done = true;
+    var next = step.nextNode || step.next;
+    if (typeof next === "function") next = next(state.flags);
+    holdToDeadline(!!(GAME_NODES[next] && GAME_NODES[next].deadlineCheck));
+    // Their timer has just ended, by running out or by being stopped: it
+    // stays on the next screen, struck through, rather than vanishing.
+    if (timerRunning && state.deadline.done && DEADLINE.ended) {
+      state.timerEnded = state.flags[DEADLINE.set + "_new"] ? DEADLINE.ended.passed : DEADLINE.ended.stopped;
+    }
+
+    for (var stat in EARLY_ENDINGS) {
+      if (state.stats[stat] <= statMin(stat)) { state.ended = { early: stat }; break; }
+    }
+    if (!state.ended) {
+      if (GAME_NODES[next]) enter(next);
+      else state.ended = { early: null };
+    }
+    save();
+    render();
+    showTop();
+  }
+
+  function restart() {
+    devHistory = []; // DEV
+    state = freshState();
+    enter(START_NODE);
+    save();
+    render();
+  }
+
+  function renderHud() {
+    var hud = document.getElementById("hud");
+    hud.textContent = "";
+    function box(label, value, meter, cls) {
+      var b = el("div", "stat-box" + (cls ? " " + cls : ""));
+      b.appendChild(el("span", "stat-label", label));
+      b.appendChild(el("span", "stat-val", value));
+      if (meter != null) {
+        var m = el("div", "meter");
+        var fill = el("div", "meter-fill" + (meter <= 25 ? " low" : meter <= 50 ? " mid" : ""));
+        fill.style.width = meter + "%";
+        m.appendChild(fill);
+        b.appendChild(m);
+      }
+      hud.appendChild(b);
+    }
+    for (var id in STATS) {
+      if (STATS[id].public && !announced() && !state.ended) {
+        box(STATS[id].label, "Not public", null, "pending");
+        continue;
+      }
+      // A stat that can go below zero shows its sign, and its meter runs
+      // from the bottom of its range to the top.
+      var v = state.stats[id], lo = statMin(id), hi = statMax(id);
+      box(STATS[id].label, (lo < 0 && v ? signed(v) : String(v)) + (STATS[id].unit || ""), Math.round((v - lo) / (hi - lo) * 100));
+      hud.lastChild.setAttribute("data-stat", id);
+      if (id === "service" && v === 0) hud.lastChild.classList.add("frozen");
+    }
+    if (state.silence && state.silence.to == null && !state.ended) {
+      box(COUNTER.label, String(silenceDays()), null, "silence days-silent");
+    }
+    var announcing = !state.ended && GAME_NODES[state.node].deadlineCheck;
+    if (state.deadline && !state.ended && (!state.deadline.done || announcing)) {
+      var left = state.deadline.day - state.days;
+      box(DEADLINE.label, left === 0 ? "TODAY" : left > 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null,
+        (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""));
+      if (state.squeezed) {
+        hud.lastChild.appendChild(el("span", "stat-note", dayCount(state.squeezed) + " squeezed into nights"));
+      }
+      if (DEADLINE.passes && state.shifted) {
+        hud.lastChild.classList.add("shifted");
+        hud.lastChild.appendChild(el("span", "stat-note", signed(state.shifted) + (Math.abs(state.shifted) === 1 ? " day" : " days")));
+      }
+    } else if (state.deadline && state.timerEnded && !state.ended) {
+      box(DEADLINE.label, state.timerEnded[0], null, "timer-ended");
+      hud.lastChild.appendChild(el("span", "stat-note", state.timerEnded[1]));
+    }
+    // The cash: weeks, then days, until it runs out, then the overdraft
+    // until the insurer pays for the lost business.
+    var cash = cashLeft();
+    if (cash != null && !state.ended) {
+      var paid = CASH.paid(state.flags), today = state.days - state.silence.from;
+      var covered = cash <= 0 && paid != null && paid <= today;
+      box(CASH.label, cash >= 14 ? Math.floor(cash / 7) + " weeks" : cash > 0 ? dayCount(cash) : cash === 0 ? "TODAY" : "Overdraft", null,
+        "cash" + (covered ? "" : cash <= 14 ? " silence" : "") + (state.cashShifted > 0 ? " shifted" : state.cashShifted < 0 ? " bite" : "") +
+        (state.cashArrived ? " arrived" : ""));
+      if (state.cashArrived) {
+        hud.lastChild.appendChild(el("span", "stat-note new", "New"));
+      } else if (state.cashShifted) {
+        hud.lastChild.appendChild(el("span", "stat-note", signed(state.cashShifted) + (Math.abs(state.cashShifted) === 1 ? " day" : " days")));
+      } else if (cash < 0) {
+        hud.lastChild.appendChild(el("span", "stat-note" + (covered ? " quiet" : ""), covered ? "insurer paying" : "insurer: nothing yet"));
+      }
+    }
+  }
+
+  // The edges of the screen close in as your health falls, and more so
+  // while you can't talk to anyone. At home, for a while, they lift.
+  function renderPressure() {
+    var health = state.ended ? 100 : state.stats.playerHealth;
+    var silent = state.silence && state.silence.to == null && !state.ended;
+    var home = !state.ended && !!GAME_NODES[state.node].homecoming;
+    var collapse = !!(state.ended && state.ended.early && !state.ended.reviewed);
+    var pressure = home ? 0 : collapse ? 1 : Math.min(1, (100 - health) / 80 + (silent ? 0.25 : 0));
+    document.documentElement.classList.toggle("unwinding", home);
+    document.documentElement.classList.toggle("collapsing", collapse);
+    document.documentElement.style.setProperty("--pressure", pressure.toFixed(2));
+  }
+
+  function renderLog() {
+    var panel = document.getElementById("log");
+    panel.textContent = "";
+    if (!state.log.length) {
+      panel.appendChild(el("div", "log-empty", "Your decisions and their consequences will appear here."));
+      return;
+    }
+    for (var i = state.log.length - 1; i >= 0; i--) {
+      var entry = state.log[i];
+      var row = el("div", "log-entry");
+      row.appendChild(el("div", "log-title", entry.title + (entry.choice ? ": " + entry.choice : "")));
+      if (entry.outcome) row.appendChild(el("div", "log-outcome", entry.outcome));
+      row.appendChild(el("div", "log-effects", entry.effects));
+      panel.appendChild(row);
+    }
+  }
+
+  // When paragraph i appears, in seconds: one every `pace`, plus any pauses
+  // up to and including it.
+  function appearAt(node, i, offset) {
+    // A scene timed by hand gives each paragraph's time in seconds.
+    if (node.times) return (offset || 0) + node.times[Math.min(i, node.times.length - 1)];
+    var at = (offset || 0) + i * (node.pace || PACE);
+    for (var j in node.pauses || {}) if (j <= i) at += node.pauses[j];
+    return at;
+  }
+
+  function renderParagraphs(card, node, cls, offset) {
+    nodeText(node).forEach(function (text, i) {
+      var at = appearAt(node, i, offset);
+      var p = el("p", cls);
+      p.style.animationDelay = at + "s";
+      if (text.indexOf("|") < 0) p.textContent = text;
+      else renderBeats(p, text, at);
+      card.appendChild(p);
+    });
+  }
+
+  // Within a paragraph, "|" is a short beat and "||" a longer one: the words
+  // after it appear a moment later, so a sentence can land a phrase at a time.
+  var BEAT = 0.5;
+  function renderBeats(p, text, at) {
+    text.split(/(\|\|?)/).forEach(function (part) {
+      if (part === "|" || part === "||") {
+        at += part.length * BEAT;
+        return;
+      }
+      if (!part) return;
+      var span = el("span", "reveal", part);
+      span.style.animationDelay = at + "s";
+      p.appendChild(span);
+    });
+  }
+
+  function minutes(time) {
+    var parts = time.split(":");
+    return parts[0] * 60 + Number(parts[1]);
+  }
+
+  function clockTime(mins) {
+    return ("0" + Math.floor(mins / 60)).slice(-2) + ":" + ("0" + (mins % 60)).slice(-2);
+  }
+
+  // Ticks the clock on a minute at a time, reaching `to` after `seconds`.
+  function countDown(clock, time, from, to, seconds) {
+    var start = minutes(from), steps = minutes(to) - start;
+    for (var i = 1; i <= steps; i++) {
+      (function (i) {
+        later(seconds * i / steps, function () {
+          time.textContent = clockTime(start + i);
+          if (i === steps) clock.classList.add("zero");
+        });
+      })(i);
+    }
+  }
+
+  // Messages pile in faster than anyone could read them, newest on top,
+  // while the unread count climbs. Returns how long that takes, in seconds.
+  function renderNoise(card, noise) {
+    var box = el("div", "noise");
+    box.setAttribute("aria-hidden", "true");
+    var badge = el("div", "noise-badge", "0 unread");
+    var stack = el("div", "noise-stack");
+    box.appendChild(badge);
+    box.appendChild(stack);
+    card.appendChild(box);
+    var gap = 0.15, count = noise.messages.length;
+    noise.messages.forEach(function (text, i) {
+      later(0.3 + i * gap, function () {
+        stack.insertBefore(el("div", "noise-msg", text), stack.firstChild);
+        badge.textContent = Math.round(noise.unread * (i + 1) / count) + " unread";
+      });
+    });
+    var done = 0.3 + count * gap + 0.4;
+    later(done, function () { box.classList.add("settled"); });
+    return done;
+  }
+
+  // A career in a few seconds: the staff badge's job title changes as the
+  // years turn in the clock line, and each old role joins the stack beside
+  // it, newest on top. Returns how long that takes, in seconds.
+  function renderCareer(card, steps, clock) {
+    var box = el("div", "career");
+    box.setAttribute("aria-hidden", "true");
+    var badge = el("div", "career-badge");
+    badge.appendChild(el("div", "career-org", "ACME Logistics \u00b7 Staff"));
+    var title = el("div", "career-title");
+    var note = el("div", "career-note");
+    badge.appendChild(title);
+    badge.appendChild(note);
+    var history = el("div", "career-history");
+    box.appendChild(badge);
+    box.appendChild(history);
+    card.appendChild(box);
+    clock.textContent = steps[0].ago;
+    var gap = 1.2;
+    steps.forEach(function (step, i) {
+      later(0.4 + i * gap, function () {
+        var prev = steps[i - 1];
+        if (prev && prev.title !== step.title) {
+          var row = el("div", "career-past");
+          row.appendChild(el("span", null, prev.title));
+          row.appendChild(el("span", "career-when", prev.ago));
+          history.insertBefore(row, history.firstChild);
+        }
+        clock.textContent = step.ago;
+        title.textContent = step.title;
+        note.textContent = step.note;
+        // Restart the badge's pop for each new step.
+        badge.classList.remove("step");
+        void badge.offsetWidth;
+        badge.classList.add("step");
+      });
+    });
+    var done = 0.4 + steps.length * gap + 0.4;
+    later(done, function () { box.classList.add("settled"); });
+    return done;
+  }
+
+  // Notes at the top of a screen: the recommendation the room just
+  // overruled, and what happened instead; or the cash arriving as a new clock.
+  function renderNotes(card) {
+    if (state.overruled) {
+      var note = el("div", "overruled-note");
+      note.appendChild(el("div", "overruled-label", "Overruled · " + state.overruled.title));
+      note.appendChild(el("p", null, state.overruled.text));
+      card.appendChild(note);
+    }
+    if (state.cashArrived && CASH.intro) {
+      var clock = el("div", "overruled-note new-clock");
+      clock.appendChild(el("div", "overruled-label", "A new clock · " + CASH.label));
+      clock.appendChild(el("p", null, CASH.intro));
+      card.appendChild(clock);
+    }
+  }
+
+  function renderScene(card) {
+    var node = GAME_NODES[state.node];
+    card.className = "card" + (node.jolt ? " jolt" : "");
+    renderNotes(card);
+    card.appendChild(el("div", "act-tag", node.act));
+    card.appendChild(el("h1", null, node.title));
+    // A scene can give a time, like an interlude, beside its date.
+    var date = dateLine(node) + (node.time ? " · " + node.time : "");
+    if (date) card.appendChild(el("div", "clock", date));
+    // Scenes normally appear at once, so the player can weigh the whole
+    // situation. A `stage`d scene unfolds like an interlude instead, starting
+    // `stage` seconds in, and its choices appear only after the last line.
+    var offset = node.stage || 0;
+    renderParagraphs(card, node, "narrative" + (node.stage ? " reveal" : ""), offset);
+    var choicesAt = appearAt(node, nodeText(node).length, offset);
+    // A choice with `when` only appears if it makes sense on this path.
+    node.choices.forEach(function (choice, i) {
+      if (choice.when && !choice.when(state.flags)) return;
+      // A choice's words can depend on where the player stands.
+      var words = typeof choice.text === "function" ? choice.text(state.flags, state.stats) : choice.text;
+      var btn = el("button", "choice-btn" + (node.stage ? " reveal" : ""), words);
+      if (node.stage) btn.style.animationDelay = choicesAt + i * 0.2 + "s";
+      btn.type = "button";
+      var past = daysPast(choice);
+      var short = shortOf(choice);
+      if (short) {
+        // Out of reach: shown, so the player sees what influence would buy.
+        btn.disabled = true;
+        btn.appendChild(el("span", "choice-cost locked", "Needs " + STATS[short[0]].label + " " + short[1] +
+          " " + (choice.needsFor || "to get the budget") + " · you have " + state.stats[short[0]]));
+      } else {
+        var shift = DEADLINE.passes && choice.deadlineShift && state.deadline && !state.deadline.done
+          ? " · " + DEADLINE.label.toLowerCase() + " " + signed(choice.deadlineShift) + (Math.abs(choice.deadlineShift) === 1 ? " day" : " days")
+          : "";
+        var moves = cashShift(decided(choice));
+        // A recommendation shows what it takes to carry the room.
+        if (choice.overruled) {
+          var carried = state.stats.internalInfluence >= choice.carries;
+          shift += " · " + STATS.internalInfluence.label + " " + choice.carries + " to carry the room" +
+            (carried ? "" : " · you have " + state.stats.internalInfluence + ": you'll be overruled");
+        }
+        if (moves) shift += " · " + (CASH.cost || CASH.label.toLowerCase()) + " " + signed(moves) + (Math.abs(moves) === 1 ? " day" : " days");
+        btn.appendChild(el("span", "choice-cost" + (past ? " past" : choice.overruled && !carried ? " locked" : ""),
+          dayCount(choice.days) + shift + (past ? " · " + (DEADLINE.passes ? DEADLINE.warn : dayCount(past) + " past Legal's date") : "")));
+      }
+      btn.addEventListener("click", function () { advance(decided(choice), words); });
+      card.appendChild(btn);
+    });
+  }
+
+  function renderInterlude(card) {
+    var node = GAME_NODES[state.node];
+    var pace = node.pace || PACE;
+    card.className = "card interlude" + (node.turn ? " turning" : "") + (node.homecoming ? " homecoming" : "");
+    renderNotes(card);
+    var clock = el("div", "clock", dateLine(node) + (node.time ? " · " : ""));
+    var time = el("span", null, node.time);
+    clock.appendChild(time);
+    card.appendChild(clock);
+    card.appendChild(el("h1", null, node.title));
+    var offset = node.noise ? renderNoise(card, node.noise) : node.career ? renderCareer(card, node.career, clock) : 0;
+    var paragraphs = nodeText(node);
+    renderParagraphs(card, node, "narrative reveal", offset);
+    var last = appearAt(node, paragraphs.length - 1, offset);
+    // An interlude can end on a picture, art/<art>.svg, fading in with its
+    // last paragraph. `art` can depend on the flags, or be null.
+    var artName = typeof node.art === "function" ? node.art(state.flags) : node.art;
+    if (artName) {
+      var art = el("img", "divider-art scene-art reveal");
+      art.src = "art/" + artName + ".svg";
+      art.alt = "";
+      art.style.animationDelay = last + 0.4 + "s";
+      art.onerror = function () { art.remove(); };
+      card.appendChild(art);
+    }
+    var btn = el("button", "next-btn reveal", "Continue");
+    btn.type = "button";
+    btn.style.animationDelay = last + pace + "s";
+    // A turning interlude drains to red as its last paragraph appears; a
+    // homecoming drains back to blue across the whole card.
+    card.style.setProperty("--turn-delay", last + "s");
+    card.style.setProperty("--reveal-time", last + pace + "s");
+    if (node.countdown) countDown(clock, time, node.time, node.countdown.to, appearAt(node, node.countdown.at, offset));
+    if (node.buzz != null) later(appearAt(node, node.buzz, offset), function () { card.classList.add("buzz"); });
+    if (node.blackout) renderBlackout(card, node, offset);
+    if (node.flashback != null) later(appearAt(node, node.flashback, offset), function () { card.classList.add("flashback"); });
+    // The silence ends on screen: the counter is struck through.
+    if (node.silence === "end") {
+      later(last, function () {
+        var counter = document.querySelector(".days-silent");
+        if (counter) counter.classList.add("ended");
+      });
+    }
+    btn.addEventListener("click", function () {
+      if (!node.homecoming) return advance(node);
+      // Falling asleep: the screen fades out before the story moves on.
+      btn.disabled = true;
+      card.classList.add("asleep");
+      later(1.8, function () { advance(node); });
+    });
+    card.appendChild(btn);
+  }
+
+  // The office goes dark: lit monitors behind the card go out in a wave
+  // from the windows, the Service meter falls to nothing, and then the
+  // player's own screen goes black and shows the ransom note. When it comes
+  // back, it's red.
+  function renderBlackout(card, node, offset) {
+    var b = node.blackout;
+    var office = el("div", "office");
+    office.setAttribute("aria-hidden", "true");
+    var cols = 16, rows = 9;
+    // The wave lasts as long as its paragraph's beats, so the last monitor
+    // goes out as the last words appear (3 seconds if it has none).
+    var bars = (nodeText(node)[b.wave].match(/\|/g) || []).length;
+    var length = bars ? bars * BEAT : 3;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var m = el("div", "monitor");
+        // The shadow crosses from the windows on the left, a little ragged.
+        var along = c / (cols - 1) * 0.85 + r / (rows - 1) * 0.1 + Math.random() * 0.05;
+        m.style.transitionDelay = (along * length).toFixed(2) + "s";
+        office.appendChild(m);
+      }
+    }
+    document.body.appendChild(office);
+    later(0.1, function () { office.classList.add("lit"); });
+    later(appearAt(node, b.wave, offset), function () { office.classList.add("dark"); });
+    // Service crashes as the map freezes: the box flashes red and shudders,
+    // and the number counts down to nothing, so nobody misses it.
+    var mapAt = appearAt(node, b.map, offset);
+    var service = document.querySelector('[data-stat="service"]');
+    if (service) {
+      var from = state.stats.service, unit = STATS.service.unit || "";
+      later(mapAt, function () { service.classList.add("crash", "frozen"); });
+      for (var n = 1; n <= 20; n++) {
+        (function (n) {
+          later(mapAt + n * 0.06, function () {
+            var v = Math.round(from * (1 - n / 20));
+            service.querySelector(".stat-val").textContent = v + unit;
+            service.querySelector(".meter-fill").style.width = v + "%";
+          });
+        })(n);
+      }
+    }
+    // `hold`: seconds to read the screen paragraph before the screen dies.
+    var at = appearAt(node, b.screen, offset) + (b.hold || 1) - 1;
+    var note = el("div", "ransom");
+    note.setAttribute("aria-hidden", "true");
+    card.appendChild(note);
+    later(at + 1.0, function () { card.classList.add("screen-off"); });
+    // The note's lines are typed out a character at a time, like someone at
+    // a keyboard, then its timer appears and starts counting down.
+    var t = at + 1.5;
+    b.note.forEach(function (line) {
+      var start = t;
+      later(start, function () { note.appendChild(el("p")); });
+      for (var k = 1; k <= line.length; k++) {
+        (function (k) {
+          later(start + k * 0.025, function () { note.lastChild.textContent = line.slice(0, k); });
+        })(k);
+      }
+      t += line.length * 0.025 + 0.5;
+    });
+    var parts = b.timer.split(":");
+    var left = parts[0] * 3600 + parts[1] * 60 + Number(parts[2]);
+    var timer = el("p", "ransom-timer");
+    later(t, function () { note.appendChild(timer); });
+    for (var i = 0; i <= b.timerFor; i++) {
+      (function (i) {
+        later(t + i, function () {
+          var s = left - i;
+          timer.textContent = [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60]
+            .map(function (n) { return ("0" + n).slice(-2); }).join(":");
+        });
+      })(i);
+    }
+    later(t + b.timerFor + 0.4, function () {
+      card.classList.remove("screen-off");
+      document.documentElement.classList.add("breached");
+    });
+  }
+
+  // A narrative paragraph mixing text with links, given as [label, href]
+  // or [label, href, true] to open in a new tab.
+  function paragraph(parts) {
+    var p = el("p", "narrative");
+    parts.forEach(function (part) {
+      if (typeof part === "string") return p.appendChild(document.createTextNode(part));
+      var a = el("a", null, part[0]);
+      a.href = part[1];
+      if (part[2]) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      p.appendChild(a);
+    });
+    return p;
+  }
+
+  // The opening screen, before Act 0: what the game is, where it comes from,
+  // and how it may be used.
+  function renderIntro(card) {
+    card.className = "card intro";
+    card.appendChild(el("div", "act-tag", "Before you begin"));
+    card.appendChild(el("h1", null, "The Night Desk"));
+    [
+      "A preview, shared before launch. Your progress is saved in this browser, so you can stop and come back.",
+      "The Night Desk is a text-based game for security, tech and business leaders. You'll live through a ransomware attack from the inside: the night the screens go black in the busiest week of the year, the weeks of running on paper, with limited operations while the money runs out, and the months it takes to rebuild.",
+      "The Night Desk is fiction. ACME Logistics, its people and its events are invented or composites, drawn from real ransomware attacks, and it isn't an account of any real organisation's response. What's real is the pressure, the imperfect choices, and the deadlines outside of your control.",
+      "Your choices shape the story, and many of its events and outcomes only happen on some paths. None of them should be read as a record of what really happened, or of what anyone really did.",
+      "You're the Head of IT Operations, with fourteen years at the company: the longest-serving member of the leadership team. Most of the big calls belong to someone else: the Chief Executive, the Finance Director, Legal, the board. You recommend, and whether they listen depends on your influence. Every decision takes time and moves four things: your influence, your team's health, your own health, and how much of the company's service is running. From the board meeting on, a fifth clock counts down the company's liquidity.",
+      "There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices played out, with lessons and questions for every seat at the table.",
+    ].forEach(function (text) { card.appendChild(el("p", "narrative", text)); });
+    if (EDITION.licensed) {
+      card.appendChild(el("h2", null, "About this copy"));
+      card.appendChild(paragraph([
+        "This copy of The Night Desk is licensed for internal use" + (EDITION.licensee ? " by " + EDITION.licensee : "") +
+          " under an organisation licence. Breach Inc. is \u00a9 2026 DVRMMR GAMING LTD, ",
+        ["breach-inc.com", "https://breach-inc.com/", true],
+        ".",
+      ]));
+    } else {
+      card.appendChild(el("h2", null, "Using The Night Desk"));
+      card.appendChild(paragraph([
+        "You're welcome to use The Night Desk free in your organisation's own security awareness and training, as long as you use it as it is and include a link to ",
+        ["breach-inc.com", "https://breach-inc.com/"],
+        ". To run it as a facilitated session with your leadership team, record completions or adapt it, organisation licences will be available at launch, as they are for The Long Silence. See ",
+        ["licences and pricing", "../licence.html"],
+        ".",
+      ]));
+      card.appendChild(paragraph([
+        "If it's useful to your organisation, please consider ",
+        ["supporting it on Ko-fi", "https://ko-fi.com/dvrmmr", true],
+        ".",
+      ]));
+    }
+    var btn = el("button", "next-btn primary-btn", "Begin");
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      snapshot(); // DEV
+      state.started = true;
+      save();
+      render();
+      showTop();
+    });
+    card.appendChild(btn);
+  }
+
+  // A screen of its own at the start of each act: just the number and title.
+  function renderDivider(card, act) {
+    var parts = act.split(": ");
+    card.className = "card divider";
+    // Each act's art is art/act<N>.svg; a missing file is simply hidden.
+    var art = el("img", "divider-art");
+    art.src = "art/" + parts[0].toLowerCase().replace(/\s+/g, "") + ".svg";
+    art.alt = "";
+    art.onerror = function () { art.remove(); };
+    card.appendChild(art);
+    card.appendChild(el("div", "divider-act", parts[0]));
+    card.appendChild(el("h1", "divider-title", parts[1] || ""));
+    var btn = el("button", "next-btn", "Continue");
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      snapshot(); // DEV
+      state.actShown = act;
+      save();
+      render();
+      showTop();
+    });
+    card.appendChild(btn);
+  }
+
+  // A paragraph of text ending in a link that opens in a new tab.
+  function link(before, label, href) {
+    var p = el("p", null, before);
+    var a = el("a", null, label);
+    a.href = href;
+    if (/^https?:/.test(href)) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    p.appendChild(a);
+    p.appendChild(document.createTextNode("."));
+    return p;
+  }
+
+  function renderEnding(card) {
+    var early = state.ended.early && EARLY_ENDINGS[state.ended.early];
+    var ending = early || ENDINGS.filter(function (e) { return e.test(state.stats, state.flags); })[0];
+    // An early ending collapses: the edges close to black, then the words
+    // come through one at a time.
+    card.className = "card" + (early ? " collapse" : "");
+    var parts = [el("div", "act-tag", early ? "Game over" : "Epilogue"), el("h1", null, ending.title)];
+    var endingText = typeof ending.text === "function" ? ending.text(state.flags, state.stats) : ending.text;
+    [].concat(endingText).forEach(function (text) { parts.push(el("p", "narrative", text)); });
+    if (state.flags.overrun) {
+      parts.push(el("p", "narrative", state.flags.forward_overrun
+        ? "Legal brought the date forward after you escalated the share sale, and the work that no longer fitted was squeezed into nights. Doing the right thing had a price, and your team paid it in overtime and lost sleep."
+        : "You weren't able to deliver everything that was required before Legal's deadline, and your team paid the price in overtime and lost sleep."));
+    }
+    var day = incidentDay();
+    var summary = "You made " + state.log.filter(function (e) { return e.choice; }).length + " decisions" +
+      (day ? ". " + dayCount(day) + " passed between the blackout and the end." : ".");
+    var silent = silenceDays();
+    if (silent != null) summary += COUNTER.summary(silent);
+    parts.push(el("p", "narrative summary", summary));
+    var btn = el("button", "next-btn primary-btn", "What this breach taught you →");
+    parts.push(btn);
+    parts.forEach(function (part, i) {
+      if (early) {
+        part.classList.add("reveal");
+        part.style.animationDelay = 1.6 + i * 0.9 + "s";
+      }
+      card.appendChild(part);
+    });
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      snapshot(); // DEV
+      state.ended.reviewed = true;
+      save();
+      render();
+      showTop();
+    });
+  }
+
+  // Unfold every lesson before printing, so the PDF has all of them.
+  window.addEventListener("beforeprint", function () {
+    [].forEach.call(document.querySelectorAll("details.lesson-more"), function (d) { d.open = true; });
+  });
+
+  var VERDICTS = { paid: "Paid off", manage: "Impact to manage", tradeoff: "Trade-off" };
+
+  // The browsers built into other apps (LinkedIn, Facebook, Instagram, the
+  // Google app...) mostly ignore window.print(), so the Print button does
+  // nothing there. They say who they are in the user agent.
+  var IN_APP_BROWSER = /LinkedInApp|FBAN|FBAV|Instagram|GSA\/|MicroMessenger|Line\/|Snapchat|Twitter/i.test(navigator.userAgent || "");
+
+  // The way back to the licences, on the questions people pass around.
+  var RUN_IT = "To run Breach Inc. as a facilitated session with your team: https://breach-inc.com/licence.html";
+
+  // Every question as plain text, for email or the clipboard.
+  // The questions come in two groups, written at the front of each one
+  // ("Tech/Cyber: ..." or "Business Leaders: ..."). Grouped, with the group
+  // taken off the front; any without one go under "".
+  var ASK_GROUPS = ["Tech/Cyber", "Business Leaders", ""];
+  function groupAsks(asks) {
+    var out = {};
+    asks.forEach(function (q) {
+      var m = /^(Tech\/Cyber|Business Leaders): (.*)$/.exec(q);
+      var group = m ? m[1] : "";
+      (out[group] = out[group] || []).push(m ? m[2] : q);
+    });
+    return out;
+  }
+  function allAsks() {
+    var asks = [];
+    LESSONS.forEach(function (lesson) { asks = asks.concat(lesson.ask); });
+    return asks;
+  }
+
+  function questionsText() {
+    var lines = ["Questions to take to your leadership team, from Breach Inc. (https://breach-inc.com)"];
+    var groups = groupAsks(allAsks());
+    ASK_GROUPS.forEach(function (group) {
+      if (!groups[group]) return;
+      lines.push("");
+      if (group) lines.push(group.toUpperCase());
+      groups[group].forEach(function (q, i) { lines.push(i + 1 + ". " + q); });
+    });
+    if (!EDITION.licensed) lines.push("", RUN_IT);
+    return lines.join("\n");
+  }
+
+  // Copies text, with a fallback for browsers without the clipboard API.
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return copyByHand(text); });
+    }
+    return Promise.resolve(copyByHand(text));
+  }
+
+  function copyByHand(text) {
+    var area = el("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
+
+  // The lessons, as the final act: each one looks back at the player's own
+  // choices, then turns them into questions to take back to work. Saves from
+  // before choices were recorded get the lessons without the look back.
+  function renderLessons(card) {
+    card.className = "card lessons-screen";
+    card.appendChild(el("div", "act-tag", "Lessons learned"));
+    card.appendChild(el("h1", null, "Your breach in review"));
+    card.appendChild(el("p", "narrative", LESSONS_INTRO));
+    var record = state.choices && { choices: state.choices, flags: state.flags, stats: state.stats, log: state.log, finished: !state.ended.early };
+    LESSONS.forEach(function (lesson, i) {
+      var box = el("section", "lesson reveal");
+      box.style.animationDelay = i * 0.3 + "s";
+      box.appendChild(el("div", "lesson-scenes", lesson.scenes));
+      var head = el("div", "lesson-head");
+      head.appendChild(el("h2", null, (i + 1) + ". " + lesson.title));
+      var review = record && lesson.review(record);
+      if (review) head.appendChild(el("span", "verdict " + review.verdict, VERDICTS[review.verdict]));
+      box.appendChild(head);
+      if (record) {
+        box.appendChild(el("div", "lesson-label", "In your game"));
+        box.appendChild(el("p", review ? null : "lesson-missed", review ? review.text : "Your breach ended before this point."));
+      }
+      // The lesson and its questions stay folded away, so the screen opens
+      // as one line per lesson. Printing unfolds them all.
+      var more = el("details", "lesson-more");
+      more.appendChild(el("summary", null, "Click here to view the lesson and " + lesson.ask.length +
+        (lesson.ask.length === 1 ? " question" : " questions") + " for your team"));
+      more.appendChild(el("div", "lesson-label", "The lesson"));
+      more.appendChild(el("p", null, lesson.lesson));
+      more.appendChild(el("div", "lesson-label", "Ask your team"));
+      var lessonGroups = groupAsks(lesson.ask);
+      ASK_GROUPS.forEach(function (group) {
+        if (!lessonGroups[group]) return;
+        if (group) more.appendChild(el("div", "ask-group", group));
+        var asks = el("ul");
+        lessonGroups[group].forEach(function (q) { asks.appendChild(el("li", null, q)); });
+        more.appendChild(asks);
+      });
+      box.appendChild(more);
+      card.appendChild(box);
+    });
+    // Every question in one place, ready to print or save as a PDF.
+    var questions = el("section", "questions");
+    questions.appendChild(el("h2", null, "Questions to take to your leadership team"));
+    var allGroups = groupAsks(allAsks());
+    ASK_GROUPS.forEach(function (group) {
+      if (!allGroups[group]) return;
+      if (group) questions.appendChild(el("h3", "ask-group-heading", group));
+      var list = el("ol");
+      allGroups[group].forEach(function (q) { list.appendChild(el("li", null, q)); });
+      questions.appendChild(list);
+    });
+    if (!EDITION.licensed) questions.appendChild(el("p", "print-only", RUN_IT));
+    // The one place the game asks for support: straight after it has given
+    // the player something to take away. A plain link, not Ko-fi's widget,
+    // so nothing loads from another site.
+    // Organisations are pointed to the licence, the way to run it with a
+    // team, rather than asked to tip from a training budget.
+    var support = paragraph([
+      "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. Want to run it with your leadership team? An ",
+      ["organisation licence", "licence.html#organisation"],
+      ", from \u00a3195 (\u00a395 for charities and the NHS), includes a ready-to-run session deck with facilitator notes, a learning platform package that records completions, and the right to adapt it for your own staff.",
+    ]);
+    support.className += " support";
+    if (!EDITION.licensed) questions.appendChild(support);
+    var actions = el("div", "actions");
+    var print = el("button", "next-btn", "Print or save as PDF");
+    print.type = "button";
+    print.addEventListener("click", function () { window.print(); });
+    actions.appendChild(print);
+    // Email and Copy work everywhere, including the in-app browsers that
+    // can't print.
+    var email = el("a", "next-btn", "Email me the questions");
+    email.href = "mailto:?subject=" + encodeURIComponent("Breach Inc.: questions for my team") + "&body=" + encodeURIComponent(questionsText());
+    actions.appendChild(email);
+    var copy = el("button", "next-btn", "Copy the questions");
+    copy.type = "button";
+    var copied = el("p", "narrative copy-status");
+    copied.setAttribute("role", "status");
+    copy.addEventListener("click", function () {
+      copyText(questionsText()).then(function (ok) {
+        copied.textContent = ok ? "Copied. Paste them into a note, message or email." : "Couldn't copy here. Try Email instead.";
+      });
+    });
+    actions.appendChild(copy);
+    var team = el("a", "next-btn", "Run this with your team");
+    team.href = "licence.html#organisation";
+    if (!EDITION.licensed) actions.appendChild(team);
+    var kofi = el("a", "next-btn", "Support Breach Inc. on Ko-fi");
+    kofi.href = "https://ko-fi.com/dvrmmr";
+    kofi.target = "_blank";
+    kofi.rel = "noopener noreferrer";
+    if (!EDITION.licensed) actions.appendChild(kofi);
+    questions.appendChild(actions);
+    questions.appendChild(copied);
+    if (IN_APP_BROWSER) {
+      questions.appendChild(el("p", "narrative print-note",
+        "Printing isn't available in this app's built-in browser. To print, open breach-inc.com in Safari or Chrome, or use Email or Copy above."));
+    }
+    card.appendChild(questions);
+    // In a learning platform, a clear finish: the player sees their
+    // completion recorded rather than wondering whether to close the tab.
+    if (EDITION.exitCourse) {
+      var exit = el("div", "actions course-exit");
+      var exitBtn = el("button", "next-btn primary-btn", "Course completed – exit course");
+      exitBtn.type = "button";
+      var exitStatus = el("p", "narrative copy-status");
+      exitStatus.setAttribute("role", "status");
+      exitBtn.addEventListener("click", function () {
+        var recorded = EDITION.exitCourse();
+        exitBtn.disabled = true;
+        exitStatus.textContent = recorded
+          ? "Your completion has been recorded. You can now close this window, or return to your learning platform."
+          : "Your learning platform didn't confirm the completion. Please close this window and check your record there.";
+      });
+      exit.appendChild(exitBtn);
+      card.appendChild(exit);
+      card.appendChild(exitStatus);
+    }
+    var author = el("div", "author-note");
+    if (!EDITION.licensed) {
+      author.appendChild(link("Going through a breach, or struggling with the personal aftermath of one? I'm happy to talk. ",
+        "Get in touch by email", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%3A%20getting%20in%20touch"));
+      author.appendChild(link("Feedback on the game is very welcome: ", "email me", "mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback"));
+    } else if (EDITION.feedbackEmail) {
+      author.appendChild(link("Feedback on this exercise is very welcome: ", "email us",
+        "mailto:" + EDITION.feedbackEmail + "?subject=Breach%20Inc.%20feedback"));
+    }
+    if (author.firstChild) card.appendChild(author);
+    var again = el("button", "next-btn primary-btn", "Play again with different choices");
+    again.type = "button";
+    again.addEventListener("click", restart);
+    card.appendChild(again);
+  }
+
+  function render() {
+    timers.forEach(clearTimeout);
+    timers = [];
+    [].forEach.call(document.querySelectorAll(".office"), function (o) { o.remove(); });
+    // The lessons step out of the story: the red goes, and the calm blue
+    // of before the breach comes back.
+    var reflecting = !!(state.ended && state.ended.reviewed);
+    document.documentElement.classList.toggle("reflecting", reflecting);
+    document.documentElement.classList.toggle("breached", !reflecting && !!(state.flags.readIn || state.silence));
+    document.documentElement.classList.toggle("aftermath", !!state.flags.home);
+    renderHud();
+    renderPressure();
+    var card = document.getElementById("main");
+    card.textContent = "";
+    var act = !state.ended && GAME_NODES[state.node].act;
+    if (state.ended) (state.ended.reviewed ? renderLessons : renderEnding)(card);
+    else if (state.started === false) renderIntro(card);
+    else if (act && act !== state.actShown) renderDivider(card, act);
+    else if (GAME_NODES[state.node].type === "interlude") renderInterlude(card);
+    else renderScene(card);
+    renderLog();
+    if (EDITION.onRender) EDITION.onRender({ started: state.started !== false, ended: !!state.ended });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    state = load() || freshState();
+    // DEV: the Back button, beside Restart.
+    if (DEV) {
+      try { devHistory = JSON.parse(sessionStorage.getItem(HISTORY_KEY)) || []; } catch (e) { devHistory = []; }
+      var backBtn = el("button", "link-btn", "Back");
+      backBtn.type = "button";
+      backBtn.style.marginRight = "8px";
+      backBtn.addEventListener("click", back);
+      var restartBtn = document.getElementById("restart");
+      restartBtn.parentNode.insertBefore(backBtn, restartBtn);
+    }
+    document.getElementById("restart").addEventListener("click", function () {
+      if (confirm("Start again from the beginning?")) restart();
+    });
+    render();
+  });
+})();

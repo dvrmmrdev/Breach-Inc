@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="A loading bay before dawn: a lorry backed up to the open door, paper lists taped to roll cages, a hi-vis jacket on a hook">
+<defs>
+<radialGradient id="fadeg" cx="0.5" cy="0.5" r="0.5"><stop offset="0.62" stop-color="#c9d1d9" stop-opacity="1"/><stop offset="1" stop-color="#c9d1d9" stop-opacity="0"/></radialGradient>
+<mask id="fade" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="360" mask-type="alpha"><rect width="800" height="360" fill="url(#fadeg)"/></mask>
+<radialGradient id="glowGold" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.5"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowWhite" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#c9d1d9" stop-opacity="0.45"/><stop offset="1" stop-color="#c9d1d9" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowRed" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f85149" stop-opacity="0.5"/><stop offset="1" stop-color="#f85149" stop-opacity="0"/></radialGradient>
+<linearGradient id="coneGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.55"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></linearGradient>
+<linearGradient id="coneWhite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9d1d9" stop-opacity="0.35"/><stop offset="1" stop-color="#c9d1d9" stop-opacity="0"/></linearGradient>
+<linearGradient id="beamLeft" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#f2cc60" stop-opacity="0.5"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0"/></linearGradient>
+<linearGradient id="dawn" gradientUnits="userSpaceOnUse" x1="0" y1="56" x2="0" y2="228"><stop offset="0" stop-color="#58a6ff" stop-opacity="0.12"/><stop offset="0.8" stop-color="#58a6ff" stop-opacity="0.3"/><stop offset="1" stop-color="#f2cc60" stop-opacity="0.3"/></linearGradient>
+<linearGradient id="floor3" gradientUnits="userSpaceOnUse" x1="0" y1="228" x2="0" y2="360"><stop offset="0" stop-color="#21262d"/><stop offset="1" stop-color="#0d1117"/></linearGradient>
+</defs>
+<g mask="url(#fade)">
+<rect x="0" y="0" width="800" height="360" fill="#0d1117"/>
+<rect x="0" y="228" width="800" height="132" fill="url(#floor3)"/>
+<rect x="270" y="56" width="260" height="172" fill="url(#dawn)"/>
+<rect x="262" y="48" width="276" height="8" fill="#30363d"/>
+<rect x="270" y="50" width="260" height="1" fill="#21262d"/>
+<rect x="270" y="52.5" width="260" height="1" fill="#21262d"/>
+<rect x="270" y="55" width="260" height="1" fill="#21262d"/>
+<rect x="270" y="57.5" width="260" height="1" fill="#21262d"/>
+<rect x="300" y="112" width="200" height="116" fill="#161b22"/>
+<rect x="304" y="116" width="192" height="112" fill="#0b0e13"/>
+<rect x="298" y="110" width="4" height="118" fill="#30363d"/>
+<rect x="498" y="110" width="4" height="118" fill="#30363d"/>
+<rect x="398" y="0" width="4" height="30" fill="#30363d"/>
+<path d="M386 34 L414 34 L420 40 L380 40 Z" fill="#c9d1d9"/>
+<path d="M382 40 L418 40 L540 330 L260 330 Z" fill="url(#coneGold)" opacity="0.55"/>
+<ellipse cx="400" cy="300" rx="160" ry="30" fill="url(#glowGold)" opacity="0.7"/>
+<rect x="60" y="140" width="130" height="150" fill="none" stroke="#30363d" stroke-width="2"/><rect x="81.6667" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="103.333" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="125" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="146.667" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="168.333" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="60" y="158.75" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="60" y="177.5" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="60" y="196.25" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="60" y="215" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="60" y="233.75" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="60" y="252.5" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="60" y="271.25" width="130" height="1" fill="#30363d" opacity="0.7"/><circle cx="68" cy="295" r="5" fill="#0d1117"/><circle cx="182" cy="295" r="5" fill="#0d1117"/><rect x="78" y="158" width="30" height="40" fill="#c9d1d9" opacity="0.85"/><rect x="87" y="155" width="12" height="6" fill="#8b949e" opacity="0.8"/><rect x="82" y="166" width="22" height="1.5" fill="#161b22"/><rect x="82" y="172" width="16" height="1.5" fill="#161b22"/><rect x="82" y="178" width="22" height="1.5" fill="#161b22"/><rect x="82" y="184" width="16" height="1.5" fill="#161b22"/><rect x="82" y="190" width="22" height="1.5" fill="#161b22"/><rect x="130" y="196" width="30" height="40" fill="#c9d1d9" opacity="0.85"/><rect x="139" y="193" width="12" height="6" fill="#8b949e" opacity="0.8"/><rect x="134" y="204" width="22" height="1.5" fill="#161b22"/><rect x="134" y="210" width="16" height="1.5" fill="#161b22"/><rect x="134" y="216" width="22" height="1.5" fill="#161b22"/><rect x="134" y="222" width="16" height="1.5" fill="#161b22"/><rect x="134" y="228" width="22" height="1.5" fill="#161b22"/>
+<rect x="600" y="140" width="130" height="150" fill="none" stroke="#30363d" stroke-width="2"/><rect x="621.667" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="643.333" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="665" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="686.667" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="708.333" y="140" width="1" height="150" fill="#30363d" opacity="0.7"/><rect x="600" y="158.75" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="600" y="177.5" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="600" y="196.25" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="600" y="215" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="600" y="233.75" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="600" y="252.5" width="130" height="1" fill="#30363d" opacity="0.7"/><rect x="600" y="271.25" width="130" height="1" fill="#30363d" opacity="0.7"/><circle cx="608" cy="295" r="5" fill="#0d1117"/><circle cx="722" cy="295" r="5" fill="#0d1117"/><rect x="618" y="170" width="30" height="40" fill="#c9d1d9" opacity="0.85"/><rect x="627" y="167" width="12" height="6" fill="#8b949e" opacity="0.8"/><rect x="622" y="178" width="22" height="1.5" fill="#161b22"/><rect x="622" y="184" width="16" height="1.5" fill="#161b22"/><rect x="622" y="190" width="22" height="1.5" fill="#161b22"/><rect x="622" y="196" width="16" height="1.5" fill="#161b22"/><rect x="622" y="202" width="22" height="1.5" fill="#161b22"/><path d="M638 201 l3 3 l6 -7" fill="none" stroke="#f85149" stroke-width="2"/><rect x="668" y="160" width="30" height="40" fill="#c9d1d9" opacity="0.85"/><rect x="677" y="157" width="12" height="6" fill="#8b949e" opacity="0.8"/><rect x="672" y="168" width="22" height="1.5" fill="#161b22"/><rect x="672" y="174" width="16" height="1.5" fill="#161b22"/><rect x="672" y="180" width="22" height="1.5" fill="#161b22"/><rect x="672" y="186" width="16" height="1.5" fill="#161b22"/><rect x="672" y="192" width="22" height="1.5" fill="#161b22"/>
+<rect x="146" y="236" width="34" height="46" fill="#8b949e" rx="2"/>
+<rect x="149" y="241" width="28" height="38" fill="#c9d1d9" opacity="0.9"/>
+<rect x="155" y="233" width="16" height="6" fill="#30363d" rx="1"/>
+<path d="M180 240 q12 20 4 44" fill="none" stroke="#30363d"/>
+<rect x="236" y="92" width="6" height="4" fill="#30363d"/>
+<path d="M239 96 L222 104 L218 160 L260 160 L256 104 Z" fill="#f2cc60" opacity="0.75"/>
+<rect x="220" y="126" width="38" height="4" fill="#c9d1d9" opacity="0.8"/>
+<rect x="220" y="140" width="38" height="4" fill="#c9d1d9" opacity="0.8"/>
+<g fill="#0d1117"><circle cx="352" cy="182.783" r="5.65217"/><path d="M348.609 189.565 L341.826 192.957 L342.957 212.174 L345.217 228 L358.783 228 L361.043 212.174 L362.174 192.957 L355.391 189.565 Z"/></g>
+<rect x="358" y="196" width="10" height="14" fill="#0d1117"/>
+</g>
+</svg>
