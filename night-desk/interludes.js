@@ -315,7 +315,7 @@ var INTERLUDES = {
     next: "act2_sam",
   },
 
-  // The end of the week, and of the draft so far.
+  // The end of the week.
   i_week: {
     act: "Act 2: The Price",
     time: "21:00",

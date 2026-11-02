@@ -77,8 +77,110 @@ a.brand:focus-visible {
   padding: 16px;
   margin-bottom: 20px;
 }
+/* Keep the scores in view while scrolling, but only with room to spare. On a
+   phone, in a small learning platform frame or when zoomed in, the bar would
+   take up too much of the screen, so it scrolls away with the page. */
 .stat-box {
   flex: 1 1 110px;
+}
+@media screen and (min-width: 820px) and (min-height: 600px) {
+  /* So that tabbing back through the choices doesn't hide one behind it. Only
+     the games: this file is shared, and other pages have links to headings. */
+  html:has(.hud) {
+    scroll-padding-top: 130px;
+  }
+  .hud {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    gap: 10px;
+    padding: 10px 14px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  }
+  /* Narrower boxes, so that all seven fit on one row. */
+  .stat-box {
+    flex-basis: 85px;
+  }
+}
+/* On smaller screens, a one-line summary takes over once the full bar has
+   scrolled out of view, and goes when it's back. It's left out on the very
+   shortest screens, such as a desktop browser at 400% zoom. */
+.mini-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Above the closing-in edges, which would fade the scores at each end. */
+  z-index: 11;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 5px 6px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease, visibility 0.15s;
+}
+.mini-hud.show {
+  visibility: visible;
+  opacity: 1;
+}
+.mini-stat {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 110px;
+  text-align: center;
+  line-height: 1.2;
+}
+.mini-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #8b949e;
+}
+.mini-val {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0f6fc;
+  white-space: nowrap;
+}
+.mini-stat.mid .mini-val {
+  color: #f2cc60;
+}
+.mini-stat.low .mini-val,
+.mini-stat.alert .mini-val,
+.mini-stat.crash .mini-val {
+  color: #ff7b72;
+}
+.mini-stat.crash {
+  border-radius: 4px;
+  animation: crash 2.4s ease-out;
+}
+.mini-stat.crash .mini-val {
+  animation: crash-val 2.4s ease-out;
+}
+.mini-stat.ended .mini-val {
+  text-decoration: line-through;
+  color: #8b949e;
+}
+@media (max-height: 299px), print {
+  .mini-hud {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mini-hud {
+    transition: none;
+  }
+  .mini-stat.crash,
+  .mini-stat.crash .mini-val {
+    animation: none;
+  }
 }
 .stat-label {
   display: block;
@@ -258,6 +360,13 @@ h3 {
 }
 .reveal {
   opacity: 0;
+  animation: reveal 0.8s ease forwards;
+}
+/* A staged choice can't be picked until it shows. */
+.choice-btn.waiting {
+  pointer-events: none;
+}
+.overruled-note.reveal {
   animation: reveal 0.8s ease forwards;
 }
 @keyframes reveal {
@@ -893,6 +1002,27 @@ a.link-btn {
 .office.dark .monitor {
   opacity: 0;
   transition-duration: 0.15s;
+}
+/* On a smaller screen the card covers nearly all of the office, so for this
+   scene it turns to smoked glass: dark enough to read on, with the monitors
+   glowing through it. The text always comes first. */
+@media (max-width: 1100px) {
+  .office {
+    gap: 2.5vw 2vw;
+  }
+  .office.lit:not(.dark) .monitor {
+    opacity: 0.5;
+  }
+  .card.floor-scene:not(.screen-off) {
+    background: rgba(13, 17, 23, 0.78);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+  .container:has(.floor-scene) .top {
+    background: rgba(13, 17, 23, 0.85);
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
 }
 .stat-box.frozen .stat-val {
   color: #f85149;

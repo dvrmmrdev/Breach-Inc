@@ -1,4 +1,4 @@
-// Breach Inc.: Outage. A working draft of the second scenario, a ransomware
+// Breach Inc.: The Night Desk, the second scenario, a ransomware
 // outage at a regional distributor. Same engine and conventions as the first
 // game: scenes keyed by id, each choice saying where it leads, how many days
 // it takes, how it moves the stats and what happened. Interludes are in
@@ -8,12 +8,14 @@
 // fictional or generic, and the events are a composite.
 
 var STATS = {
-  internalInfluence: { label: "Influence", start: 50 }, // fourteen years of goodwill
-  teamHealth: { label: "Team health", start: 65 }, // a team you've led for years
-  playerHealth: { label: "Your health", start: 100 },
+  // `short` is the label on the mini status bar, shown once the full one has
+  // scrolled out of view.
+  internalInfluence: { label: "Influence", short: "INF", start: 50 }, // fourteen years of goodwill
+  teamHealth: { label: "Team health", short: "TEAM", start: 65 }, // a team you've led for years
+  playerHealth: { label: "Your health", short: "YOU", start: 100 },
   // How much of the company's service is running. It falls to nothing in
   // the blackout, and climbs back far more slowly than anyone wants.
-  service: { label: "Service", start: 100, unit: "%" },
+  service: { label: "Service", short: "SVC", start: 100, unit: "%" },
 };
 
 var START_NODE = "i_career";
@@ -26,6 +28,7 @@ var BLACKOUT_DATE = "2025-12-05";
 // days you couldn't tell anyone.
 var COUNTER = {
   label: "Days offline",
+  short: "DAYS",
   summary: function (days) {
     return " ACME Logistics was offline for " + days + (days === 1 ? " day" : " days") + " of them.";
   },
@@ -45,14 +48,16 @@ var SERVICE_FULL = 60;
 // `leaked` is set (with `leaked_new` for the one screen that breaks it).
 var DEADLINE = {
   label: "Their timer",
+  short: "TIMER",
   passes: true,
   set: "leaked",
   warn: "their timer runs out",
   stats: { internalInfluence: -10, teamHealth: -5, playerHealth: -5 },
-  // How the timer looks on the screen after it ends: [value, note].
+  // How the timer looks on the screen after it ends: [value, note, the value
+  // on the mini status bar].
   ended: {
-    passed: ["Ran out", "the stolen data is published"],
-    stopped: ["Stopped", "the ransom was paid"],
+    passed: ["Ran out", "the stolen data is published", "Out"],
+    stopped: ["Stopped", "the ransom was paid", "Stop"],
   },
   log: {
     title: "Their timer",
@@ -82,7 +87,8 @@ function leakNews(flags) {
 // company until the insurer pays for the lost business. Days are counted
 // from the blackout (0 is Friday 5 December).
 var CASH = {
-  label: "Company liquidity remaining",
+  label: "Liquidity",
+  short: "CASH",
   // Shorter, for the cost line on a choice: "liquidity −4 days".
   cost: "liquidity",
   // Shown at the top of the screen where it first appears.

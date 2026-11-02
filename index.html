@@ -340,9 +340,8 @@
         </div>
       </a>
 
-      <div class="file soon" aria-disabled="true">
-        <span class="stamp">Coming soon</span>
-        <div class="art"><img src="art/night_desk.svg" alt="A dark IT floor at night: every screen dead, and one person at a desk under a lamp, on the phone."></div>
+      <a class="file" href="night-desk/">
+        <div class="art"><img src="art/night_desk_dark.svg" alt="A dark IT floor at night: every screen dead, the desk lamp off, and one person at a desk on the phone."><img class="lit" src="art/night_desk.svg" alt="" aria-hidden="true"></div>
         <div class="body">
           <h2>The Night Desk</h2>
           <p class="setting">A ransomware attack at a medicines and food distributor</p>
@@ -352,9 +351,9 @@
             <li>Outage and recovery</li>
             <li>About 40 minutes</li>
           </ul>
-          <div class="open">Start</div>
+          <div class="open"><span id="night-desk-go">Start</span> <span aria-hidden="true">&rarr;</span></div>
         </div>
-      </div>
+      </a>
     </section>
 
     <p class="note">Both run in your browser, with no download, account, adverts or tracking. Your progress in each is saved separately, so you can play one and come back for the other.</p>
@@ -375,17 +374,20 @@
     <footer>
       Works of fiction. The Long Silence is inspired by the creator's experience of a major cyber breach. All companies, people, projects and events are invented or composites.
       <br>Feedback is very welcome: <a href="mailto:hello@breach-inc.com?subject=Breach%20Inc.%20feedback">email me</a>.
-      <br><a href="facilitator.html">Facilitator guide</a> &middot; <a href="licence.html">Licences and pricing</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://ko-fi.com/dvrmmr" target="_blank" rel="noopener noreferrer">Support on Ko-fi</a>
+      <br>Facilitator guides: <a href="facilitator.html">The Long Silence</a> &middot; <a href="night-desk/facilitator.html">The Night Desk</a>
+      <br><a href="licence.html">Licences and pricing</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://ko-fi.com/dvrmmr" target="_blank" rel="noopener noreferrer">Support on Ko-fi</a>
       <br>Breach Inc. is published by DVRMMR GAMING LTD, registered in England and Wales, company number 17527015. Registered office: 61 Bridge Street, Kington, HR5 3DJ.
     </footer>
   </div>
   <script>
-    // A game in progress: offer to carry on rather than start. The save is
-    // The Long Silence's own, and storage may be unavailable.
-    try {
-      var save = JSON.parse(localStorage.getItem("breach-inc-save"));
-      if (save && save.started && !save.ended) document.getElementById("long-silence-go").textContent = "Continue where you left off";
-    } catch (e) { /* no save to read */ }
+    // A game in progress: offer to carry on rather than start. Each challenge
+    // has its own save, and storage may be unavailable.
+    [["breach-inc-save", "long-silence-go"], ["breach-inc-outage-save", "night-desk-go"]].forEach(function (game) {
+      try {
+        var save = JSON.parse(localStorage.getItem(game[0]));
+        if (save && save.started && !save.ended) document.getElementById(game[1]).textContent = "Continue where you left off";
+      } catch (e) { /* no save to read */ }
+    });
   </script>
 </body>
 </html>

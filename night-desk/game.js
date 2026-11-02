@@ -6,7 +6,7 @@
   var SAVE_KEY = "breach-inc-outage-save";
   // DEVELOPMENT ONLY: a Back button that steps back one screen. Set DEV to
   // false, or remove it and everything marked "DEV", before uploading.
-  var DEV = true;
+  var DEV = false;
   var HISTORY_KEY = SAVE_KEY + "-devHistory";
   var devHistory = [];
   function snapshot() {
@@ -68,6 +68,9 @@
   // Seconds between an interlude's paragraphs appearing, unless it sets its
   // own `pace`.
   var PACE = 0.6;
+  // The same for decision screens: a little quicker, as players come back to
+  // them on another playthrough, and a facilitator may be waiting with a room.
+  var SCENE_PACE = 0.45;
 
   // Timed effects within a screen, cancelled whenever it's redrawn. With
   // reduced motion, they jump straight to how they end.
@@ -391,7 +394,24 @@
   function renderHud() {
     var hud = document.getElementById("hud");
     hud.textContent = "";
-    function box(label, value, meter, cls) {
+    // The mini status bar repeats the full one for sighted players, so screen
+    // readers skip it: the full one stays in the page wherever it's scrolled.
+    var mini = document.getElementById("mini-hud");
+    if (!mini) {
+      mini = el("div", "mini-hud");
+      mini.id = "mini-hud";
+      mini.setAttribute("aria-hidden", "true");
+      document.body.appendChild(mini);
+    }
+    mini.textContent = "";
+    function box(label, value, meter, cls, short, shortValue) {
+      if (short) {
+        var s = el("div", "mini-stat" + (meter == null ? "" : meter <= 25 ? " low" : meter <= 50 ? " mid" : "") +
+          (/\bsilence\b/.test(cls || "") ? " alert" : ""));
+        s.appendChild(el("span", "mini-label", short));
+        s.appendChild(el("span", "mini-val", shortValue || value));
+        mini.appendChild(s);
+      }
       var b = el("div", "stat-box" + (cls ? " " + cls : ""));
       b.appendChild(el("span", "stat-label", label));
       b.appendChild(el("span", "stat-val", value));
@@ -412,18 +432,21 @@
       // A stat that can go below zero shows its sign, and its meter runs
       // from the bottom of its range to the top.
       var v = state.stats[id], lo = statMin(id), hi = statMax(id);
-      box(STATS[id].label, (lo < 0 && v ? signed(v) : String(v)) + (STATS[id].unit || ""), Math.round((v - lo) / (hi - lo) * 100));
+      box(STATS[id].label, (lo < 0 && v ? signed(v) : String(v)) + (STATS[id].unit || ""), Math.round((v - lo) / (hi - lo) * 100), null, STATS[id].short);
       hud.lastChild.setAttribute("data-stat", id);
+      if (mini.lastChild) mini.lastChild.setAttribute("data-stat", id);
       if (id === "service" && v === 0) hud.lastChild.classList.add("frozen");
     }
     if (state.silence && state.silence.to == null && !state.ended) {
-      box(COUNTER.label, String(silenceDays()), null, "silence days-silent");
+      box(COUNTER.label, String(silenceDays()), null, "silence days-silent", COUNTER.short);
+      mini.lastChild.classList.add("mini-days");
     }
     var announcing = !state.ended && GAME_NODES[state.node].deadlineCheck;
     if (state.deadline && !state.ended && (!state.deadline.done || announcing)) {
       var left = state.deadline.day - state.days;
       box(DEADLINE.label, left === 0 ? "TODAY" : left > 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null,
-        (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""));
+        (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""),
+        DEADLINE.short, left === 0 ? "0d" : left > 0 ? left + "d" : "+" + (-left) + "d");
       if (state.squeezed) {
         hud.lastChild.appendChild(el("span", "stat-note", dayCount(state.squeezed) + " squeezed into nights"));
       }
@@ -432,7 +455,7 @@
         hud.lastChild.appendChild(el("span", "stat-note", signed(state.shifted) + (Math.abs(state.shifted) === 1 ? " day" : " days")));
       }
     } else if (state.deadline && state.timerEnded && !state.ended) {
-      box(DEADLINE.label, state.timerEnded[0], null, "timer-ended");
+      box(DEADLINE.label, state.timerEnded[0], null, "timer-ended", DEADLINE.short, state.timerEnded[2]);
       hud.lastChild.appendChild(el("span", "stat-note", state.timerEnded[1]));
     }
     // The cash: weeks, then days, until it runs out, then the overdraft
@@ -443,7 +466,8 @@
       var covered = cash <= 0 && paid != null && paid <= today;
       box(CASH.label, cash >= 14 ? Math.floor(cash / 7) + " weeks" : cash > 0 ? dayCount(cash) : cash === 0 ? "TODAY" : "Overdraft", null,
         "cash" + (covered ? "" : cash <= 14 ? " silence" : "") + (state.cashShifted > 0 ? " shifted" : state.cashShifted < 0 ? " bite" : "") +
-        (state.cashArrived ? " arrived" : ""));
+        (state.cashArrived ? " arrived" : ""),
+        CASH.short, cash >= 14 ? Math.floor(cash / 7) + "w" : cash >= 0 ? cash + "d" : "O/D");
       if (state.cashArrived) {
         hud.lastChild.appendChild(el("span", "stat-note new", "New"));
       } else if (state.cashShifted) {
@@ -452,6 +476,17 @@
         hud.lastChild.appendChild(el("span", "stat-note" + (covered ? " quiet" : ""), covered ? "insurer paying" : "insurer: nothing yet"));
       }
     }
+  }
+
+  // Shows the mini status bar whenever the full one isn't all in view. Where
+  // the full one sticks to the top of the screen, that never happens.
+  function watchHud() {
+    if (!window.IntersectionObserver) return;
+    var hud = document.getElementById("hud");
+    new IntersectionObserver(function (entries) {
+      var mini = document.getElementById("mini-hud");
+      if (mini) mini.classList.toggle("show", hud.offsetHeight > 0 && entries[entries.length - 1].intersectionRatio < 0.99);
+    }, { threshold: [0.99] }).observe(hud);
   }
 
   // The edges of the screen close in as your health falls, and more so
@@ -489,7 +524,7 @@
   function appearAt(node, i, offset) {
     // A scene timed by hand gives each paragraph's time in seconds.
     if (node.times) return (offset || 0) + node.times[Math.min(i, node.times.length - 1)];
-    var at = (offset || 0) + i * (node.pace || PACE);
+    var at = (offset || 0) + i * (node.pace || (node.type === "interlude" ? PACE : SCENE_PACE));
     for (var j in node.pauses || {}) if (j <= i) at += node.pauses[j];
     return at;
   }
@@ -608,43 +643,58 @@
 
   // Notes at the top of a screen: the recommendation the room just
   // overruled, and what happened instead; or the cash arriving as a new clock.
+  // News lands first: each note appears in turn, and this returns how long
+  // the screen's own text should wait for them.
   function renderNotes(card) {
+    var held = 0;
+    function reveal(note) {
+      note.classList.add("reveal");
+      note.style.animationDelay = 0.1 + held + "s";
+      held += 0.9;
+    }
     if (state.overruled) {
       var note = el("div", "overruled-note");
+      reveal(note);
       note.appendChild(el("div", "overruled-label", "Overruled · " + state.overruled.title));
       note.appendChild(el("p", null, state.overruled.text));
       card.appendChild(note);
     }
     if (state.cashArrived && CASH.intro) {
       var clock = el("div", "overruled-note new-clock");
+      reveal(clock);
       clock.appendChild(el("div", "overruled-label", "A new clock · " + CASH.label));
       clock.appendChild(el("p", null, CASH.intro));
       card.appendChild(clock);
     }
+    return held;
   }
 
   function renderScene(card) {
     var node = GAME_NODES[state.node];
     card.className = "card" + (node.jolt ? " jolt" : "");
-    renderNotes(card);
+    var held = renderNotes(card);
     card.appendChild(el("div", "act-tag", node.act));
     card.appendChild(el("h1", null, node.title));
     // A scene can give a time, like an interlude, beside its date.
     var date = dateLine(node) + (node.time ? " · " + node.time : "");
     if (date) card.appendChild(el("div", "clock", date));
-    // Scenes normally appear at once, so the player can weigh the whole
-    // situation. A `stage`d scene unfolds like an interlude instead, starting
-    // `stage` seconds in, and its choices appear only after the last line.
-    var offset = node.stage || 0;
-    renderParagraphs(card, node, "narrative" + (node.stage ? " reveal" : ""), offset);
-    var choicesAt = appearAt(node, nodeText(node).length, offset);
+    // Scenes unfold a paragraph at a time, and their choices appear only after
+    // the last line. `stage` sets when the first line appears; a scene that
+    // cuts in with a shudder waits for it to pass.
+    var offset = (node.stage != null ? node.stage : node.jolt ? 0.9 : 0.2) + held;
+    renderParagraphs(card, node, "narrative reveal", offset);
+    var choicesAt = appearAt(node, nodeText(node).length, offset), shown = 0;
     // A choice with `when` only appears if it makes sense on this path.
     node.choices.forEach(function (choice, i) {
       if (choice.when && !choice.when(state.flags)) return;
       // A choice's words can depend on where the player stands.
       var words = typeof choice.text === "function" ? choice.text(state.flags, state.stats) : choice.text;
-      var btn = el("button", "choice-btn" + (node.stage ? " reveal" : ""), words);
-      if (node.stage) btn.style.animationDelay = choicesAt + i * 0.2 + "s";
+      var btn = el("button", "choice-btn reveal waiting", words);
+      // Until it shows, a choice can't be picked: a double tap on the last
+      // screen's button could otherwise land on one nobody has read.
+      btn.style.animationDelay = choicesAt + shown * 0.2 + "s";
+      (function (b, at) { later(at, function () { b.classList.remove("waiting"); }); })(btn, choicesAt + shown * 0.2);
+      shown++;
       btn.type = "button";
       var past = daysPast(choice);
       var short = shortOf(choice);
@@ -668,7 +718,9 @@
         btn.appendChild(el("span", "choice-cost" + (past ? " past" : choice.overruled && !carried ? " locked" : ""),
           dayCount(choice.days) + shift + (past ? " · " + (DEADLINE.passes ? DEADLINE.warn : dayCount(past) + " past Legal's date") : "")));
       }
-      btn.addEventListener("click", function () { advance(decided(choice), words); });
+      btn.addEventListener("click", function () {
+        if (!btn.classList.contains("waiting")) advance(decided(choice), words);
+      });
       card.appendChild(btn);
     });
   }
@@ -677,13 +729,13 @@
     var node = GAME_NODES[state.node];
     var pace = node.pace || PACE;
     card.className = "card interlude" + (node.turn ? " turning" : "") + (node.homecoming ? " homecoming" : "");
-    renderNotes(card);
+    var held = renderNotes(card);
     var clock = el("div", "clock", dateLine(node) + (node.time ? " · " : ""));
     var time = el("span", null, node.time);
     clock.appendChild(time);
     card.appendChild(clock);
     card.appendChild(el("h1", null, node.title));
-    var offset = node.noise ? renderNoise(card, node.noise) : node.career ? renderCareer(card, node.career, clock) : 0;
+    var offset = held + (node.noise ? renderNoise(card, node.noise) : node.career ? renderCareer(card, node.career, clock) : 0);
     var paragraphs = nodeText(node);
     renderParagraphs(card, node, "narrative reveal", offset);
     var last = appearAt(node, paragraphs.length - 1, offset);
@@ -714,6 +766,8 @@
       later(last, function () {
         var counter = document.querySelector(".days-silent");
         if (counter) counter.classList.add("ended");
+        var miniCounter = document.querySelector(".mini-days");
+        if (miniCounter) miniCounter.classList.add("ended");
       });
     }
     btn.addEventListener("click", function () {
@@ -735,6 +789,17 @@
     var office = el("div", "office");
     office.setAttribute("aria-hidden", "true");
     var cols = 16, rows = 9;
+    // On a smaller screen there's little room beside the card, so the card
+    // turns see-through for this scene (see .floor-scene), with fewer, bigger
+    // monitors arranged to suit the shape of the screen.
+    if (window.matchMedia && matchMedia("(max-width: 1100px)").matches) {
+      var portrait = window.innerHeight > window.innerWidth;
+      cols = portrait ? 8 : 12;
+      rows = portrait ? 14 : 7;
+      office.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+      office.style.gridTemplateRows = "repeat(" + rows + ", 1fr)";
+    }
+    card.classList.add("floor-scene");
     // The wave lasts as long as its paragraph's beats, so the last monitor
     // goes out as the last words appear (3 seconds if it has none).
     var bars = (nodeText(node)[b.wave].match(/\|/g) || []).length;
@@ -754,16 +819,21 @@
     // Service crashes as the map freezes: the box flashes red and shudders,
     // and the number counts down to nothing, so nobody misses it.
     var mapAt = appearAt(node, b.map, offset);
-    var service = document.querySelector('[data-stat="service"]');
+    var service = document.querySelector('.stat-box[data-stat="service"]');
+    var miniService = document.querySelector('.mini-stat[data-stat="service"]');
     if (service) {
       var from = state.stats.service, unit = STATS.service.unit || "";
-      later(mapAt, function () { service.classList.add("crash", "frozen"); });
+      later(mapAt, function () {
+        service.classList.add("crash", "frozen");
+        if (miniService) miniService.classList.add("crash");
+      });
       for (var n = 1; n <= 20; n++) {
         (function (n) {
           later(mapAt + n * 0.06, function () {
             var v = Math.round(from * (1 - n / 20));
             service.querySelector(".stat-val").textContent = v + unit;
             service.querySelector(".meter-fill").style.width = v + "%";
+            if (miniService) miniService.querySelector(".mini-val").textContent = v + unit;
           });
         })(n);
       }
@@ -830,12 +900,12 @@
     card.appendChild(el("div", "act-tag", "Before you begin"));
     card.appendChild(el("h1", null, "The Night Desk"));
     [
-      "A preview, shared before launch. Your progress is saved in this browser, so you can stop and come back.",
+      "Your progress is saved in this browser, so you can stop and come back.",
       "The Night Desk is a text-based game for security, tech and business leaders. You'll live through a ransomware attack from the inside: the night the screens go black in the busiest week of the year, the weeks of running on paper, with limited operations while the money runs out, and the months it takes to rebuild.",
       "The Night Desk is fiction. ACME Logistics, its people and its events are invented or composites, drawn from real ransomware attacks, and it isn't an account of any real organisation's response. What's real is the pressure, the imperfect choices, and the deadlines outside of your control.",
       "Your choices shape the story, and many of its events and outcomes only happen on some paths. None of them should be read as a record of what really happened, or of what anyone really did.",
       "You're the Head of IT Operations, with fourteen years at the company: the longest-serving member of the leadership team. Most of the big calls belong to someone else: the Chief Executive, the Finance Director, Legal, the board. You recommend, and whether they listen depends on your influence. Every decision takes time and moves four things: your influence, your team's health, your own health, and how much of the company's service is running. From the board meeting on, a fifth clock counts down the company's liquidity.",
-      "There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices played out, with lessons and questions for every seat at the table.",
+      "There's no perfect path. The aim is to help you think about how to prepare today for what might come tomorrow. After your story ends, the game shows you how your choices played out, with lessons and questions for tech and cyber teams and for business leaders.",
     ].forEach(function (text) { card.appendChild(el("p", "narrative", text)); });
     if (EDITION.licensed) {
       card.appendChild(el("h2", null, "About this copy"));
@@ -850,7 +920,7 @@
       card.appendChild(paragraph([
         "You're welcome to use The Night Desk free in your organisation's own security awareness and training, as long as you use it as it is and include a link to ",
         ["breach-inc.com", "https://breach-inc.com/"],
-        ". To run it as a facilitated session with your leadership team, record completions or adapt it, organisation licences will be available at launch, as they are for The Long Silence. See ",
+        ". To run it as a facilitated session with your leadership team, record completions or adapt it, see ",
         ["licences and pricing", "../licence.html"],
         ".",
       ]));
@@ -936,6 +1006,10 @@
       if (early) {
         part.classList.add("reveal");
         part.style.animationDelay = 1.6 + i * 0.9 + "s";
+      } else if (i >= 2) {
+        // A normal ending unfolds like any other screen, after its heading.
+        part.classList.add("reveal");
+        part.style.animationDelay = 0.2 + (i - 2) * PACE + "s";
       }
       card.appendChild(part);
     });
@@ -1026,11 +1100,13 @@
     card.className = "card lessons-screen";
     card.appendChild(el("div", "act-tag", "Lessons learned"));
     card.appendChild(el("h1", null, "Your breach in review"));
-    card.appendChild(el("p", "narrative", LESSONS_INTRO));
+    var intro = el("p", "narrative reveal", LESSONS_INTRO);
+    intro.style.animationDelay = "0.2s";
+    card.appendChild(intro);
     var record = state.choices && { choices: state.choices, flags: state.flags, stats: state.stats, log: state.log, finished: !state.ended.early };
     LESSONS.forEach(function (lesson, i) {
       var box = el("section", "lesson reveal");
-      box.style.animationDelay = i * 0.3 + "s";
+      box.style.animationDelay = 0.6 + i * 0.3 + "s";
       box.appendChild(el("div", "lesson-scenes", lesson.scenes));
       var head = el("div", "lesson-head");
       head.appendChild(el("h2", null, (i + 1) + ". " + lesson.title));
@@ -1079,7 +1155,7 @@
     // team, rather than asked to tip from a training budget.
     var support = paragraph([
       "Breach Inc. is free, with no ads and no tracking, and it's going to stay that way. If it's given you something to take back to your team, you can help keep it free. Want to run it with your leadership team? An ",
-      ["organisation licence", "licence.html#organisation"],
+      ["organisation licence", "../licence.html#organisation"],
       ", from \u00a3195 (\u00a395 for charities and the NHS), includes a ready-to-run session deck with facilitator notes, a learning platform package that records completions, and the right to adapt it for your own staff.",
     ]);
     support.className += " support";
@@ -1105,7 +1181,7 @@
     });
     actions.appendChild(copy);
     var team = el("a", "next-btn", "Run this with your team");
-    team.href = "licence.html#organisation";
+    team.href = "../licence.html#organisation";
     if (!EDITION.licensed) actions.appendChild(team);
     var kofi = el("a", "next-btn", "Support Breach Inc. on Ko-fi");
     kofi.href = "https://ko-fi.com/dvrmmr";
@@ -1194,5 +1270,6 @@
       if (confirm("Start again from the beginning?")) restart();
     });
     render();
+    watchHud();
   });
 })();
