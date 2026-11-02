@@ -9,15 +9,17 @@
 // places and dates are fictional or generic.
 
 var STATS = {
-  internalInfluence: { label: "Influence", start: 40 },
-  teamHealth: { label: "Team health", start: 20 }, // the All Hands lifts it
-  playerHealth: { label: "Your health", start: 100 },
+  // `short` is the label on the mini status bar, shown once the full one has
+  // scrolled out of view.
+  internalInfluence: { label: "Influence", short: "INF", start: 40 },
+  teamHealth: { label: "Team health", short: "TEAM", start: 20 }, // the All Hands lifts it
+  playerHealth: { label: "Your health", short: "YOU", start: 100 },
   // How far customers, clients and regulators trust ACME Inc.'s response,
   // from -50 to 50. It starts at 0: most of them have never heard of ACME.
   // `public`: changes are held until the announcement, which itself costs
   // `announcement`. Good preparation mostly limits the damage rather than
   // earning trust, so even a near-perfect response only gets back to 0.
-  publicTrust: { label: "Public trust", start: 0, min: -50, max: 50, public: true, announcement: -20 },
+  publicTrust: { label: "Public trust", short: "TRUST", start: 0, min: -50, max: 50, public: true, announcement: -20 },
 };
 
 var START_NODE = "act0_start";

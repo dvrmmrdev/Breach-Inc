@@ -49,6 +49,9 @@
   // Seconds between an interlude's paragraphs appearing, unless it sets its
   // own `pace`.
   var PACE = 0.6;
+  // The same for decision screens: a little quicker, as players come back to
+  // them on another playthrough, and a facilitator may be waiting with a room.
+  var SCENE_PACE = 0.45;
 
   // Timed effects within a screen, cancelled whenever it's redrawn. With
   // reduced motion, they jump straight to how they end.
@@ -281,7 +284,24 @@
   function renderHud() {
     var hud = document.getElementById("hud");
     hud.textContent = "";
-    function box(label, value, meter, cls) {
+    // The mini status bar repeats the full one for sighted players, so screen
+    // readers skip it: the full one stays in the page wherever it's scrolled.
+    var mini = document.getElementById("mini-hud");
+    if (!mini) {
+      mini = el("div", "mini-hud");
+      mini.id = "mini-hud";
+      mini.setAttribute("aria-hidden", "true");
+      document.body.appendChild(mini);
+    }
+    mini.textContent = "";
+    function box(label, value, meter, cls, short, shortValue) {
+      if (short) {
+        var s = el("div", "mini-stat" + (meter == null ? "" : meter <= 25 ? " low" : meter <= 50 ? " mid" : "") +
+          (/\bsilence\b/.test(cls || "") ? " alert" : "") + (/\bpending\b/.test(cls || "") ? " pending" : ""));
+        s.appendChild(el("span", "mini-label", short));
+        s.appendChild(el("span", "mini-val", shortValue || value));
+        mini.appendChild(s);
+      }
       var b = el("div", "stat-box" + (cls ? " " + cls : ""));
       b.appendChild(el("span", "stat-label", label));
       b.appendChild(el("span", "stat-val", value));
@@ -296,22 +316,24 @@
     }
     for (var id in STATS) {
       if (STATS[id].public && !announced() && !state.ended) {
-        box(STATS[id].label, "Not public", null, "pending");
+        box(STATS[id].label, "Not public", null, "pending", STATS[id].short, "\u2013");
         continue;
       }
       // A stat that can go below zero shows its sign, and its meter runs
       // from the bottom of its range to the top.
       var v = state.stats[id], lo = statMin(id), hi = statMax(id);
-      box(STATS[id].label, lo < 0 && v ? signed(v) : String(v), Math.round((v - lo) / (hi - lo) * 100));
+      box(STATS[id].label, lo < 0 && v ? signed(v) : String(v), Math.round((v - lo) / (hi - lo) * 100), null, STATS[id].short);
     }
     if (state.silence && state.silence.to == null && !state.ended) {
-      box("Days in silence", String(silenceDays()), null, "silence days-silent");
+      box("Days in silence", String(silenceDays()), null, "silence days-silent", "DAYS");
+      mini.lastChild.classList.add("mini-days");
     }
     var announcing = !state.ended && GAME_NODES[state.node].deadlineCheck;
     if (state.deadline && !state.ended && (!state.deadline.done || announcing)) {
       var left = state.deadline.day - state.days;
       box("Legal's date", left === 0 ? "TODAY" : left > 0 ? "in " + dayCount(left) : dayCount(-left) + " over", null,
-        (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""));
+        (left <= 5 ? "silence" : "") + (state.squeezed ? " bite" : ""),
+        "LEGAL", left === 0 ? "0d" : left > 0 ? left + "d" : "+" + (-left) + "d");
       if (state.squeezed) {
         hud.lastChild.appendChild(el("span", "stat-note", dayCount(state.squeezed) + " squeezed into nights"));
       }
@@ -321,6 +343,17 @@
         hud.lastChild.appendChild(el("span", "stat-note", shiftWords(state.shifted)));
       }
     }
+  }
+
+  // Shows the mini status bar whenever the full one isn't all in view. Where
+  // the full one sticks to the top of the screen, that never happens.
+  function watchHud() {
+    if (!window.IntersectionObserver) return;
+    var hud = document.getElementById("hud");
+    new IntersectionObserver(function (entries) {
+      var mini = document.getElementById("mini-hud");
+      if (mini) mini.classList.toggle("show", hud.offsetHeight > 0 && entries[entries.length - 1].intersectionRatio < 0.99);
+    }, { threshold: [0.99] }).observe(hud);
   }
 
   // The edges of the screen close in as your health falls, and more so
@@ -356,7 +389,7 @@
   // When paragraph i appears, in seconds: one every `pace`, plus any pauses
   // up to and including it.
   function appearAt(node, i, offset) {
-    var at = (offset || 0) + i * (node.pace || PACE);
+    var at = (offset || 0) + i * (node.pace || (node.type === "interlude" ? PACE : SCENE_PACE));
     for (var j in node.pauses || {}) if (j <= i) at += node.pauses[j];
     return at;
   }
@@ -418,15 +451,19 @@
     card.className = "card" + (node.jolt ? " jolt" : "");
     card.appendChild(el("div", "act-tag", node.act));
     card.appendChild(el("h1", null, node.title));
-    // Scenes normally appear at once, so the player can weigh the whole
-    // situation. A `stage`d scene unfolds like an interlude instead, starting
-    // `stage` seconds in, and its choices appear only after the last line.
-    var offset = node.stage || 0;
-    renderParagraphs(card, node, "narrative" + (node.stage ? " reveal" : ""), offset);
-    var choicesAt = appearAt(node, nodeText(node).length, offset);
+    // Scenes unfold a paragraph at a time, and their choices appear only after
+    // the last line. `stage` sets when the first line appears; a scene that
+    // cuts in with a shudder waits for it to pass.
+    var offset = (node.stage != null ? node.stage : node.jolt ? 0.9 : 0.2);
+    renderParagraphs(card, node, "narrative reveal", offset);
+    var choicesAt = appearAt(node, nodeText(node).length, offset), shown = 0;
     node.choices.forEach(function (choice, i) {
-      var btn = el("button", "choice-btn" + (node.stage ? " reveal" : ""), choice.text);
-      if (node.stage) btn.style.animationDelay = choicesAt + i * 0.2 + "s";
+      var btn = el("button", "choice-btn reveal waiting", choice.text);
+      // Until it shows, a choice can't be picked: a double tap on the last
+      // screen's button could otherwise land on one nobody has read.
+      btn.style.animationDelay = choicesAt + shown * 0.2 + "s";
+      (function (b, at) { later(at, function () { b.classList.remove("waiting"); }); })(btn, choicesAt + shown * 0.2);
+      shown++;
       btn.type = "button";
       var past = daysPast(choice);
       var short = shortOf(choice);
@@ -441,7 +478,9 @@
           (choice.deadlineShift && state.deadline && !state.deadline.done ? " · Legal's date " + shiftWords(choice.deadlineShift) : "") +
           (past ? " · " + dayCount(past) + " past Legal's date" : "")));
       }
-      btn.addEventListener("click", function () { advance(choice, choice.text); });
+      btn.addEventListener("click", function () {
+        if (!btn.classList.contains("waiting")) advance(choice, choice.text);
+      });
       card.appendChild(btn);
     });
   }
@@ -475,6 +514,8 @@
       later(last, function () {
         var counter = document.querySelector(".days-silent");
         if (counter) counter.classList.add("ended");
+        var miniCounter = document.querySelector(".mini-days");
+        if (miniCounter) miniCounter.classList.add("ended");
       });
     }
     btn.addEventListener("click", function () {
@@ -615,6 +656,10 @@
       if (early) {
         part.classList.add("reveal");
         part.style.animationDelay = 1.6 + i * 0.9 + "s";
+      } else if (i >= 2) {
+        // A normal ending unfolds like any other screen, after its heading.
+        part.classList.add("reveal");
+        part.style.animationDelay = 0.2 + (i - 2) * PACE + "s";
       }
       card.appendChild(part);
     });
@@ -682,11 +727,13 @@
     card.className = "card lessons-screen";
     card.appendChild(el("div", "act-tag", "Lessons learned"));
     card.appendChild(el("h1", null, "Your breach in review"));
-    card.appendChild(el("p", "narrative", LESSONS_INTRO));
+    var intro = el("p", "narrative reveal", LESSONS_INTRO);
+    intro.style.animationDelay = "0.2s";
+    card.appendChild(intro);
     var record = state.choices && { choices: state.choices, flags: state.flags, stats: state.stats, log: state.log, finished: !state.ended.early };
     LESSONS.forEach(function (lesson, i) {
       var box = el("section", "lesson reveal");
-      box.style.animationDelay = i * 0.3 + "s";
+      box.style.animationDelay = 0.6 + i * 0.3 + "s";
       box.appendChild(el("div", "lesson-scenes", lesson.scenes));
       var head = el("div", "lesson-head");
       head.appendChild(el("h2", null, (i + 1) + ". " + lesson.title));
@@ -831,5 +878,6 @@
       if (confirm("Start again from the beginning?")) restart();
     });
     render();
+    watchHud();
   });
 })();
