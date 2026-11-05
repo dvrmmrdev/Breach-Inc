@@ -317,7 +317,7 @@ var INTERLUDES = {
         "Corporate security sends every senior leader formal advice: if a stranger asks where you work, name a different employer, and report anything suspicious in or around the building. Private security for the executives is quietly increased.",
         "One of your team is served with a lawsuit naming them personally.",
         "Another is told to change the domain registration for their personal website, because it gives their home address to anyone who looks.",
-        "They did their jobs. Now their names are part of the story.",
+        "They did their jobs. But none of that matters to anyone but you.",
       ].filter(Boolean);
     },
     // A white-label response site on an unfamiliar domain costs trust as well.
@@ -396,6 +396,13 @@ var INTERLUDES = {
         flags.agencies
           ? "The investigators' evidence says ACME Inc. came to them early, and the regulator confirms it."
           : "A lawmaker asks why the regulator learned the details of the breach on the same day as the public.",
+        flags.interview_full
+          ? "A lawmaker asks about encryption. The answer has been on the record since the first week, and they move on."
+          : flags.interview_line
+            ? "A lawmaker plays the clip of the former CEO, then asks whether anyone at ACME knew the answer that morning."
+            : flags.interview_yes
+              ? "A lawmaker plays the former CEO's 'yes', and asks who it protected."
+              : null,
         flags.shielded
           ? "The lawmaker's timeline matches the updates the war room gave the board, line for line. Nobody can claim they weren't told."
           : null,
@@ -416,6 +423,10 @@ var INTERLUDES = {
       // Telling the regulator and law enforcement early is remembered.
       if (flags.agencies) trust += 5;
       else influence -= 5;
+      // What the CEO said on air is still on the record.
+      if (flags.interview_full) influence += 5;
+      if (flags.interview_line) influence -= 5;
+      if (flags.interview_yes) influence -= 5;
       return { internalInfluence: influence, playerHealth: you, publicTrust: trust };
     },
     next: "act4_dutyofcare",

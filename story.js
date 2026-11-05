@@ -532,17 +532,62 @@ var GAME_NODES = {
     choices: [
       {
         text: "Remove the posts, apologise publicly, and register the most likely lookalike domains.",
-        nextNode: "i_exposed",
+        nextNode: "act3_interview",
         days: 1,
         stats: { internalInfluence: 5, teamHealth: -5, playerHealth: -5 },
         outcome: "It's an embarrassing day, but it's over in one news cycle.",
       },
       {
         text: "Correct the posts and put the right address on every official channel, without a public apology that would give the story a second day.",
-        nextNode: "i_exposed",
+        nextNode: "act3_interview",
         days: 1,
         stats: { internalInfluence: -5, teamHealth: 0, playerHealth: -5, publicTrust: -5 },
         outcome: "The fix is quick, and most people never see the wrong link. Then the researcher posts screenshots of the deleted posts, and the story becomes why ACME Inc. didn't say sorry.",
+      },
+    ],
+  },
+
+  act3_interview: {
+    act: "Act 3: Going Public",
+    title: "Was It Encrypted?",
+    text: function (flags) {
+      return [
+        "Your phone rings at ten to seven. The CEO is in a car on the way to a studio, for nine live minutes on the country's biggest morning news programme. After the wrong website, Communications want a human face on the story.",
+        "The producer has let the first question slip: was the data encrypted?",
+        "It's a fair question, and it has no short answer. The card numbers were encrypted where they were stored. But the attackers came in through a portal that was allowed to read them, so the encryption stopped nothing. 'Yes' is true. 'No' is closer to what matters.",
+        flags.plain_apology
+          ? "The apology promised people what ACME knows and what it doesn't. The presenter will hold the CEO to that."
+          : "The presenter has the 'abundance of caution' clip ready to play.",
+        flags.narrow_scope ? "And there are still systems your team never examined." : null,
+        "You can hear the indicator ticking in the car. The CEO has slept four hours since the announcement. 'Just tell me what to say.'",
+      ].filter(Boolean);
+    },
+    choices: [
+      {
+        text: "Give the CEO the full answer: 'Some of it was, but the attackers got in through a system that could read it, so it didn't protect you. Here's what to do today.'",
+        nextNode: "i_exposed",
+        days: 0,
+        needs: { internalInfluence: BOARD_INFLUENCE },
+        needsFor: "to carry the room",
+        stats: { internalInfluence: -5 },
+        set: "interview_full",
+        outcome: "It's a terrible clip. Legal don't speak to you for two days. But there's nothing left to uncover, and by lunchtime the story has moved on to what people should do.",
+      },
+      {
+        text: "Give the line Legal have cleared: 'That's part of our investigation, and I don't want to say anything that turns out to be wrong.'",
+        nextNode: "i_exposed",
+        days: 0,
+        stats: { internalInfluence: 5, teamHealth: -5 },
+        set: "interview_line",
+        outcome: "It's careful, and it's defensible. The presenter asks three more times. By nine, the clip is captioned 'ACME boss doesn't know if your data was encrypted', and your engineers, who do know, watch it at their desks.",
+      },
+      {
+        text: "Give the short answer: 'Yes, the data was encrypted.' It's true, Legal can stand behind it, and it could calm millions of people and shorten the queues.",
+        nextNode: "i_exposed",
+        days: 0,
+        stats: { publicTrust: -5 },
+        set: "interview_yes",
+        outcome: "It works for about four days, and call volumes dip. Then a researcher explains why encrypted data could still be read, and every report runs the CEO's answer beside the explanation.",
       },
     ],
   },
@@ -871,7 +916,7 @@ var LESSONS = [
   },
   {
     title: "Decisions only the board can make",
-    scenes: "Who Do We Tell? \u00b7 The CEO's Words",
+    scenes: "Who Do We Tell? \u00b7 The CEO's Words \u00b7 Was It Encrypted?",
     review: function (r) {
       var tell = r.choices.act2_agencies, words = r.choices.act2_statement;
       if (tell == null) return null;
@@ -888,6 +933,11 @@ var LESSONS = [
             ? " On the CEO's statement, you didn't have the influence to change Legal's draft, and 'abundance of caution' became the headline."
             : " You accepted Legal's draft of the CEO's statement, and 'abundance of caution' became the headline.";
       }
+      var lockedOnAir = " You didn't have the influence to give the CEO the full answer on air, so they";
+      var onAir = " When the CEO was asked on air whether the data was encrypted, they";
+      if (r.flags.interview_full) text += " When the CEO was asked on air whether the data was encrypted, you gave them the full answer. It made a terrible clip, but it left nothing to uncover.";
+      else if (r.flags.interview_line) text += (locked.act3_interview ? lockedOnAir : onAir) + " gave the line Legal had cleared, and the clip made it look as if nobody knew.";
+      else if (r.flags.interview_yes) text += (locked.act3_interview ? lockedOnAir : onAir) + " said yes. It was true, it protected nobody, and within days everyone knew that.";
       var both = tell === 0 && words === 0, neither = tell !== 0 && words !== 0;
       return { verdict: both ? "paid" : neither ? "manage" : "tradeoff", text: text };
     },
@@ -895,6 +945,7 @@ var LESSONS = [
     ask: [
       "Who contacts our regulator, law enforcement, the national cyber security agency and our cyber insurer in a breach, and when? Is that agreed with Legal in advance?",
       "Have we drafted, and agreed with Legal, the first statement our CEO would make?",
+      "If our CEO were asked on live television whether the stolen data was encrypted, what would they say, and would it still be true in a week?",
       "Which breach announcements have been well received, and what did they do differently? Have our board and Legal seen them?",
       "Which of our leaders would have to advise the board in a crisis, and have they done it before?",
     ],
